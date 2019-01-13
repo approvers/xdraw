@@ -1,0 +1,29 @@
+{
+  "name": "xdraw",
+  "version": "1.0.0",
+  "description": "The 3D rendering system for Javascript.",
+  "main": "./lib/main.js",
+  "types": "./lib/main.d.ts",
+  "scripts": {
+    "test": "jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/RkEclair/xdraw.git"
+  },
+  "keywords": [
+    "rendering"
+  ],
+  "author": "RkEclair",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/RkEclair/xdraw/issues"
+  },
+  "homepage": "https://github.com/RkEclair/xdraw#readme",
+  "devDependencies": {
+    "jest": "^23.6.0"
+  },
+  "dependencies": {
+    "@types/webgl2": "^0.0.4"
+  }
+}
