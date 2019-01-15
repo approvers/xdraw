@@ -1,10 +1,11 @@
 import Color from '../../basis/Color';
 import Renderer from '../Renderer';
 import WebGLState from './WebGLState';
+import Mesh from '../../objects/Mesh';
 
 /**
  * @author mrdoob / http://mrdoob.com/
- * @autohr RkEclair / https://github.com/RkEclair
+ * @author RkEclair / https://github.com/RkEclair
  */
 
 export default class WebGLBackground {
@@ -56,16 +57,7 @@ export default class WebGLBackground {
     if (background &&
         (background.isCubeTexture || background.isWebGLRenderTargetCube)) {
       if (boxMesh === null) {
-        boxMesh = new Mesh(new BoxBufferGeometry(1, 1, 1), new ShaderMaterial({
-                             type: 'BackgroundCubeMaterial',
-                             uniforms: ShaderLib.cube.uniforms.clone(),
-                             vertexShader: ShaderLib.cube.vertexShader,
-                             fragmentShader: ShaderLib.cube.fragmentShader,
-                             side: 'Back',
-                             depthTest: true,
-                             depthWrite: false,
-                             fog: false
-                           }));
+        boxMesh = Mesh.cube();
 
         boxMesh.geometry.removeAttribute('normal');
         boxMesh.geometry.removeAttribute('uv');

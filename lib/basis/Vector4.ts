@@ -136,14 +136,6 @@ export default class Vector4 {
     return new Vector4(x, y, z, angle);
   }
 
-  set(x: number, y: number, z: number, w: number) {
-    this.x = x;
-    this.y = y;
-    this.z = z;
-    this.w = w;
-    return this;
-  }
-
   setScalar(s: number) {
     this.x = s;
     this.y = s;
@@ -225,14 +217,6 @@ export default class Vector4 {
     this.y += s;
     this.z += s;
     this.w += s;
-    return this;
-  }
-
-  addScaledVector(v: Vector4, s: number) {
-    this.x += v.x * s;
-    this.y += v.y * s;
-    this.z += v.z * s;
-    this.w += v.w * s;
     return this;
   }
 

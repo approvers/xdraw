@@ -2,7 +2,7 @@
  * @author RkEclait / https:  // RkEclair
  */
 
-import Vector3 from './Vector3';
+import Vector3 from "./Vector3";
 
 export default class Plane {
   constructor(private _normal = new Vector3(1, 0, 0), public constant = 0) {}
@@ -14,7 +14,7 @@ export default class Plane {
     return this._normal;
   }
 
-  setComponents(x, y, z, w) {
+  setComponents(x: number, y: number, z: number, w: number) {
     this._normal = new Vector3(x, y, z);
     this.constant = w;
     return this;

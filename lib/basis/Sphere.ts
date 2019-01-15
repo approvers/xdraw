@@ -34,7 +34,7 @@ export default class Sphere {
 
   applyMatrix4(m: Matrix4) {
     this.center.applyMatrix4(m);
-    this.radius = this.radius * m.getMaxScaleOnAxis();
+    this.radius = this.radius * m.maxScaleOnAxis();
     return this;
   }
 }

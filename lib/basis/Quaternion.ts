@@ -8,6 +8,7 @@
 
 import Euler from "./Euler";
 import Vector3 from "./Vector3";
+import Matrix4 from "./Matrix4";
 
 export default class Quaternion {
   private onChange: Function = () => {};
@@ -127,7 +128,7 @@ export default class Quaternion {
     return newQ;
   }
 
-  static fromRotationMatrix(m) {
+  static fromRotationMatrix(m: Matrix4) {
     const te = m.elements,
       m11 = te[0],
       m12 = te[4],
@@ -183,9 +184,9 @@ export default class Quaternion {
     if (r < 0.000001) {
       r = 0;
       if (Math.abs(from.x) > Math.abs(from.z)) {
-        v.set(-from.y, from.x, 0);
+        v = new Vector3(-from.y, from.x, 0);
       } else {
-        v.set(0, -from.z, from.y);
+        v = new Vector3(0, -from.z, from.y);
       }
     } else {
       v = from.cross(to);

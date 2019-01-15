@@ -2,13 +2,15 @@
  * @author mrdoob / http://mrdoob.com/
  * @author alteredq / http://alteredqualia.com/
  * @author bhouston / http://clara.io
- * @author RkEclait / https://RkEclair
+ * @author RkEclair / https://github.com/RkEclair
  */
 
 import Plane from './Plane';
 import Sphere from './Sphere';
-import Vector3 from './Vector3';
 import Transform from './Transform';
+import Vector3 from './Vector3';
+import Matrix4 from './Matrix4';
+import Box3 from './Box3';
 
 export default class Frustum {
   planes: Plane[];
@@ -16,29 +18,16 @@ export default class Frustum {
       p0: Plane = new Plane(), p1: Plane = new Plane(), p2: Plane = new Plane(),
       p3: Plane = new Plane(), p4: Plane = new Plane(),
       p5: Plane = new Plane()) {
-    this.planes = [p0, p1, p2, p3, p4, p5];
-  }
-
-  set(p0, p1, p2, p3, p4, p5) {
-    const planes = this.planes;
-
-    planes[0] = p0.clone();
-    planes[1] = p1.clone();
-    planes[2] = p2.clone();
-    planes[3] = p3.clone();
-    planes[4] = p4.clone();
-    planes[5] = p5.clone();
-
-    return this;
+    this.planes = [
+      p0.clone(), p1.clone(), p2.clone(), p3.clone(), p4.clone(), p5.clone()
+    ];
   }
 
   clone() {
-    const cloned = new Frustum();
-    cloned.planes = this.planes.map((e) => e.clone());
-    return cloned;
+    return new (Frustum.apply(null, this.planes))();
   }
 
-  setFromMatrix(m) {
+  setFromMatrix(m: Matrix4) {
     const planes = this.planes;
     const me = m.elements;
     const me0 = me[0], me1 = me[1], me2 = me[2], me3 = me[3];
@@ -78,14 +67,14 @@ export default class Frustum {
   intersectsSprite(sprite) {
     const sphere = new Sphere();
 
-    sphere.center.set(0, 0, 0);
+    sphere.center = new Vector3(0, 0, 0);
     sphere.radius = 0.7071067811865476;
     sphere.applyMatrix4(sprite.matrixWorld);
 
     return this.intersectsSphere(sphere);
   }
 
-  intersectsSphere(sphere) {
+  intersectsSphere(sphere: Sphere) {
     const center = sphere.center;
     const negRadius = -sphere.radius;
 
@@ -98,7 +87,7 @@ export default class Frustum {
     return true;
   }
 
-  intersectsBox(box) {
+  intersectsBox(box: Box3) {
     const p = new Vector3();
 
     const planes = this.planes;
@@ -117,7 +106,7 @@ export default class Frustum {
     return true;
   }
 
-  containsPoint(point) {
+  containsPoint(point: Vector3) {
     return !this.planes.some((e) => e.distanceToPoint(point) < 0);
   }
 }

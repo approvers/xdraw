@@ -3,23 +3,23 @@
  */
 
 export default class EventSource {
-  listeners = {};
+  private listeners: {[key: string]: Function[]} = {};
 
-  addEventListener(type, listener) {
+  addEventListener(type: string, listener: Function) {
     if (this.listeners[type] === undefined) {
       this.listeners[type] = [];
     }
     this.listeners[type].push(listener);
   }
 
-  hasEventListener(type, listener) {
+  hasEventListener(type: string, listener: Function) {
     return (
       this.listeners[type] !== undefined &&
       this.listeners[type].indexOf(listener) !== -1
     );
   }
 
-  removeEventListener(type, listener) {
+  removeEventListener(type: string, listener: Function) {
     const listenersOfType = this.listeners[type];
 
     if (listenersOfType !== undefined) {
@@ -35,7 +35,7 @@ export default class EventSource {
 
     if (listenersOfType !== undefined) {
       event.target = this;
-      listenersOfType.forEach(e => e.call(this, event));
+      listenersOfType.forEach((e) => e.call(this, event));
     }
   }
 }

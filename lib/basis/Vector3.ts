@@ -2,7 +2,11 @@
  * @author RkEclair / https://github.com/RkEclair
  */
 
+import Camera from '../cameras/Camera';
+
+import BufferAttribute from './BufferAttribute';
 import Euler from './Euler';
+import Matrix3 from './Matrix3';
 import Matrix4 from './Matrix4';
 import Quaternion from './Quaternion';
 
@@ -53,18 +57,11 @@ export default class Vector3 {
     return new Vector3(array[offset], array[offset + 1], array[offset + 2]);
   }
 
-  static fromBufferAttribute(attribute, index: number) {
+  static fromBufferAttribute(attribute: BufferAttribute, index: number) {
     const x = attribute.getX(index);
     const y = attribute.getY(index);
     const z = attribute.getZ(index);
     return new Vector3(x, y, z);
-  }
-
-  set(x: number, y: number, z: number) {
-    this.x = x;
-    this.y = y;
-    this.z = z;
-    return this;
   }
 
   setScalar(s: number) {
@@ -163,7 +160,7 @@ export default class Vector3 {
     return this.applyQuaternion(Quaternion.fromAxisAngle(axis, angle));
   }
 
-  applyMatrix3(m) {
+  applyMatrix3(m: Matrix3) {
     const {x, y, z} = this, e = m.elements;
 
     this.x = e[0] * x + e[3] * y + e[6] * z;
@@ -173,7 +170,7 @@ export default class Vector3 {
     return this;
   }
 
-  applyMatrix4(m) {
+  applyMatrix4(m: Matrix4) {
     const {x, y, z} = this, e = m.elements;
 
     const w = 1 / (e[3] * x + e[7] * y + e[11] * z + e[15]);
@@ -200,13 +197,13 @@ export default class Vector3 {
     return this;
   }
 
-  project(camera) {
+  project(camera: Camera) {
     return this.applyMatrix4(camera.matrixWorldInverse)
         .applyMatrix4(camera.projectionMatrix);
   }
 
-  unproject(camera) {
-    return this.applyMatrix4(camera.projectionMatrix.inverse())
+  unproject(camera: Camera) {
+    return this.applyMatrix4(new Matrix4().inverse(camera.projectionMatrix))
         .applyMatrix4(camera.matrixWorld);
   }
 

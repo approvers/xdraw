@@ -1,14 +1,23 @@
+import BufferAttribute from './BufferAttribute';
+import Matrix3 from './Matrix3';
+
 /**
  * @author RkEclair / https://github.com/RkEclair
  */
 
 export default class Vector2 {
-  x: number;
-  y: number;
+  constructor(public x: number = 0, public y: number = 0) {}
 
-  constructor(x, y) {
-    this.x = x || 0;
-    this.y = y || 0;
+  static fromArray(array: number[], offset = 0) {
+    const x = array[offset];
+    const y = array[offset + 1];
+    return new Vector2(x, y);
+  }
+
+  static fromBufferAttribute(attribute: BufferAttribute, index: number) {
+    const x = attribute.getX(index);
+    const y = attribute.getY(index);
+    return new Vector2(x, y);
   }
 
   get width() {
@@ -25,12 +34,6 @@ export default class Vector2 {
     this.y = v;
   }
 
-  set(x, y) {
-    this.x = x;
-    this.y = y;
-    return this;
-  }
-
   setScalar(s) {
     this.x = this.y = s;
     return this;
@@ -44,7 +47,7 @@ export default class Vector2 {
     return this;
   }
 
-  setComponent(index, v) {
+  setComponent(index: number, v: number) {
     switch (index || -1) {
       case 0:
         this.x = v;
@@ -57,7 +60,7 @@ export default class Vector2 {
     }
     return this;
   }
-  getComponent(index) {
+  getComponent(index: number) {
     switch (index || -1) {
       case 0:
         return this.x;
@@ -72,75 +75,75 @@ export default class Vector2 {
     return new Vector2(this.x, this.y);
   }
 
-  add(v) {
+  add(v: Vector2) {
     this.x += v.x;
     this.y += v.y;
     return this;
   }
-  addScalar(s) {
+  addScalar(s: number) {
     this.x += s;
     this.y += s;
     return this;
   }
 
-  sub(v) {
+  sub(v: Vector2) {
     this.x -= v.x;
     this.y -= v.y;
     return this;
   }
-  subScalar(s) {
+  subScalar(s: number) {
     this.x -= s;
     this.y -= s;
     return this;
   }
 
-  multiply(v) {
+  multiply(v: Vector2) {
     this.x *= v.x;
     this.y *= v.y;
     return this;
   }
-  multiplyScalar(s) {
+  multiplyScalar(s: number) {
     this.x *= s;
     this.y *= s;
     return this;
   }
 
-  divide(v) {
+  divide(v: Vector2) {
     this.x /= v.x;
     this.y /= v.y;
     return this;
   }
-  divideScalar(s) {
+  divideScalar(s: number) {
     return this.multiplyScalar(1 / s);
   }
 
-  applyMatrix3(m) {
+  applyMatrix3(m: Matrix3) {
     const {x, y} = this, e = m.elements;
     this.x = e[0] * x + e[3] * y + e[6];
     this.y = e[1] * x + e[4] * y + e[7];
     return this;
   }
 
-  min(v) {
+  min(v: Vector2) {
     this.x = Math.min(this.x, v.x);
     this.y = Math.min(this.y, v.y);
     return this;
   }
-  max(v) {
+  max(v: Vector2) {
     this.x = Math.max(this.x, v.x);
     this.y = Math.max(this.y, v.y);
     return this;
   }
 
-  clamp(min, max) {
+  clamp(min: Vector2, max: Vector2) {
     this.x = Math.max(min.x, Math.min(max.x, this.x));
     this.y = Math.max(min.y, Math.min(max.y, this.y));
     return this;
   }
-  clampScalar(min, max) {
+  clampScalar(min: number, max: number) {
     return this.clamp(new Vector2(min, min), new Vector2(max, max));
   }
-  clampLength(min, max) {
+  clampLength(min: number, max: number) {
     const len = this.length();
     return this.divideScalar(length || 1)
         .multiplyScalar(Math.max(min, Math.min(max, len)));
@@ -172,10 +175,10 @@ export default class Vector2 {
     this.y = -this.y;
     return this;
   }
-  dot(v) {
+  dot(v: Vector2) {
     return this.x * v.x + this.y * v.y;
   }
-  cross(v) {
+  cross(v: Vector2) {
     return this.x * v.y - this.y * v.x;
   }
 
@@ -200,54 +203,39 @@ export default class Vector2 {
     return angle;
   }
 
-  distanceTo(v) {
+  distanceTo(v: Vector2) {
     return Math.sqrt(this.distanceToSquared(v));
   }
-  distanceToSquared(v) {
+  distanceToSquared(v: Vector2) {
     const d = this.clone().sub(v);
     return d.lengthSq();
   }
 
-  manhattanDistanceTo(v) {
+  manhattanDistanceTo(v: Vector2) {
     return Math.abs(this.x - v.x) + Math.abs(this.y - v.y);
   }
 
-  setLength(length) {
+  setLength(length: number) {
     return this.normalize().multiplyScalar(length);
   }
 
-  lerp(v, alpha) {
+  lerp(v: Vector2, alpha: number) {
     this.x += (v.x - this.x) * alpha;
     this.y += (v.y - this.y) * alpha;
     return this;
   }
 
-  equals(v) {
+  equals(v: Vector2) {
     return v.x === this.x && v.y === this.y;
   }
 
-  fromArray(array, offset) {
-    offset = offset || 0;
-    this.x = array[offset];
-    this.y = array[offset + 1];
-    return this;
-  }
-
-  toArray(array, offset) {
-    array = array || [];
-    offset = offset || 0;
+  toArray(array = [], offset = 0) {
     array[offset] = this.x;
     array[offset + 1] = this.y;
     return array;
   }
 
-  fromBufferAttribute(attribute, index) {
-    this.x = attribute.getX(index);
-    this.y = attribute.getY(index);
-    return this;
-  }
-
-  rotateAround(center, angle) {
+  rotateAround(center: Vector2, angle: number) {
     const ox = Math.cos(angle), oy = Math.sin(angle);
     const dx = this.x - center.x;
     const dy = this.y - center.y;

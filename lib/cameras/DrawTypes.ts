@@ -66,3 +66,4 @@ export enum TextureCompressionFormat {
   RGBA_ASTC_12x10_Format = 37820,
   RGBA_ASTC_12x12_Format = 37821
 }
+export type CombineOperation = 'Multiply'|'Mix'|'Add';

@@ -24,7 +24,10 @@ export default class Transform extends EventSource {
 
   vertices: Vector3[] = [];
 
-  matrixWorld: Matrix4;
+  matrix = new Matrix4();
+  matrixWorld = new Matrix4();
+  matrixAutoUpdate = true;
+  matrixWorldNeedsUpdate = true;
 
   // lazy boundings
   boundingSphere = null;
@@ -39,5 +42,28 @@ export default class Transform extends EventSource {
 
   computeBoundingSphere() {
     this.boundingSphere = Sphere.fromPoints(this.vertices);
+  }
+
+  updateMatrix() {
+    this.matrix.compose(this.position, this.quaternion, this.scale);
+
+    this.matrixWorldNeedsUpdate = true;
+  }
+
+  updateMatrixWorld(force: boolean) {
+    if (this.matrixAutoUpdate) this.updateMatrix();
+
+    if (this.matrixWorldNeedsUpdate || force) {
+      if (this.parent === null) {
+        this.matrixWorld = this.matrix.clone();
+      } else {
+        this.matrixWorld =
+            this.parent.matrixWorld.clone().multiply(this.matrix);
+      }
+      this.matrixWorldNeedsUpdate = false;
+      force = true;
+    }
+
+    this.children.forEach((e) => e.updateMatrixWorld(force));
   }
 }
