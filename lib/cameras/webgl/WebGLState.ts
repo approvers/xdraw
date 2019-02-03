@@ -1,42 +1,43 @@
-import Vector4 from '../../basis/Vector4';
-import {BlendFactor, BlendFunc, BlendMode, CullFaceMode, DepthFunc} from '../DrawTypes';
-
-import WebGLCapabilities from './WebGLCapabilities';
-import WebGLExtensions from './WebGLExtensions';
-
 /**
  * @author mrdoob / http://mrdoob.com/
  * @author RkEclair / https://github.com/RkEclair
  */
 
+import Vector4 from '../../basis/Vector4';
+import { BlendFactor, BlendFunc, BlendMode, CullFaceMode, DepthFunc } from '../DrawTypes';
+
+import Material from '../../materials/Material';
+import WebGLCapabilities from './WebGLCapabilities';
+import WebGLExtensions from './WebGLExtensions';
+
 class ColorBuffer {
   locked = false;
 
   color = new Vector4();
-  currentColorMask = null;
+  currentColorMask: boolean = null;
   currentColorClear = new Vector4(0, 0, 0, 0);
 
-  constructor(private gl: WebGLRenderingContext) {}
+  constructor(private gl: WebGLRenderingContext) { }
 
-  setMask(colorMask) {
+  setMask(colorMask: boolean) {
     if (this.currentColorMask !== colorMask && !this.locked) {
       this.gl.colorMask(colorMask, colorMask, colorMask, colorMask);
       this.currentColorMask = colorMask;
     }
   }
 
-  setLocked(lock) {
+  setLocked(lock: boolean) {
     this.locked = lock;
   }
 
-  setClear(r, g, b, a, premultipliedAlpha = false) {
+  setClear(r: number, g: number, b: number, a: number, premultipliedAlpha = false) {
     if (premultipliedAlpha === true) {
       r *= a;
       g *= a;
       b *= a;
     }
 
-    this.color.set(r, g, b, a);
+    this.color = new Vector4(r, g, b, a);
 
     if (this.currentColorClear.equals(this.color) === false) {
       this.gl.clearColor(r, g, b, a);
@@ -48,7 +49,7 @@ class ColorBuffer {
     this.locked = false;
 
     this.currentColorMask = null;
-    this.currentColorClear.set(-1, 0, 0, 0);  // set to invalid state
+    this.currentColorClear = new Vector4(-1, 0, 0, 0);  // set to invalid state
   }
 }
 
@@ -60,10 +61,10 @@ class DepthBuffer {
   currentDepthClear = null;
 
   constructor(
-      private gl: WebGLRenderingContext, private enable: Function,
-      private disable: Function) {}
+    private gl: WebGLRenderingContext, private enable: Function,
+    private disable: Function) { }
 
-  setTest(depthTest) {
+  setTest(depthTest: boolean) {
     if (depthTest) {
       this.enable(this.gl.DEPTH_TEST);
     } else {
@@ -71,7 +72,7 @@ class DepthBuffer {
     }
   }
 
-  setMask(depthMask) {
+  setMask(depthMask: boolean) {
     if (this.currentDepthMask !== depthMask && !this.locked) {
       this.gl.depthMask(depthMask);
       this.currentDepthMask = depthMask;
@@ -120,11 +121,11 @@ class DepthBuffer {
     }
   }
 
-  setLocked(lock) {
+  setLocked(lock: boolean) {
     this.locked = lock;
   }
 
-  setClear(depth) {
+  setClear(depth: number) {
     if (this.currentDepthClear !== depth) {
       this.gl.clearDepth(depth);
       this.currentDepthClear = depth;
@@ -153,10 +154,10 @@ class StencilBuffer {
   currentStencilClear = null;
 
   constructor(
-      private gl: WebGLRenderingContext, private enable: Function,
-      private disable: Function) {}
+    private gl: WebGLRenderingContext, private enable: Function,
+    private disable: Function) { }
 
-  setTest(stencilTest) {
+  setTest(stencilTest: boolean) {
     if (stencilTest) {
       this.enable(this.gl.STENCIL_TEST);
     } else {
@@ -164,17 +165,17 @@ class StencilBuffer {
     }
   }
 
-  setMask(stencilMask) {
+  setMask(stencilMask: number) {
     if (this.currentStencilMask !== stencilMask && !this.locked) {
       this.gl.stencilMask(stencilMask);
       this.currentStencilMask = stencilMask;
     }
   }
 
-  setFunc(stencilFunc, stencilRef, stencilMask) {
+  setFunc(stencilFunc: number, stencilRef: number, stencilMask: number) {
     if (this.currentStencilFunc !== stencilFunc ||
-        this.currentStencilRef !== stencilRef ||
-        this.currentStencilFuncMask !== stencilMask) {
+      this.currentStencilRef !== stencilRef ||
+      this.currentStencilFuncMask !== stencilMask) {
       this.gl.stencilFunc(stencilFunc, stencilRef, stencilMask);
 
       this.currentStencilFunc = stencilFunc;
@@ -183,10 +184,10 @@ class StencilBuffer {
     }
   }
 
-  setOp(stencilFail, stencilZFail, stencilZPass) {
+  setOp(stencilFail: number, stencilZFail: number, stencilZPass: number) {
     if (this.currentStencilFail !== stencilFail ||
-        this.currentStencilZFail !== stencilZFail ||
-        this.currentStencilZPass !== stencilZPass) {
+      this.currentStencilZFail !== stencilZFail ||
+      this.currentStencilZPass !== stencilZPass) {
       this.gl.stencilOp(stencilFail, stencilZFail, stencilZPass);
 
       this.currentStencilFail = stencilFail;
@@ -195,11 +196,11 @@ class StencilBuffer {
     }
   }
 
-  setLocked(lock) {
+  setLocked(lock: boolean) {
     this.locked = lock;
   }
 
-  setClear(stencil) {
+  setClear(stencil: number) {
     if (this.currentStencilClear !== stencil) {
       this.gl.clearStencil(stencil);
       this.currentStencilClear = stencil;
@@ -232,8 +233,8 @@ export default class WebGLState {
   private enabledCapabilities = {};
 
   constructor(
-      private gl: WebGLRenderingContext, private extensions: WebGLExtensions,
-      private capabilities: WebGLCapabilities) {
+    private gl: WebGLRenderingContext, private extensions: WebGLExtensions,
+    private capabilities: WebGLCapabilities) {
     this.colorBuffer = new ColorBuffer(gl);
     this.depthBuffer = new DepthBuffer(gl, this.enable, this.disable);
     this.stencilBuffer = new StencilBuffer(gl, this.enable, this.disable);
@@ -256,9 +257,9 @@ export default class WebGLState {
       this.lineWidthAvailable = version >= 2.0;
     }
 
-    const createTexture = (type, target, count) => {
+    const createTexture = (type: number, target: number, count: number) => {
       var data = new Uint8Array(
-          4);  // 4 is required to match default unpack alignment of 4.
+        4);  // 4 is required to match default unpack alignment of 4.
       var texture = gl.createTexture();
 
       this.gl.bindTexture(type, texture);
@@ -267,8 +268,8 @@ export default class WebGLState {
 
       for (var i = 0; i < count; i++) {
         this.gl.texImage2D(
-            target + i, 0, this.gl.RGBA, 1, 1, 0, this.gl.RGBA,
-            this.gl.UNSIGNED_BYTE, data);
+          target + i, 0, this.gl.RGBA, 1, 1, 0, this.gl.RGBA,
+          this.gl.UNSIGNED_BYTE, data);
       }
 
       return texture;
@@ -276,9 +277,9 @@ export default class WebGLState {
 
     const emptyTextures = this.emptyTextures;
     emptyTextures[gl.TEXTURE_2D] =
-        createTexture(gl.TEXTURE_2D, this.gl.TEXTURE_2D, 1);
+      createTexture(gl.TEXTURE_2D, this.gl.TEXTURE_2D, 1);
     emptyTextures[gl.TEXTURE_CUBE_MAP] = createTexture(
-        gl.TEXTURE_CUBE_MAP, this.gl.TEXTURE_CUBE_MAP_POSITIVE_X, 6);
+      gl.TEXTURE_CUBE_MAP, this.gl.TEXTURE_CUBE_MAP_POSITIVE_X, 6);
 
     // init
 
@@ -300,11 +301,11 @@ export default class WebGLState {
     this.newAttributes.forEach((e) => (e = 0));
   }
 
-  enableAttribute(attribute) {
+  enableAttribute(attribute: number) {
     this.enableAttributeAndDivisor(attribute, 0);
   }
 
-  enableAttributeAndDivisor(attribute, meshPerAttribute) {
+  enableAttributeAndDivisor(attribute: number, meshPerAttribute: number) {
     this.newAttributes[attribute] = 1;
 
     if (this.enabledAttributes[attribute] === 0) {
@@ -314,11 +315,11 @@ export default class WebGLState {
 
     if (this.attributeDivisors[attribute] !== meshPerAttribute) {
       var extension = this.capabilities.isWebGL2 ?
-          this.gl :
-          this.extensions.get('ANGLE_instanced_arrays');
+        this.gl :
+        this.extensions.get('ANGLE_instanced_arrays');
 
       extension[this.capabilities.isWebGL2 ? 'vertexAttribDivisor' : 'vertexAttribDivisorANGLE'](
-          attribute, meshPerAttribute);
+        attribute, meshPerAttribute);
       this.attributeDivisors[attribute] = meshPerAttribute;
     }
   }
@@ -332,14 +333,14 @@ export default class WebGLState {
     }
   }
 
-  enable(id) {
+  enable(id: number) {
     if (this.enabledCapabilities[id] !== true) {
       this.gl.enable(id);
       this.enabledCapabilities[id] = true;
     }
   }
 
-  disable(id) {
+  disable(id: number) {
     if (this.enabledCapabilities[id] !== false) {
       this.gl.disable(id);
       this.enabledCapabilities[id] = false;
@@ -350,9 +351,9 @@ export default class WebGLState {
 
   getCompressedTextureFormats() {
     if (this.extensions.get('WEBGL_compressed_texture_pvrtc') ||
-        this.extensions.get('WEBGL_compressed_texture_s3tc') ||
-        this.extensions.get('WEBGL_compressed_texture_etc1') ||
-        this.extensions.get('WEBGL_compressed_texture_astc')) {
+      this.extensions.get('WEBGL_compressed_texture_s3tc') ||
+      this.extensions.get('WEBGL_compressed_texture_etc1') ||
+      this.extensions.get('WEBGL_compressed_texture_astc')) {
       const formats = this.gl.getParameter(this.gl.COMPRESSED_TEXTURE_FORMATS);
       formats.forEach((e) => this.compressedTextureFormats.push(e));
     }
@@ -361,7 +362,7 @@ export default class WebGLState {
 
   private currentProgram: WebGLProgram;
 
-  useProgram(program) {
+  useProgram(program: number) {
     if (this.currentProgram !== program) {
       this.gl.useProgram(program);
       this.currentProgram = program;
@@ -381,14 +382,14 @@ export default class WebGLState {
   private currentPremultipledAlpha = false;
 
   setBlending(
-      blending: BlendMode = 'None',
-      blendEquation: BlendFunc = BlendFunc.AddEquation,
-      blendSrc: BlendFactor = BlendFactor.OneFactor,
-      blendDst: BlendFactor = BlendFactor.OneFactor,
-      blendEquationAlpha: BlendFunc = BlendFunc.AddEquation,
-      blendSrcAlpha: BlendFactor = BlendFactor.OneFactor,
-      blendDstAlpha: BlendFactor = BlendFactor.OneFactor,
-      premultipliedAlpha: boolean = false) {
+    blending: BlendMode = 'None',
+    blendEquation: BlendFunc = BlendFunc.AddEquation,
+    blendSrc: BlendFactor = BlendFactor.OneFactor,
+    blendDst: BlendFactor = BlendFactor.OneFactor,
+    blendEquationAlpha: BlendFunc = BlendFunc.AddEquation,
+    blendSrcAlpha: BlendFactor = BlendFactor.OneFactor,
+    blendDstAlpha: BlendFactor = BlendFactor.OneFactor,
+    premultipliedAlpha: boolean = false) {
     if (blending === 'None') {
       if (this.currentBlendingEnabled) {
         this.disable(this.gl.BLEND);
@@ -405,9 +406,9 @@ export default class WebGLState {
 
     if (blending !== 'Custom') {
       if (blending !== this.currentBlending ||
-          premultipliedAlpha !== this.currentPremultipledAlpha) {
+        premultipliedAlpha !== this.currentPremultipledAlpha) {
         if (this.currentBlendEquation !== BlendFunc.AddEquation ||
-            this.currentBlendEquationAlpha !== BlendFunc.AddEquation) {
+          this.currentBlendEquationAlpha !== BlendFunc.AddEquation) {
           this.gl.blendEquation(this.gl.FUNC_ADD);
 
           this.currentBlendEquation = BlendFunc.AddEquation;
@@ -418,8 +419,8 @@ export default class WebGLState {
           switch (blending) {
             case 'Normal':
               this.gl.blendFuncSeparate(
-                  this.gl.ONE, this.gl.ONE_MINUS_SRC_ALPHA, this.gl.ONE,
-                  this.gl.ONE_MINUS_SRC_ALPHA);
+                this.gl.ONE, this.gl.ONE_MINUS_SRC_ALPHA, this.gl.ONE,
+                this.gl.ONE_MINUS_SRC_ALPHA);
               break;
 
             case 'Additive':
@@ -428,14 +429,14 @@ export default class WebGLState {
 
             case 'Subtractive':
               this.gl.blendFuncSeparate(
-                  this.gl.ZERO, this.gl.ZERO, this.gl.ONE_MINUS_SRC_COLOR,
-                  this.gl.ONE_MINUS_SRC_ALPHA);
+                this.gl.ZERO, this.gl.ZERO, this.gl.ONE_MINUS_SRC_COLOR,
+                this.gl.ONE_MINUS_SRC_ALPHA);
               break;
 
             case 'Multiply':
               this.gl.blendFuncSeparate(
-                  this.gl.ZERO, this.gl.SRC_COLOR, this.gl.ZERO,
-                  this.gl.SRC_ALPHA);
+                this.gl.ZERO, this.gl.SRC_COLOR, this.gl.ZERO,
+                this.gl.SRC_ALPHA);
               break;
 
             default:
@@ -446,8 +447,8 @@ export default class WebGLState {
           switch (blending) {
             case 'Normal':
               this.gl.blendFuncSeparate(
-                  this.gl.SRC_ALPHA, this.gl.ONE_MINUS_SRC_ALPHA, this.gl.ONE,
-                  this.gl.ONE_MINUS_SRC_ALPHA);
+                this.gl.SRC_ALPHA, this.gl.ONE_MINUS_SRC_ALPHA, this.gl.ONE,
+                this.gl.ONE_MINUS_SRC_ALPHA);
               break;
 
             case 'Additive':
@@ -486,7 +487,7 @@ export default class WebGLState {
     blendDstAlpha = blendDstAlpha || blendDst;
 
     if (blendEquation !== this.currentBlendEquation ||
-        blendEquationAlpha !== this.currentBlendEquationAlpha) {
+      blendEquationAlpha !== this.currentBlendEquationAlpha) {
       this.gl.blendEquationSeparate(blendEquation, blendEquationAlpha);
 
       this.currentBlendEquation = blendEquation;
@@ -494,11 +495,11 @@ export default class WebGLState {
     }
 
     if (blendSrc !== this.currentBlendSrc ||
-        blendDst !== this.currentBlendDst ||
-        blendSrcAlpha !== this.currentBlendSrcAlpha ||
-        blendDstAlpha !== this.currentBlendDstAlpha) {
+      blendDst !== this.currentBlendDst ||
+      blendSrcAlpha !== this.currentBlendSrcAlpha ||
+      blendDstAlpha !== this.currentBlendDstAlpha) {
       this.gl.blendFuncSeparate(
-          blendSrc, blendDst, blendSrcAlpha, blendDstAlpha);
+        blendSrc, blendDst, blendSrcAlpha, blendDstAlpha);
 
       this.currentBlendSrc = blendSrc;
       this.currentBlendDst = blendDst;
@@ -510,7 +511,7 @@ export default class WebGLState {
     this.currentPremultipledAlpha = null;
   }
 
-  setMaterial(material, frontFaceCW) {
+  setMaterial(material: Material, frontFaceCW: boolean) {
     if (material.side === 'Double')
       this.disable(this.gl.CULL_FACE);
     else
@@ -522,12 +523,12 @@ export default class WebGLState {
     this.setFlipSided(flipSided);
 
     material.blending === 'Normal' && material.transparent === false ?
-        this.setBlending('None') :
-        this.setBlending(
-            material.blending, material.blendEquation, material.blendSrc,
-            material.blendDst, material.blendEquationAlpha,
-            material.blendSrcAlpha, material.blendDstAlpha,
-            material.premultipliedAlpha);
+      this.setBlending('None') :
+      this.setBlending(
+        material.blending, material.blendEquation, material.blendSrc,
+        material.blendDst, material.blendEquationAlpha,
+        material.blendSrcAlpha, material.blendDstAlpha,
+        material.premultipliedAlpha);
 
     this.depthBuffer.setFunc(material.depthFunc);
     this.depthBuffer.setTest(material.depthTest);
@@ -535,8 +536,8 @@ export default class WebGLState {
     this.colorBuffer.setMask(material.colorWrite);
 
     this.setPolygonOffset(
-        material.polygonOffset, material.polygonOffsetFactor,
-        material.polygonOffsetUnits);
+      material.polygonOffset, material.polygonOffsetFactor,
+      material.polygonOffsetUnits);
   }
 
   private currentFlipSided = false;
@@ -578,7 +579,7 @@ export default class WebGLState {
   private currentLineWidth: number;
   private lineWidthAvailable = false;
 
-  setLineWidth(width) {
+  setLineWidth(width: number) {
     if (width !== this.currentLineWidth) {
       if (this.lineWidthAvailable) this.gl.lineWidth(width);
 
@@ -594,7 +595,7 @@ export default class WebGLState {
       this.enable(this.gl.POLYGON_OFFSET_FILL);
 
       if (this.currentPolygonOffsetFactor !== factor ||
-          this.currentPolygonOffsetUnits !== units) {
+        this.currentPolygonOffsetUnits !== units) {
         this.gl.polygonOffset(factor, units);
 
         this.currentPolygonOffsetFactor = factor;
@@ -627,7 +628,7 @@ export default class WebGLState {
     }
   }
 
-  bindTexture(webglType, webglTexture: WebGLTexture) {
+  bindTexture(webglType: number, webglTexture: WebGLTexture) {
     if (this.currentTextureSlot === null) {
       this.activeTexture();
     }
@@ -635,14 +636,14 @@ export default class WebGLState {
     let boundTexture = this.currentBoundTextures[this.currentTextureSlot];
 
     if (boundTexture === undefined) {
-      boundTexture = {type: undefined, texture: undefined};
+      boundTexture = { type: undefined, texture: undefined };
       this.currentBoundTextures[this.currentTextureSlot] = boundTexture;
     }
 
     if (boundTexture.type !== webglType ||
-        boundTexture.texture !== webglTexture) {
+      boundTexture.texture !== webglTexture) {
       this.gl.bindTexture(
-          webglType, webglTexture || this.emptyTextures[webglType]);
+        webglType, webglTexture || this.emptyTextures[webglType]);
 
       boundTexture.type = webglType;
       boundTexture.texture = webglTexture;
@@ -667,7 +668,7 @@ export default class WebGLState {
 
   private currentScissor = new Vector4();
 
-  scissor(scissor) {
+  scissor(scissor: Vector4) {
     if (this.currentScissor.equals(scissor) === false) {
       this.gl.scissor(scissor.x, scissor.y, scissor.z, scissor.w);
       this.currentScissor = scissor.clone();
@@ -676,7 +677,7 @@ export default class WebGLState {
 
   private currentViewport = new Vector4();
 
-  viewport(viewport) {
+  viewport(viewport: Vector4) {
     if (this.currentViewport.equals(viewport) === false) {
       this.gl.viewport(viewport.x, viewport.y, viewport.z, viewport.w);
       this.currentViewport = viewport.clone();

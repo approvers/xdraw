@@ -30,11 +30,10 @@ export default class EventSource {
     }
   }
 
-  dispatchEvent(event) {
+  dispatchEvent(event: {type: string}) {
     const listenersOfType = this.listeners[event.type];
 
     if (listenersOfType !== undefined) {
-      event.target = this;
       listenersOfType.forEach((e) => e.call(this, event));
     }
   }

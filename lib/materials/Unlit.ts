@@ -1,10 +1,12 @@
-import Color from '../basis/Color';
-import {CombineOperation} from '../cameras/DrawTypes';
-
 /**
  * @author RkEclair / https://github.com/RkEclair
  */
-export default class Unlit {
+
+import Color from '../basis/Color';
+import { CombineOperation } from '../cameras/DrawTypes';
+import Material from './Material';
+
+export default class Unlit extends Material {
   color = new Color(0xffffff);
 
   map = null;

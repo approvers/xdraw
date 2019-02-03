@@ -1,6 +1,6 @@
 export default class Uniforms {
-  clone() {
-    const dst = {};
+  clone(): Uniforms {
+    const dst: any = {};
 
     for (const u in this) {
       dst[u] = {};
@@ -11,22 +11,25 @@ export default class Uniforms {
         if (property.clone !== undefined) {
           dst[u][p] = property.clone();
         } else if (Array.isArray(property)) {
-          dst[u][p] = property.slice();
+          dst[u][p] = property.slice() as any;
         } else {
           dst[u][p] = property;
         }
       }
     }
 
-    return dst;
+    dst.clone = this.clone;
+    dst.mergeUniforms = this.mergeUniforms;
+
+    return dst as Uniforms;
   }
-  mergeUniforms(uniforms) {
-    var merged = {};
+  mergeUniforms(uniforms: Uniforms[]) {
+    const merged = {};
 
-    for (var u = 0; u < uniforms.length; u++) {
-      var tmp = this.clone(uniforms[u]);
+    for (let u = 0; u < uniforms.length; u++) {
+      const tmp = uniforms[u].clone();
 
-      for (var p in tmp) {
+      for (const p in tmp) {
         merged[p] = tmp[p];
       }
     }

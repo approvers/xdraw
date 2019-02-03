@@ -1,8 +1,8 @@
-export default class GLSLShader {
-  type = 'ShaderMaterial';
+import Uniforms from './Uniforms';
 
+export default class GLSLShader {
   defines = {};
-  uniforms = {};
+  uniforms = new Uniforms();
 
   vertexShader =
       'void main() {\n\tgl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );\n}';
@@ -43,7 +43,7 @@ export default class GLSLShader {
     newM.fragmentShader = this.fragmentShader;
     newM.vertexShader = this.vertexShader;
 
-    newM.uniforms = this.cloneUniforms(this.uniforms);
+    newM.uniforms = this.uniforms.clone();
 
     newM.defines = {...this.defines};
 
@@ -60,7 +60,7 @@ export default class GLSLShader {
 
     newM.extensions = this.extensions;
 
-    return newM.
+    return newM;
   }
 
   toJSON() {

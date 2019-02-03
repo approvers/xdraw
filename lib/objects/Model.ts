@@ -1,4 +1,5 @@
 import Color from '../basis/Color';
+import EventSource from '../basis/EventSource';
 import Matrix4 from '../basis/Matrix4';
 import Raycaster, {RaycastIntersection} from '../basis/Raycaster';
 import Transform from '../basis/Transform';
@@ -6,9 +7,9 @@ import Vector3 from '../basis/Vector3';
 import {TraiangleDrawMode} from '../cameras/DrawTypes';
 import Unlit from '../materials/Unlit';
 
+import Material from '../materials/Material';
 import BufferMesh from './BufferMesh';
 import BoxMesh from './meshes/BoxMesh';
-import Mesh from './Mesh';
 
 /**
  * @author mrdoob / http://mrdoob.com/
@@ -18,9 +19,21 @@ import Mesh from './Mesh';
  * @author RkEclair / https://github.com/RkEclair
  */
 
-export default class Model {
-  static cube() {
-    return new Model(new BoxMesh(1, 1, 1), new ShaderMaterial({
+export default class Model extends EventSource {
+  static plane(width = 1, height = 1) {
+    return new Model(new PlaneMesh(width, height), new ShaderMaterial({
+               type: 'BackgroundMaterial',
+               uniforms: ShaderLib.background.uniforms.clone(),
+               vertexShader: ShaderLib.background.vertexShader,
+               fragmentShader: ShaderLib.background.fragmentShader,
+               side: 'Front',
+               depthTest: false,
+               depthWrite: false,
+               fog: false
+             }));
+  }
+  static cube(width = 1, height = 1, depth = 1) {
+    return new Model(new BoxMesh(width, height, depth), new ShaderMaterial({
                        type: 'BackgroundCubeMaterial',
                        uniforms: ShaderLib.cube.uniforms.clone(),
                        vertexShader: ShaderLib.cube.vertexShader,
@@ -37,20 +50,17 @@ export default class Model {
   morphTargetInfluences = [];
   morphTargetDictionary = {};
 
-  constructor(public mesh = new Mesh(), public material = new Unlit()) {
-    material.color = new Color(Math.random() * 0xffffff);
+  constructor(public mesh: BufferMesh = new BufferMesh(), public material: Material = new Unlit()) {
+    super();
+    if (material instanceof Unlit) material.color = new Color(Math.random() * 0xffffff);
     this.updateMorphTargets();
   }
 
   clone() {
     const newM = new Model();
     newM.drawMode = this.drawMode;
-    if (this.morphTargetInfluences !== undefined) {
-      newM.morphTargetInfluences = this.morphTargetInfluences.slice();
-    }
-    if (this.morphTargetDictionary !== undefined) {
-      newM.morphTargetDictionary = {...this.morphTargetDictionary};
-    }
+    newM.morphTargetInfluences = this.morphTargetInfluences.slice();
+    newM.morphTargetDictionary = {...this.morphTargetDictionary};
     return newM;
   }
 

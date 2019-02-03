@@ -1,19 +1,22 @@
-import Color from '../../basis/Color';
-import Renderer from '../Renderer';
-import WebGLState from './WebGLState';
-import Mesh from '../../objects/Mesh';
-
 /**
  * @author mrdoob / http://mrdoob.com/
  * @author RkEclair / https://github.com/RkEclair
  */
 
+import Color from '../../basis/Color';
+import GLSLShader from '../../materials/GLSLShader';
+import Renderer from '../Renderer';
+import WebGLState from './WebGLState';
+import WebGLObjects from './WebGLObjects';
+import Model from '../../objects/Model';
+import Camera from '../Camera';
+
 export default class WebGLBackground {
   clearColor = new Color(0x000000);
   clearAlpha = 0;
 
-  planeMesh: Mesh = null;
-  boxMesh: Mesh = null;
+  planeModel: Model = null;
+  boxModel: Model = null;
 
   // Store the current background texture and its `version`
   // so we can recompile the material accordingly.
@@ -21,16 +24,16 @@ export default class WebGLBackground {
   currentBackgroundVersion = 0;
 
   constructor(
-      private renderer: Renderer, private state: WebGLState,
-      private objects: WebGLObjects, private premultipliedAlpha: boolean) {}
+    private renderer: Renderer, private state: WebGLState,
+    private objects: WebGLObjects, private premultipliedAlpha: boolean) { }
 
   render(renderList, scene, camera, forceClear) {
     const background = scene.background;
     let {
       clearColor,
       clearAlpha,
-      planeMesh,
-      boxMesh,
+      planeModel,
+      boxModel,
       currentBackground,
       currentBackgroundVersion,
       renderer,
@@ -50,85 +53,80 @@ export default class WebGLBackground {
 
     if (renderer.autoClear || forceClear) {
       renderer.clear(
-          renderer.autoClearColor, renderer.autoClearDepth,
-          renderer.autoClearStencil);
+        renderer.autoClearColor, renderer.autoClearDepth,
+        renderer.autoClearStencil);
     }
 
     if (background &&
-        (background.isCubeTexture || background.isWebGLRenderTargetCube)) {
-      if (boxMesh === null) {
-        boxMesh = Mesh.cube();
+      (background.isCubeTexture || background.isWebGLRenderTargetCube)) {
+      if (boxModel === null) {
+        boxModel = Model.cube();
 
-        boxMesh.geometry.removeAttribute('normal');
-        boxMesh.geometry.removeAttribute('uv');
+        boxModel.mesh.removeAttribute('normal');
+        boxModel.mesh.removeAttribute('uv');
 
-        boxMesh.onBeforeRender = function(renderer, scene, camera) {
-          this.matrixWorld.copyPosition(camera.matrixWorld);
-        };
+        boxModel.addEventListener('beforeRender', (_renderer: any, _scene: any, camera: Camera) => {
+          boxModel.transform.matrixWorld = camera.matrixWorld.clone();
+        });
 
         // enable code injection for non-built-in material
-        Object.defineProperty(boxMesh.material, 'map', {
+        Object.defineProperty(boxModel.material, 'map', {
           get: function() {
             return this.uniforms.tCube.value;
           }
         });
 
-        objects.update(boxMesh);
+        objects.update(boxModel);
       }
 
-      var texture =
-          background.isWebGLRenderTargetCube ? background.texture : background;
-      boxMesh.material.uniforms.tCube.value = texture;
-      boxMesh.material.uniforms.tFlip.value =
-          background.isWebGLRenderTargetCube ? 1 : -1;
+      if (!(boxModel.material instanceof GLSLShader)) return;
+
+      const texture =
+        background.isWebGLRenderTargetCube ? background.texture : background;
+      boxModel.material.uniforms['tCube'].value = texture;
+      boxModel.material.uniforms['tFlip'].value =
+        background.isWebGLRenderTargetCube ? 1 : -1;
 
       if (currentBackground !== background ||
-          currentBackgroundVersion !== texture.version) {
-        boxMesh.material.needsUpdate = true;
+        currentBackgroundVersion !== texture.version) {
+        boxModel.material.needsUpdate = true;
 
         currentBackground = background;
         currentBackgroundVersion = texture.version;
       }
 
       // push to the pre-sorted opaque render list
-      renderList.unshift(boxMesh, boxMesh.geometry, boxMesh.material, 0, null);
+      renderList.unshift(boxModel, boxModel.mesh, boxModel.material, 0, null);
     } else if (background && background.isTexture) {
-      if (planeMesh === undefined) {
-        planeMesh =
-            new Mesh(new PlaneBufferGeometry(2, 2), new ShaderMaterial({
-                       type: 'BackgroundMaterial',
-                       uniforms: ShaderLib.background.uniforms.clone(),
-                       vertexShader: ShaderLib.background.vertexShader,
-                       fragmentShader: ShaderLib.background.fragmentShader,
-                       side: FrontSide,
-                       depthTest: false,
-                       depthWrite: false,
-                       fog: false
-                     }));
+      if (planeModel === undefined) {
+        planeModel =
+          Model.plane(2, 2);
 
-        planeMesh.geometry.removeAttribute('normal');
+        planeModel.mesh.removeAttribute('normal');
 
         // enable code injection for non-built-in material
-        Object.defineProperty(planeMesh.material, 'map', {
+        Object.defineProperty(planeModel.material, 'map', {
           get: function() {
             return this.uniforms.t2D.value;
           }
         });
 
-        objects.update(planeMesh);
+        objects.update(planeModel);
       }
 
-      planeMesh.material.uniforms.t2D.value = background;
+      if (!(planeModel.material instanceof GLSLShader)) return;
+
+      planeModel.material.uniforms['t2D'].value = background;
 
       if (background.matrixAutoUpdate === true) {
         background.updateMatrix();
       }
 
-      planeMesh.material.uniforms.uvTransform.value.copy(background.matrix);
+      planeModel.material.uniforms['uvTransform'].value = background.matrix.clone();
 
       if (currentBackground !== background ||
-          currentBackgroundVersion !== background.version) {
-        planeMesh.material.needsUpdate = true;
+        currentBackgroundVersion !== background.version) {
+        planeModel.material.needsUpdate = true;
 
         currentBackground = background;
         currentBackgroundVersion = background.version;
@@ -136,13 +134,13 @@ export default class WebGLBackground {
 
       // push to the pre-sorted opaque render list
       renderList.unshift(
-          planeMesh, planeMesh.geometry, planeMesh.material, 0, null);
+        planeModel, planeModel.mesh, planeModel.material, 0, null);
     }
   }
 
-  setClear(color, alpha) {
+  setClear(color: Color, alpha: number) {
     this.state.colorBuffer.setClear(
-        color.r, color.g, color.b, alpha, this.premultipliedAlpha);
+      color.r, color.g, color.b, alpha, this.premultipliedAlpha);
   }
 
   getClearColor() {
@@ -156,7 +154,7 @@ export default class WebGLBackground {
   getClearAlpha() {
     return this.clearAlpha;
   }
-  setClearAlpha(alpha) {
+  setClearAlpha(alpha: number) {
     this.clearAlpha = alpha;
     this.setClear(this.clearColor, this.clearAlpha);
   }
