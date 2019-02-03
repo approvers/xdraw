@@ -63,4 +63,96 @@ export default class BufferMesh extends Mesh {
   addGroup(start: number, count: number, materialIndex = 0) {
     this.groups.push({ start, count, materialIndex });
   }
+
+  updateFromObject(object: Model) {
+    const mesh = object.mesh;
+
+		let attribute: BufferAttribute;
+
+		if ( mesh.verticesNeedUpdate === true ) {
+
+			attribute = this.attributes.position;
+
+			if ( attribute !== undefined ) {
+
+				attribute.copyVector3sArray( mesh.vertices );
+				attribute.needsUpdate = true;
+
+			}
+
+			mesh.verticesNeedUpdate = false;
+
+		}
+
+		if ( mesh.normalsNeedUpdate === true ) {
+
+			attribute = this.attributes.normal;
+
+			if ( attribute !== undefined ) {
+
+				attribute.copyVector3sArray( mesh.normals );
+				attribute.needsUpdate = true;
+
+			}
+
+			mesh.normalsNeedUpdate = false;
+
+		}
+
+		if ( mesh.colorsNeedUpdate === true ) {
+
+			attribute = this.attributes.color;
+
+			if ( attribute !== undefined ) {
+
+				attribute.copyColorsArray( mesh.colors );
+				attribute.needsUpdate = true;
+
+			}
+
+			mesh.colorsNeedUpdate = false;
+
+		}
+
+		if ( mesh.uvsNeedUpdate ) {
+
+			attribute = this.attributes.uv;
+
+			if ( attribute !== undefined ) {
+
+				attribute.copyVector2sArray( mesh.uvs );
+				attribute.needsUpdate = true;
+
+			}
+
+			mesh.uvsNeedUpdate = false;
+
+		}
+
+		if ( mesh.lineDistancesNeedUpdate ) {
+
+			attribute = this.attributes.lineDistance;
+
+			if ( attribute !== undefined ) {
+
+				attribute.copyArray( mesh.lineDistances );
+				attribute.needsUpdate = true;
+
+			}
+
+			mesh.lineDistancesNeedUpdate = false;
+
+		}
+
+		if ( mesh.groupsNeedUpdate ) {
+
+			mesh.computeGroups(mesh);
+			this.groups = mesh.groups;
+
+			mesh.groupsNeedUpdate = false;
+
+		}
+
+		return this;
+  }
 }

@@ -5,6 +5,8 @@
 
 import Mesh from '../../objects/Mesh';
 import Model from '../../objects/Model';
+import WebGLInfo from './WebGLInfo';
+import WebGLMeshes from './WebGLMeshes';
 
 export default class WebGLObjects {
 	private updateList = {};
@@ -20,7 +22,7 @@ export default class WebGLObjects {
 
 		// Update once per frame
 
-		if (this.updateList[bufferMesh.id] !== frame) {
+		if (this.updateList[bufferMesh.name] !== frame) {
 
 			if (mesh instanceof Mesh) {
 

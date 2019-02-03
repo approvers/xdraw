@@ -19,6 +19,7 @@ type TypedArray =
 
 export default class BufferAttribute {
   count: number;
+  needsUpdate: boolean;
 
   static fromArray<T extends TypedArray>(
     buffer: new (any) => T,

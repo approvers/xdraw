@@ -6,6 +6,7 @@ import BufferMesh from '../../objects/BufferMesh.js';
 import Model from '../../objects/Model.js';
 import Mesh from '../../objects/Mesh.js';
 import BufferAttribute from '../../basis/BufferAttribute.js';
+import WebGLInfo from './WebGLInfo';
 
 export default class WebGLGeometries {
   meshes: { [key: string]: BufferMesh };
