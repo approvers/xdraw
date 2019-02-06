@@ -3,7 +3,7 @@
  */
 
 export type TraiangleDrawMode = 'Normal'|'Strip'|'Fan';
-export type FaceSide = 'Front'|'BackSide'|'DoubleSide';
+export type FaceSide = 'Front'|'Back'|'Double';
 export type ToneMapping =
     |'None'|'Linear'|'Reinhard'|'Uncharted2'|'Cineon'|'ACESFilmic';
 export type TextureFormat =|'Alpha'|'RGB'|'RGBA'|'Luminance'|'LuminanceAlpha'|

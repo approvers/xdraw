@@ -1,12 +1,10 @@
 import BufferAttribute from '../../basis/BufferAttribute';
 import Vector3 from '../../basis/Vector3';
 import BufferMesh from '../BufferMesh';
+import Vector2 from '../../basis/Vector2';
 
 export default class BoxMesh extends BufferMesh {
   indices: number[];
-  vertexes: number[];
-  normals: number[];
-  uvs: number[];
 
   private numberOfVertices = 0;
   private groupStart = 0;
@@ -50,11 +48,11 @@ export default class BoxMesh extends BufferMesh {
 
     this.setIndex(this.indices);
     this.addAttribute(
-        'position', BufferAttribute.fromArray(Float32Array, this.vertexes, 3));
+        'position', BufferAttribute.fromArray(Float32Array, this.vertices.reduce((prev, curr) => curr.toArray(prev), []), 3));
     this.addAttribute(
-        'normal', BufferAttribute.fromArray(Float32Array, this.normals, 3));
+        'normal', BufferAttribute.fromArray(Float32Array, this.normals.reduce((prev, curr) => curr.toArray(prev), []), 3));
     this.addAttribute(
-        'uv', BufferAttribute.fromArray(Float32Array, this.uvs, 2));
+        'uv', BufferAttribute.fromArray(Float32Array, this.uvs.reduce((prev, curr) => curr.toArray(prev), []), 2));
 
     this.mergeVertices();
   }
@@ -92,7 +90,7 @@ export default class BoxMesh extends BufferMesh {
 
         // now apply vector to vertex buffer
 
-        this.vertexes.push(vector.x, vector.y, vector.z);
+        this.vertices.push(vector.clone());
 
         // set values to correct vector component
 
@@ -102,12 +100,11 @@ export default class BoxMesh extends BufferMesh {
 
         // now apply vector to normal buffer
 
-        this.normals.push(vector.x, vector.y, vector.z);
+        this.normals.push(vector.clone());
 
         // uvs
 
-        this.uvs.push(ix / gridX);
-        this.uvs.push(1 - iy / gridY);
+        this.uvs.push(new Vector2(ix / gridX, 1 - iy / gridY));
 
         // counters
 

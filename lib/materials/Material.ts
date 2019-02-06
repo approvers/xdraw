@@ -7,6 +7,52 @@
 import EventSource from '../basis/EventSource';
 import { BlendMode, FaceSide, BlendFactor, BlendFunc, DepthFunc } from '../cameras/DrawTypes';
 
+export interface MaterialOptions {
+  name?: string;
+
+  fog?: boolean;
+  lights?: boolean;
+
+  blending?: BlendMode;
+  side?: FaceSide;
+  flatShading?: boolean;
+  vertexColors?: 'None' | 'Vertex' | 'Face';
+
+  opacity?: number;
+  transparent?: boolean;
+
+  blendSrc?: BlendFactor;
+  blendDst?: BlendFactor;
+  blendEquation?: BlendFunc;
+  blendSrcAlpha?: BlendFactor;
+  blendDstAlpha?: BlendFactor;
+  blendEquationAlpha?: BlendFunc;
+
+  depthFunc?: DepthFunc;
+  depthTest?: boolean;
+  depthWrite?: boolean;
+
+  clippingPlanes?: any[];
+  clipIntersection?: boolean;
+  clipShadows?: boolean;
+
+  shadowSide?: FaceSide;
+
+  colorWrite?: boolean;
+
+  precision?: string;
+  polygonOffset?: boolean;
+  polygonOffsetFactor?: number;
+  polygonOffsetUnits?: number;
+
+  dithering?: boolean;
+
+  alphaTest?: number;
+  premultipliedAlpha?: boolean;
+
+  visible?: boolean;
+};
+
 export default class Material extends EventSource {
   name = '';
 
@@ -56,4 +102,9 @@ export default class Material extends EventSource {
   userData = {};
 
   needsUpdate = true;
+
+  constructor(options: MaterialOptions) {
+    super();
+    (Object as any).assign(this, options);
+  }
 };

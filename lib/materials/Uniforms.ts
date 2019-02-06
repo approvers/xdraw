@@ -1,4 +1,8 @@
 export default class Uniforms {
+  constructor(uniforms: any) {
+    (Object as any).assign(this, uniforms);
+  }
+
   clone(): Uniforms {
     const dst: any = {};
 

@@ -1,16 +1,3 @@
-import Color from '../basis/Color';
-import EventSource from '../basis/EventSource';
-import Matrix4 from '../basis/Matrix4';
-import Raycaster, {RaycastIntersection} from '../basis/Raycaster';
-import Transform from '../basis/Transform';
-import Vector3 from '../basis/Vector3';
-import {TraiangleDrawMode} from '../cameras/DrawTypes';
-import Unlit from '../materials/Unlit';
-
-import Material from '../materials/Material';
-import BufferMesh from './BufferMesh';
-import BoxMesh from './meshes/BoxMesh';
-
 /**
  * @author mrdoob / http://mrdoob.com/
  * @author alteredq / http://alteredqualia.com/
@@ -19,30 +6,42 @@ import BoxMesh from './meshes/BoxMesh';
  * @author RkEclair / https://github.com/RkEclair
  */
 
+import Color from '../basis/Color';
+import EventSource from '../basis/EventSource';
+import Matrix4 from '../basis/Matrix4';
+import Raycaster, { RaycastIntersection } from '../basis/Raycaster';
+import Transform from '../basis/Transform';
+import Vector3 from '../basis/Vector3';
+import { TraiangleDrawMode } from '../cameras/DrawTypes';
+import GLSLShader from '../materials/GLSLShader';
+import Unlit from '../materials/Unlit';
+import Background from '../materials/shaders/Background';
+import Cube from '../materials/shaders/Cube';
+import Material from '../materials/Material';
+import BufferMesh from './BufferMesh';
+import BoxMesh from './meshes/BoxMesh';
+import PlaneMesh from './meshes/PlaneMesh';
+
 export default class Model extends EventSource {
   static plane(width = 1, height = 1) {
-    return new Model(new PlaneMesh(width, height), new ShaderMaterial({
-               type: 'BackgroundMaterial',
-               uniforms: ShaderLib.background.uniforms.clone(),
-               vertexShader: ShaderLib.background.vertexShader,
-               fragmentShader: ShaderLib.background.fragmentShader,
-               side: 'Front',
-               depthTest: false,
-               depthWrite: false,
-               fog: false
-             }));
+    return new Model(new PlaneMesh(width, height), new GLSLShader({
+      name: 'BackgroundMaterial',
+      shader: Background,
+      side: 'Front',
+      depthTest: false,
+      depthWrite: false,
+      fog: false
+    }));
   }
   static cube(width = 1, height = 1, depth = 1) {
-    return new Model(new BoxMesh(width, height, depth), new ShaderMaterial({
-                       type: 'BackgroundCubeMaterial',
-                       uniforms: ShaderLib.cube.uniforms.clone(),
-                       vertexShader: ShaderLib.cube.vertexShader,
-                       fragmentShader: ShaderLib.cube.fragmentShader,
-                       side: 'Back',
-                       depthTest: true,
-                       depthWrite: false,
-                       fog: false
-                     }));
+    return new Model(new BoxMesh(width, height, depth), new GLSLShader({
+      name: 'BackgroundCubeMaterial',
+      shader: Cube,
+      side: 'Back',
+      depthTest: true,
+      depthWrite: false,
+      fog: false
+    }));
   }
 
   transform: Transform;
@@ -50,7 +49,7 @@ export default class Model extends EventSource {
   morphTargetInfluences = [];
   morphTargetDictionary = {};
 
-  constructor(public mesh: BufferMesh = new BufferMesh(), public material: Material = new Unlit()) {
+  constructor(public mesh: BufferMesh = new BufferMesh(), public material: Material = new Unlit({})) {
     super();
     if (material instanceof Unlit) material.color = new Color(Math.random() * 0xffffff);
     this.updateMorphTargets();
@@ -60,7 +59,7 @@ export default class Model extends EventSource {
     const newM = new Model();
     newM.drawMode = this.drawMode;
     newM.morphTargetInfluences = this.morphTargetInfluences.slice();
-    newM.morphTargetDictionary = {...this.morphTargetDictionary};
+    newM.morphTargetDictionary = { ...this.morphTargetDictionary };
     return newM;
   }
 
@@ -134,7 +133,7 @@ export default class Model extends EventSource {
 
             const start = Math.max(group.start, drawRange.start);
             const end = Math.min(
-                group.start + group.count, drawRange.start + drawRange.count);
+              group.start + group.count, drawRange.start + drawRange.count);
 
             for (let i = start; i < end; i += 3) {
               const a = index.getX(i);
@@ -142,12 +141,12 @@ export default class Model extends EventSource {
               const c = index.getX(i + 2);
 
               const intersection = raycaster.checkBufferMeshIntersection(
-                  this.transform, groupMaterial, position, uv, a, b, c,
-                  intersectionPoint);
+                this.transform, groupMaterial, position, uv, a, b, c,
+                intersectionPoint);
 
               if (intersection) {
                 intersection.faceIndex = Math.floor(
-                    i / 3);  // triangle number in indexed buffer semantics
+                  i / 3);  // triangle number in indexed buffer semantics
                 intersects.push(intersection);
               }
             }
@@ -162,12 +161,12 @@ export default class Model extends EventSource {
             const c = index.getX(i + 2);
 
             const intersection = raycaster.checkBufferMeshIntersection(
-                this.transform, material, position, uv, a, b, c,
-                intersectionPoint);
+              this.transform, material, position, uv, a, b, c,
+              intersectionPoint);
 
             if (intersection) {
               intersection.faceIndex = Math.floor(
-                  i / 3);  // triangle number in indexed buffer semantics
+                i / 3);  // triangle number in indexed buffer semantics
               intersects.push(intersection);
             }
           }
@@ -181,7 +180,7 @@ export default class Model extends EventSource {
 
             const start = Math.max(group.start, drawRange.start);
             const end = Math.min(
-                group.start + group.count, drawRange.start + drawRange.count);
+              group.start + group.count, drawRange.start + drawRange.count);
 
             for (let i = start; i < end; i += 3) {
               const a = i;
@@ -189,12 +188,12 @@ export default class Model extends EventSource {
               const c = i + 2;
 
               const intersection = raycaster.checkBufferMeshIntersection(
-                  this.transform, groupMaterial, position, uv, a, b, c,
-                  intersectionPoint);
+                this.transform, groupMaterial, position, uv, a, b, c,
+                intersectionPoint);
 
               if (intersection) {
                 intersection.faceIndex =
-                    Math.floor(i / 3);  // triangle number in non-indexed
+                  Math.floor(i / 3);  // triangle number in non-indexed
                 // buffer semantics
                 intersects.push(intersection);
               }
@@ -203,7 +202,7 @@ export default class Model extends EventSource {
         } else {
           const start = Math.max(0, drawRange.start);
           const end =
-              Math.min(position.count, drawRange.start + drawRange.count);
+            Math.min(position.count, drawRange.start + drawRange.count);
 
           for (let i = start; i < end; i += 3) {
             const a = i;
@@ -211,12 +210,12 @@ export default class Model extends EventSource {
             const c = i + 2;
 
             const intersection = raycaster.checkBufferMeshIntersection(
-                this.transform, material, position, uv, a, b, c,
-                intersectionPoint);
+              this.transform, material, position, uv, a, b, c,
+              intersectionPoint);
 
             if (intersection) {
               intersection.faceIndex = Math.floor(
-                  i / 3);  // triangle number in non-indexed buffer semantics
+                i / 3);  // triangle number in non-indexed buffer semantics
               intersects.push(intersection);
             }
           }
