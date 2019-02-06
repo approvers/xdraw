@@ -15,7 +15,7 @@ export default class Euler {
       private _order: RotationOrder = 'XYZ') {}
 
   static fromRotationMatrix(m: Matrix4, order: RotationOrder) {
-    const clamp = (src, min, max) => Math.max(Math.min(src, max), min);
+    const clamp = (src: number, min: number, max: number) => Math.max(Math.min(src, max), min);
 
     const te = m.elements;
     const m11 = te[0], m12 = te[4], m13 = te[8];
@@ -91,7 +91,9 @@ export default class Euler {
     return new Euler(x, y, z, order);
   }
 
-  static fromQuaternion(q: Quaternion, order: RotationOrder) {}
+  static fromQuaternion(q: Quaternion, order: RotationOrder) {
+    throw new Error('Not implemented');
+  }
 
   get x() {
     return this._x;

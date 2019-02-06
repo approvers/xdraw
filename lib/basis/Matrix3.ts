@@ -1,5 +1,6 @@
 import Matrix4 from './Matrix4';
 import Vector3 from './Vector3';
+import BufferAttribute from './BufferAttribute';
 
 export default class Matrix3 {
   constructor(public elements = [1, 0, 0, 0, 1, 0, 0, 0, 1]) {}
@@ -8,7 +9,7 @@ export default class Matrix3 {
     return new Matrix3([1, 0, 0, 0, 1, 0, 0, 0, 1]);
   }
 
-  static fromUvTransform(tx, ty, sx, sy, rotation, cx, cy) {
+  static fromUvTransform(tx: number, ty: number, sx: number, sy: number, rotation: number, cx: number, cy: number) {
     const c = Math.cos(rotation);
     const s = Math.sin(rotation);
 
@@ -18,7 +19,7 @@ export default class Matrix3 {
     ]);
   }
 
-  static fromMatrix4(m) {
+  static fromMatrix4(m: Matrix4) {
     const me = m.elements;
     return new Matrix3(
         [me[0], me[4], me[8], me[1], me[5], me[9], me[2], me[6], me[10]]);
@@ -80,7 +81,7 @@ export default class Matrix3 {
     return this;
   }
 
-  applyToBufferAttribute(attribute) {
+  applyToBufferAttribute(attribute: BufferAttribute) {
     const v1 = new Vector3();
     for (let i = 0; i < attribute.count; i++) {
       v1.x = attribute.getX(i);
@@ -192,8 +193,8 @@ export default class Matrix3 {
     return Matrix3.fromMatrix4(matrix4).inverse(this).transpose();
   }
 
-  transposeIntoArray(r: number[]) {
-    r = this.elements.slice();
+  transposeIntoArray(_r: number[]) {
+    _r = this.elements.slice();
     return this;
   }
 
@@ -254,7 +255,7 @@ export default class Matrix3 {
     return true;
   }
 
-  toArray(array = [], offset = 0) {
+  toArray(array: number[] = [], offset = 0) {
     const te = this.elements;
 
     array[offset] = te[0];

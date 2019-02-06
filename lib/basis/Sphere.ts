@@ -9,13 +9,13 @@ import Box3 from "./Box3";
 export default class Sphere {
   constructor(private _center = new Vector3(), public radius = 0) {}
 
-  static fromPoints(points: Vector3[], center: Vector3 = null) {
+  static fromPoints(points: Vector3[], center?: Vector3) {
     const box = Box3.fromPoints(points);
-    if (center === null) {
+    if (center === undefined) {
       center = box.getCenter();
     }
     const radius = points.reduce(
-      (acc, cur) => Math.max(acc, center.distanceToSquared(cur)),
+      (acc, cur) => Math.max(acc, (center as Vector3).distanceToSquared(cur)),
       0
     );
     return new Sphere(center, radius);

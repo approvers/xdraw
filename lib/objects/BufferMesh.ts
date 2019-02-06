@@ -3,49 +3,46 @@ import Mesh from "./Mesh";
 import Model from "./Model";
 
 export default class BufferMesh extends Mesh {
-  static fromModel(object: Model) {
+  static fromModel(object: Model): BufferMesh {
+    return (object.mesh !== null && object.mesh instanceof BufferMesh) ? object.mesh.clone() : new BufferMesh();
+  }
+
+  index: BufferAttribute;
+  attributes: { [key: string]: BufferAttribute };
+  morphAttributes = {};
+  groups: { start: number; count: number; materialIndex: number }[];
+  drawRange = { start: 0, count: Infinity };
+  userData = {};
+
+  clone() {
     const newM = new BufferMesh();
+    const positions = BufferAttribute.fromArray(Float32Array, new Array(this.vertices.length * 3), 3);
+    const colors = BufferAttribute.fromArray(Float32Array, new Array(this.colors.length * 3), 3);
 
-    const mesh = object.mesh;
+    newM.addAttribute('position', positions.copyVector3sArray(this.vertices));
+    newM.addAttribute('color', colors.copyColorsArray(this.colors));
 
-    if (object instanceof Points || object instanceof Line) {
+    if (this.lineDistances && this.lineDistances.length === this.vertices.length) {
 
-      const positions = BufferAttribute.fromArray(Float32Array, new Array(mesh.vertices.length * 3), 3);
-      const colors = BufferAttribute.fromArray(Float32Array, new Array(mesh.colors.length * 3), 3);
+      const lineDistances = BufferAttribute.fromArray(Float32Array, this.lineDistances, 1);
 
-      newM.addAttribute('position', positions.copyVector3sArray(mesh.vertices));
-      newM.addAttribute('color', colors.copyColorsArray(mesh.colors));
+      newM.addAttribute('lineDistance', lineDistances);
 
-      if (mesh.lineDistances && mesh.lineDistances.length === mesh.vertices.length) {
+    }
 
-        const lineDistances = BufferAttribute.fromArray(Float32Array, new Array(mesh.lineDistances.length), 1);
+    if (this.boundingSphere !== null) {
 
-        newM.addAttribute('lineDistance', lineDistances.copyArray(mesh.lineDistances));
+      newM.boundingSphere = this.boundingSphere.clone();
 
-      }
+    }
 
-      if (mesh.boundingSphere !== null) {
+    if (this.boundingBox !== null) {
 
-        newM.boundingSphere = mesh.boundingSphere.clone();
-
-      }
-
-      if (mesh.boundingBox !== null) {
-
-        newM.boundingBox = mesh.boundingBox.clone();
-
-      }
+      newM.boundingBox = this.boundingBox.clone();
 
     }
     return newM;
   }
-
-  index: BufferAttribute;
-  attributes: { [key: string]: BufferAttribute } = { position: null, uv: null };
-  morphAttributes = {};
-  groups: { start; count; materialIndex }[];
-  drawRange = { start: 0, count: Infinity };
-  userData = {};
 
   setIndex(index: number[]) {
     if (index.some((v) => v > 65535)) {
@@ -67,92 +64,92 @@ export default class BufferMesh extends Mesh {
   updateFromObject(object: Model) {
     const mesh = object.mesh;
 
-		let attribute: BufferAttribute;
+    let attribute: BufferAttribute;
 
-		if ( mesh.verticesNeedUpdate === true ) {
+    if (mesh.verticesNeedUpdate === true) {
 
-			attribute = this.attributes.position;
+      attribute = this.attributes.position;
 
-			if ( attribute !== undefined ) {
+      if (attribute !== undefined) {
 
-				attribute.copyVector3sArray( mesh.vertices );
-				attribute.needsUpdate = true;
+        attribute.copyVector3sArray(mesh.vertices);
+        attribute.needsUpdate = true;
 
-			}
+      }
 
-			mesh.verticesNeedUpdate = false;
+      mesh.verticesNeedUpdate = false;
 
-		}
+    }
 
-		if ( mesh.normalsNeedUpdate === true ) {
+    if (mesh.normalsNeedUpdate === true) {
 
-			attribute = this.attributes.normal;
+      attribute = this.attributes.normal;
 
-			if ( attribute !== undefined ) {
+      if (attribute !== undefined) {
 
-				attribute.copyVector3sArray( mesh.normals );
-				attribute.needsUpdate = true;
+        attribute.copyVector3sArray(mesh.normals);
+        attribute.needsUpdate = true;
 
-			}
+      }
 
-			mesh.normalsNeedUpdate = false;
+      mesh.normalsNeedUpdate = false;
 
-		}
+    }
 
-		if ( mesh.colorsNeedUpdate === true ) {
+    if (mesh.colorsNeedUpdate === true) {
 
-			attribute = this.attributes.color;
+      attribute = this.attributes.color;
 
-			if ( attribute !== undefined ) {
+      if (attribute !== undefined) {
 
-				attribute.copyColorsArray( mesh.colors );
-				attribute.needsUpdate = true;
+        attribute.copyColorsArray(mesh.colors);
+        attribute.needsUpdate = true;
 
-			}
+      }
 
-			mesh.colorsNeedUpdate = false;
+      mesh.colorsNeedUpdate = false;
 
-		}
+    }
 
-		if ( mesh.uvsNeedUpdate ) {
+    if (mesh.uvsNeedUpdate) {
 
-			attribute = this.attributes.uv;
+      attribute = this.attributes.uv;
 
-			if ( attribute !== undefined ) {
+      if (attribute !== undefined) {
 
-				attribute.copyVector2sArray( mesh.uvs );
-				attribute.needsUpdate = true;
+        attribute.copyVector2sArray(mesh.uvs);
+        attribute.needsUpdate = true;
 
-			}
+      }
 
-			mesh.uvsNeedUpdate = false;
+      mesh.uvsNeedUpdate = false;
 
-		}
+    }
 
-		if ( mesh.lineDistancesNeedUpdate ) {
+    if (mesh.lineDistancesNeedUpdate) {
 
-			attribute = this.attributes.lineDistance;
+      attribute = this.attributes.lineDistance;
 
-			if ( attribute !== undefined ) {
+      if (attribute !== undefined) {
 
-				attribute.copyArray( mesh.lineDistances );
-				attribute.needsUpdate = true;
+        attribute.copyArray(mesh.lineDistances);
+        attribute.needsUpdate = true;
 
-			}
+      }
 
-			mesh.lineDistancesNeedUpdate = false;
+      mesh.lineDistancesNeedUpdate = false;
 
-		}
+    }
 
-		if ( mesh.groupsNeedUpdate ) {
+    if (mesh.groupsNeedUpdate) {
 
-			mesh.computeGroups(mesh);
-			this.groups = mesh.groups;
+      mesh.computeGroups(mesh);
+      this.groups = mesh.groups;
 
-			mesh.groupsNeedUpdate = false;
+      mesh.groupsNeedUpdate = false;
 
-		}
+    }
 
-		return this;
+    return this;
   }
 }

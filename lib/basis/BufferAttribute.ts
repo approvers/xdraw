@@ -22,7 +22,7 @@ export default class BufferAttribute {
   needsUpdate: boolean;
 
   static fromArray<T extends TypedArray>(
-    buffer: new (any) => T,
+    buffer: new (any: any) => T,
     array: number[],
     itemSize: number,
     normalized = false
@@ -38,6 +38,8 @@ export default class BufferAttribute {
     this.count = array.length / itemSize;
   }
 
+  get length() { return this.count; }
+
   getX(i: number) {
     return this.array[i * this.itemSize];
   }
@@ -48,6 +50,35 @@ export default class BufferAttribute {
 
   getZ(i: number) {
     return this.array[i * this.itemSize];
+  }
+
+  getW(i: number) {
+    return this.array[i * this.itemSize];
+  }
+
+  setXYZ(index: number, x: number, y: number, z: number) {
+
+    index *= this.itemSize;
+
+    this.array[index + 0] = x;
+    this.array[index + 1] = y;
+    this.array[index + 2] = z;
+
+    return this;
+
+  }
+
+  setXYZW(index: number, x: number, y: number, z: number, w: number) {
+
+    index *= this.itemSize;
+
+    this.array[index + 0] = x;
+    this.array[index + 1] = y;
+    this.array[index + 2] = z;
+    this.array[index + 3] = w;
+
+    return this;
+
   }
 
   copyArray(array: any[]) {

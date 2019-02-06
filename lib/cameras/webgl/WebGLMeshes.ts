@@ -107,7 +107,7 @@ export default class WebGLGeometries {
 
     if (attribute) return attribute;
 
-    const indices = [];
+    const indices: number[] = [];
 
     const meshIndex = mesh.index;
     const meshAttributes = mesh.attributes;

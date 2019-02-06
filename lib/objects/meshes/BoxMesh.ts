@@ -58,7 +58,7 @@ export default class BoxMesh extends BufferMesh {
   }
 
   private buildPlane(
-      u, v, w, udir, vdir, width, height, depth, gridX, gridY,
+      u: string, v: string, w: string, udir: number, vdir: number, width: number, height: number, depth: number, gridX: number, gridY: number,
       materialIndex: number) {
     const segmentWidth = width / gridX;
     const segmentHeight = height / gridY;

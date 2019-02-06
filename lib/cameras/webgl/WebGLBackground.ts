@@ -10,13 +10,14 @@ import WebGLState from './WebGLState';
 import WebGLObjects from './WebGLObjects';
 import Model from '../../objects/Model';
 import Camera from '../Camera';
+import BufferMesh from '../../objects/BufferMesh';
 
 export default class WebGLBackground {
   clearColor = new Color(0x000000);
   clearAlpha = 0;
 
-  planeModel: Model = null;
-  boxModel: Model = null;
+  planeModel: Model | null = null;
+  boxModel: Model | null = null;
 
   // Store the current background texture and its `version`
   // so we can recompile the material accordingly.
@@ -27,7 +28,7 @@ export default class WebGLBackground {
     private renderer: Renderer, private state: WebGLState,
     private objects: WebGLObjects, private premultipliedAlpha: boolean) { }
 
-  render(renderList, scene, camera, forceClear) {
+  render(renderList, scene: Scene, camera: Camera, forceClear: boolean) {
     const background = scene.background;
     let {
       clearColor,
@@ -62,17 +63,20 @@ export default class WebGLBackground {
       if (boxModel === null) {
         boxModel = Model.cube();
 
+        if (boxModel === null || !(boxModel.mesh instanceof BufferMesh))
+          throw new Error('Model.cube() generated unexcepted mesh.');
+
         boxModel.mesh.removeAttribute('normal');
         boxModel.mesh.removeAttribute('uv');
 
         boxModel.addEventListener('beforeRender', (_renderer: any, _scene: any, camera: Camera) => {
-          boxModel.transform.matrixWorld = camera.matrixWorld.clone();
+          (boxModel as Model).transform.matrixWorld = camera.matrixWorld.clone();
         });
 
         // enable code injection for non-built-in material
         Object.defineProperty(boxModel.material, 'map', {
           get: function() {
-            return this.uniforms.tCube.value;
+            return this.shader.uniforms.tCube.value;
           }
         });
 
@@ -83,8 +87,8 @@ export default class WebGLBackground {
 
       const texture =
         background.isWebGLRenderTargetCube ? background.texture : background;
-      boxModel.material.uniforms['tCube'].value = texture;
-      boxModel.material.uniforms['tFlip'].value =
+      boxModel.material.shader.uniforms['tCube'].value = texture;
+      boxModel.material.shader.uniforms['tFlip'].value =
         background.isWebGLRenderTargetCube ? 1 : -1;
 
       if (currentBackground !== background ||
@@ -102,27 +106,30 @@ export default class WebGLBackground {
         planeModel =
           Model.plane(2, 2);
 
+        if (planeModel === null || !(planeModel.mesh instanceof BufferMesh))
+          throw new Error('Model.plane() generated unexcepted mesh.');
+
         planeModel.mesh.removeAttribute('normal');
 
         // enable code injection for non-built-in material
         Object.defineProperty(planeModel.material, 'map', {
           get: function() {
-            return this.uniforms.t2D.value;
+            return this.shader.uniforms.t2D.value;
           }
         });
 
         objects.update(planeModel);
       }
 
-      if (!(planeModel.material instanceof GLSLShader)) return;
+      if (planeModel === null || !(planeModel.material instanceof GLSLShader)) return;
 
-      planeModel.material.uniforms['t2D'].value = background;
+      planeModel.material.shader.uniforms['t2D'].value = background;
 
       if (background.matrixAutoUpdate === true) {
         background.updateMatrix();
       }
 
-      planeModel.material.uniforms['uvTransform'].value = background.matrix.clone();
+      planeModel.material.shader.uniforms['uvTransform'].value = background.matrix.clone();
 
       if (currentBackground !== background ||
         currentBackgroundVersion !== background.version) {

@@ -1,5 +1,6 @@
 import Matrix4 from './Matrix4';
 import Quaternion from './Quaternion';
+import BufferAttribute from './BufferAttribute';
 
 /**
  * @author RkEclair / https://github.com/RkEclair
@@ -16,7 +17,7 @@ export default class Vector4 {
    * @returns {Vector4} - Axis and Angle
    * @memberof Vector4
    */
-  static fromQuaternionToAxisAngle(q: Quaternion) {
+  static fromQuaternionToAxisAngle(q: Quaternion): Vector4 {
     // http://www.euclideanspace.com/maths/geometry/rotations/conversions/quaternionToAngle/index.htm
 
     let x: number, y: number, z: number, w: number;
@@ -387,7 +388,7 @@ export default class Vector4 {
     return this;
   }
 
-  toArray(array = [], offset = 0) {
+  toArray(array: number[] = [], offset = 0) {
     array[offset] = this.x;
     array[offset + 1] = this.y;
     array[offset + 2] = this.z;
@@ -395,7 +396,7 @@ export default class Vector4 {
     return array;
   }
 
-  fromBufferAttribute(attribute, index: number) {
+  fromBufferAttribute(attribute: BufferAttribute, index: number) {
     this.x = attribute.getX(index);
     this.y = attribute.getY(index);
     this.z = attribute.getZ(index);

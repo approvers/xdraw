@@ -21,6 +21,7 @@ import Material from '../materials/Material';
 import BufferMesh from './BufferMesh';
 import BoxMesh from './meshes/BoxMesh';
 import PlaneMesh from './meshes/PlaneMesh';
+import Mesh from './Mesh';
 
 export default class Model extends EventSource {
   static plane(width = 1, height = 1) {
@@ -46,10 +47,10 @@ export default class Model extends EventSource {
 
   transform: Transform;
   drawMode: TraiangleDrawMode;
-  morphTargetInfluences = [];
+  morphTargetInfluences: number[] = [];
   morphTargetDictionary = {};
 
-  constructor(public mesh: BufferMesh = new BufferMesh(), public material: Material = new Unlit({})) {
+  constructor(public mesh: Mesh = new BufferMesh(), public material: Material = new Unlit({})) {
     super();
     if (material instanceof Unlit) material.color = new Color(Math.random() * 0xffffff);
     this.updateMorphTargets();

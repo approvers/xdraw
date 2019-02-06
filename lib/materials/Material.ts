@@ -70,9 +70,9 @@ export default class Material extends EventSource {
   blendSrc = BlendFactor.SrcAlphaFactor;
   blendDst = BlendFactor.OneMinusSrcAlphaFactor;
   blendEquation = BlendFunc.AddEquation;
-  blendSrcAlpha: BlendFactor = null;
-  blendDstAlpha: BlendFactor = null;
-  blendEquationAlpha: BlendFunc = null;
+  blendSrcAlpha: BlendFactor;
+  blendDstAlpha: BlendFactor;
+  blendEquationAlpha: BlendFunc;
 
   depthFunc: DepthFunc = 'LessEqual';
   depthTest = true;

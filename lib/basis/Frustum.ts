@@ -15,9 +15,9 @@ import Box3 from './Box3';
 export default class Frustum {
   planes: Plane[];
   constructor(
-      p0: Plane = new Plane(), p1: Plane = new Plane(), p2: Plane = new Plane(),
-      p3: Plane = new Plane(), p4: Plane = new Plane(),
-      p5: Plane = new Plane()) {
+    p0: Plane = new Plane(), p1: Plane = new Plane(), p2: Plane = new Plane(),
+    p3: Plane = new Plane(), p4: Plane = new Plane(),
+    p5: Plane = new Plane()) {
     this.planes = [
       p0.clone(), p1.clone(), p2.clone(), p3.clone(), p4.clone(), p5.clone()
     ];
@@ -36,40 +36,39 @@ export default class Frustum {
     const me12 = me[12], me13 = me[13], me14 = me[14], me15 = me[15];
 
     planes[0]
-        .setComponents(me3 - me0, me7 - me4, me11 - me8, me15 - me12)
-        .normalize();
+      .setComponents(me3 - me0, me7 - me4, me11 - me8, me15 - me12)
+      .normalize();
     planes[1]
-        .setComponents(me3 + me0, me7 + me4, me11 + me8, me15 + me12)
-        .normalize();
+      .setComponents(me3 + me0, me7 + me4, me11 + me8, me15 + me12)
+      .normalize();
     planes[2]
-        .setComponents(me3 + me1, me7 + me5, me11 + me9, me15 + me13)
-        .normalize();
+      .setComponents(me3 + me1, me7 + me5, me11 + me9, me15 + me13)
+      .normalize();
     planes[3]
-        .setComponents(me3 - me1, me7 - me5, me11 - me9, me15 - me13)
-        .normalize();
+      .setComponents(me3 - me1, me7 - me5, me11 - me9, me15 - me13)
+      .normalize();
     planes[4]
-        .setComponents(me3 - me2, me7 - me6, me11 - me10, me15 - me14)
-        .normalize();
+      .setComponents(me3 - me2, me7 - me6, me11 - me10, me15 - me14)
+      .normalize();
     planes[5]
-        .setComponents(me3 + me2, me7 + me6, me11 + me10, me15 + me14)
-        .normalize();
+      .setComponents(me3 + me2, me7 + me6, me11 + me10, me15 + me14)
+      .normalize();
 
     return this;
   }
 
   intersectsObject(t: Transform) {
-    if (t.boundingSphere === null) t.computeBoundingSphere();
-    const sphere = t.boundingSphere.clone();
+    const sphere = (t.boundingSphere === null) ? t.computeBoundingSphere() : t.boundingSphere;;
     sphere.applyMatrix4(t.matrixWorld);
     return this.intersectsSphere(sphere);
   }
 
-  intersectsSprite(sprite) {
+  intersectsSprite(sprite: Sprite) {
     const sphere = new Sphere();
 
     sphere.center = new Vector3(0, 0, 0);
     sphere.radius = 0.7071067811865476;
-    sphere.applyMatrix4(sprite.matrixWorld);
+    sphere.applyMatrix4(sprite.transform.matrixWorld);
 
     return this.intersectsSphere(sphere);
   }

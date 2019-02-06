@@ -14,7 +14,7 @@ class ColorBuffer {
   locked = false;
 
   color = new Vector4();
-  currentColorMask: boolean = null;
+  currentColorMask: boolean = false;
   currentColorClear = new Vector4(0, 0, 0, 0);
 
   constructor(private gl: WebGLRenderingContext) { }
@@ -48,7 +48,7 @@ class ColorBuffer {
   reset() {
     this.locked = false;
 
-    this.currentColorMask = null;
+    this.currentColorMask = false;
     this.currentColorClear = new Vector4(-1, 0, 0, 0);  // set to invalid state
   }
 }
@@ -56,9 +56,9 @@ class ColorBuffer {
 class DepthBuffer {
   locked = false;
 
-  currentDepthMask = null;
-  currentDepthFunc: DepthFunc = null;
-  currentDepthClear = null;
+  currentDepthMask = false;
+  currentDepthFunc: DepthFunc = 'Never';
+  currentDepthClear = 0;
 
   constructor(
     private gl: WebGLRenderingContext, private enable: Function,
@@ -135,23 +135,23 @@ class DepthBuffer {
   reset() {
     this.locked = false;
 
-    this.currentDepthMask = null;
-    this.currentDepthFunc = null;
-    this.currentDepthClear = null;
+    this.currentDepthMask = false;
+    this.currentDepthFunc = 'Never';
+    this.currentDepthClear = 0;
   }
 }
 
 class StencilBuffer {
   locked = false;
 
-  currentStencilMask = null;
-  currentStencilFunc = null;
-  currentStencilRef = null;
-  currentStencilFuncMask = null;
-  currentStencilFail = null;
-  currentStencilZFail = null;
-  currentStencilZPass = null;
-  currentStencilClear = null;
+  currentStencilMask = 0;
+  currentStencilFunc = 0;
+  currentStencilRef = 0;
+  currentStencilFuncMask = 0;
+  currentStencilFail = 0;
+  currentStencilZFail = 0;
+  currentStencilZPass = 0;
+  currentStencilClear = 0;
 
   constructor(
     private gl: WebGLRenderingContext, private enable: Function,
@@ -210,14 +210,14 @@ class StencilBuffer {
   reset() {
     this.locked = false;
 
-    this.currentStencilMask = null;
-    this.currentStencilFunc = null;
-    this.currentStencilRef = null;
-    this.currentStencilFuncMask = null;
-    this.currentStencilFail = null;
-    this.currentStencilZFail = null;
-    this.currentStencilZPass = null;
-    this.currentStencilClear = null;
+    this.currentStencilMask = 0;
+    this.currentStencilFunc = 0;
+    this.currentStencilRef = 0;
+    this.currentStencilFuncMask = 0;
+    this.currentStencilFail = 0;
+    this.currentStencilZFail = 0;
+    this.currentStencilZPass = 0;
+    this.currentStencilClear = 0;
   }
 }
 
@@ -246,21 +246,21 @@ export default class WebGLState {
 
     this.maxTextures = gl.getParameter(gl.MAX_COMBINED_TEXTURE_IMAGE_UNITS);
 
-    var version = 0;
-    var glVersion = gl.getParameter(gl.VERSION);
+    let version = 0;
+    const glVersion = gl.getParameter(gl.VERSION);
 
     if (glVersion.indexOf('WebGL') !== -1) {
-      version = parseFloat(/^WebGL\ ([0-9])/.exec(glVersion)[1]);
+      version = parseFloat((/^WebGL\ ([0-9])/.exec(glVersion) as string[])[1]);
       this.lineWidthAvailable = version >= 1.0;
     } else if (glVersion.indexOf('OpenGL ES') !== -1) {
-      version = parseFloat(/^OpenGL\ ES\ ([0-9])/.exec(glVersion)[1]);
+      version = parseFloat((/^OpenGL\ ES\ ([0-9])/.exec(glVersion) as string[])[1]);
       this.lineWidthAvailable = version >= 2.0;
     }
 
     const createTexture = (type: number, target: number, count: number) => {
-      var data = new Uint8Array(
+      const data = new Uint8Array(
         4);  // 4 is required to match default unpack alignment of 4.
-      var texture = gl.createTexture();
+      const texture = gl.createTexture();
 
       this.gl.bindTexture(type, texture);
       this.gl.texParameteri(type, this.gl.TEXTURE_MIN_FILTER, this.gl.NEAREST);
@@ -298,7 +298,7 @@ export default class WebGLState {
   }
 
   initAttributes() {
-    this.newAttributes.forEach((e) => (e = 0));
+    this.newAttributes.fill(0);
   }
 
   enableAttribute(attribute: number) {
@@ -355,7 +355,7 @@ export default class WebGLState {
       this.extensions.get('WEBGL_compressed_texture_etc1') ||
       this.extensions.get('WEBGL_compressed_texture_astc')) {
       const formats = this.gl.getParameter(this.gl.COMPRESSED_TEXTURE_FORMATS);
-      formats.forEach((e) => this.compressedTextureFormats.push(e));
+      this.compressedTextureFormats = formats.slice();
     }
     return this.compressedTextureFormats;
   }
@@ -469,10 +469,10 @@ export default class WebGLState {
           }
         }
 
-        this.currentBlendSrc = null;
-        this.currentBlendDst = null;
-        this.currentBlendSrcAlpha = null;
-        this.currentBlendDstAlpha = null;
+        this.currentBlendSrc = blendSrc;
+        this.currentBlendDst = blendDst;
+        this.currentBlendSrcAlpha = blendSrcAlpha;
+        this.currentBlendDstAlpha = blendDstAlpha;
 
         this.currentBlending = blending;
         this.currentPremultipledAlpha = premultipliedAlpha;
@@ -508,7 +508,7 @@ export default class WebGLState {
     }
 
     this.currentBlending = blending;
-    this.currentPremultipledAlpha = null;
+    this.currentPremultipledAlpha = premultipliedAlpha;
   }
 
   setMaterial(material: Material, frontFaceCW: boolean) {
@@ -694,17 +694,17 @@ export default class WebGLState {
 
     this.enabledCapabilities = {};
 
-    this.compressedTextureFormats = null;
+    this.compressedTextureFormats = [];
 
-    this.currentTextureSlot = null;
+    this.currentTextureSlot = -1;
     this.currentBoundTextures = {};
 
-    this.currentProgram = null;
+    this.currentProgram = new WebGLProgram();
 
-    this.currentBlending = null;
+    this.currentBlending = 'None';
 
-    this.currentFlipSided = null;
-    this.currentCullFace = null;
+    this.currentFlipSided = false;
+    this.currentCullFace = 'None';
 
     this.stencilBuffer.reset();
     this.depthBuffer.reset();

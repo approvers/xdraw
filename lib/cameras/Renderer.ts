@@ -15,6 +15,14 @@ import {ToneMapping, TraiangleDrawMode} from './DrawTypes.js';
 import WebGLExtensions from './webgl/WebGLExtensions';
 import WebGLCapabilities from './webgl/WebGLCapabilities';
 import WebGLState from './webgl/WebGLState';
+import WebGLBackground from './webgl/WebGLBackground';
+import WebGLObjects from './webgl/WebGLObjects';
+import WebGLGeometries from './webgl/WebGLMeshes';
+import WebGLInfo from './webgl/WebGLInfo';
+import Camera from './Camera';
+import Transform from '../basis/Transform';
+import Mesh from '../objects/Mesh';
+import Material from '../materials/Material';
 
 type RendererParameters = {
   canvas: HTMLCanvasElement; context: any; alpha: boolean; depth: boolean;
@@ -27,7 +35,7 @@ type RendererParameters = {
 
 export default class Renderer {
   public domElement: HTMLCanvasElement;
-  public context = null;
+  public context: WebGLRenderingContext;
 
   // clearing
   public autoClear = true;
@@ -79,7 +87,6 @@ export default class Renderer {
   private capabilities: WebGLCapabilities;
   private info: WebGLInfo;
   private textures: WebGLTextures;
-  private utils: WebGLUtils;
 
   private isContextLost = false;
   private framebuffer = null;
@@ -122,7 +129,7 @@ export default class Renderer {
   private vector3 = new Vector3();
 
   // vr
-  private vr = null;
+  private vr: VRHandler;
 
   // Shadow map
   private shadowMap: WebGLShadowMap;
@@ -218,8 +225,7 @@ export default class Renderer {
       indexedBufferRenderer,
       capabilities,
       info,
-      textures,
-      utils
+      textures
     } = this;
 
     extensions = new WebGLExtensions(this.gl);
@@ -238,9 +244,7 @@ export default class Renderer {
 
     extensions.get('OES_texture_float_linear');
 
-    utils = new WebGLUtils(this.gl, extensions, capabilities);
-
-    state = new WebGLState(this.gl, extensions, utils, capabilities);
+    state = new WebGLState(this.gl, extensions, capabilities);
     this.currentScissor = this.scissor.clone();
     state.scissor(this.currentScissor.multiplyScalar(this.pixelRatio));
     this.currentViewport = this.viewport.clone();
@@ -249,7 +253,7 @@ export default class Renderer {
     info = new WebGLInfo(this.gl);
     properties = new WebGLProperties();
     textures = new WebGLTextures(
-        this.gl, extensions, state, properties, capabilities, utils, info);
+        this.gl, extensions, state, properties, capabilities, info);
     attributes = new WebGLAttributes(this.gl);
     geometries = new WebGLGeometries(this.gl, attributes, info);
     objects = new WebGLObjects(geometries, info);
@@ -304,9 +308,7 @@ export default class Renderer {
     return this.pixelRatio;
   }
 
-  setPixelRatio(value) {
-    if (value === undefined) return;
-
+  setPixelRatio(value: number) {
     this.pixelRatio = value;
 
     this.setSize(this.width, this.height, false);
@@ -316,7 +318,7 @@ export default class Renderer {
     return {width: this.width, height: this.height};
   }
 
-  setSize(width, height, updateStyle) {
+  setSize(width: number, height: number, updateStyle: boolean) {
     if (this.vr.isPresenting()) {
       console.warn(
           'THREE.WebGLRenderer: Can\'t change size while VR device is presenting.');
@@ -344,7 +346,7 @@ export default class Renderer {
     };
   }
 
-  setDrawingBufferSize(width, height, pixelRatio) {
+  setDrawingBufferSize(width: number, height: number, pixelRatio: number) {
     this.width = width;
     this.height = height;
 
@@ -360,14 +362,14 @@ export default class Renderer {
     return this.currentViewport;
   }
 
-  setViewport(x, y, width, height) {
-    this.viewport.set(x, this.height - y - height, width, height);
+  setViewport(x: number, y: number, width: number, height: number) {
+    this.viewport = new Vector4(x, this.height - y - height, width, height);
     this.currentViewport = this.viewport.clone();
     this.state.viewport(this.currentViewport.multiplyScalar(this.pixelRatio));
   }
 
-  setScissor(x, y, width, height) {
-    this.scissor.set(x, this.height - y - height, width, height);
+  setScissor(x: any, y: number, width: any, height: number) {
+    this.scissor = new Vector4(x, this.height - y - height, width, height);
     this.currentScissor = this.scissor.clone();
     this.state.scissor(this.currentScissor.multiplyScalar(this.pixelRatio));
   }
@@ -393,7 +395,7 @@ export default class Renderer {
     this.background.setClearAlpha.apply(this.background, arguments);
   }
 
-  clear(color, depth, stencil) {
+  clear(color: boolean | undefined, depth: boolean | undefined, stencil: boolean | undefined) {
     let bits = 0;
 
     if (color === undefined || color) bits |= this.gl.COLOR_BUFFER_BIT;
@@ -444,7 +446,7 @@ export default class Renderer {
       () => {
         console.log('Context Restored.');
         this.isContextLost = false;
-        this.initGLContext();
+        this.initGLContext({});
       }
 
   private onMaterialDispose =
@@ -786,7 +788,7 @@ export default class Renderer {
 
   // Compile
 
-  compile(scene, camera) {
+  compile(scene, camera: Camera) {
     this.currentRenderState = this.renderStates.get(scene, camera);
     this.currentRenderState.init();
 
@@ -830,7 +832,7 @@ export default class Renderer {
 
   // Rendering
 
-  render(scene, camera, renderTarget, forceClear) {
+  render(scene, camera: Camera, renderTarget, forceClear: boolean) {
     if (!(camera && camera.isCamera)) {
       console.error('camera is not an instance of THREE.Camera.');
       return;
@@ -1032,14 +1034,14 @@ export default class Renderer {
     object.children.forEach(e => this.projectObject(e, camera, sortObjects));
   }
 
-  renderObjects(renderList, scene, camera, overrideMaterial = null) {
+  renderObjects(renderList, scene, camera: Camera, overrideMaterial = null) {
     for (const renderItem of renderList) {
       const object = renderItem.object;
       const geometry = renderItem.geometry;
       const material = overrideMaterial || renderItem.material;
       const group = renderItem.group;
 
-      if (camera.isArrayCamera) {
+      if (camera instanceof ArrayCamera) {
         this.currentArrayCamera = camera;
 
         const cameras = camera.cameras;
@@ -1073,8 +1075,8 @@ export default class Renderer {
     }
   }
 
-  renderObject(object, scene, camera, geometry, material, group) {
-    object.onBeforeRender(this, scene, camera, geometry, material, group);
+  renderObject(object: Transform, scene, camera: Camera, mesh: Mesh, material: Material, group) {
+    object.onBeforeRender(this, scene, camera, mesh, material, group);
     this.currentRenderState =
         this.renderStates.get(scene, this.currentArrayCamera || camera);
 
@@ -1095,10 +1097,10 @@ export default class Renderer {
 
     } else {
       this.renderBufferDirect(
-          camera, scene.fog, geometry, material, object, group);
+          camera, scene.fog, mesh, material, object, group);
     }
 
-    object.onAfterRender(this, scene, camera, geometry, material, group);
+    object.onAfterRender(this, scene, camera, mesh, material, group);
     this.currentRenderState =
         this.renderStates.get(scene, this.currentArrayCamera || camera);
   }

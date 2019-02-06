@@ -6,12 +6,12 @@
 export default class WebGLExtensions {
   constructor(private gl: WebGLRenderingContext, public extensions = {}) {}
 
-  get(name) {
+  get(name: string) {
     if (this.extensions[name] !== undefined) {
       return this.extensions[name];
     }
 
-    let extension;
+    let extension: EXT_blend_minmax | null;
 
     switch (name) {
       case "WEBGL_depth_texture":

@@ -14,7 +14,7 @@ let globalId = 0;
 export default class Transform extends EventSource {
   id: number;
   name: string;
-  parent: Transform;
+  parent: Transform | null;
   children: Transform[];
 
   position: Vector3;
@@ -30,7 +30,7 @@ export default class Transform extends EventSource {
   matrixWorldNeedsUpdate = true;
 
   // lazy boundings
-  boundingSphere = null;
+  boundingSphere: Sphere | null;
 
   constructor() {
     super();
@@ -41,7 +41,7 @@ export default class Transform extends EventSource {
   }
 
   computeBoundingSphere() {
-    this.boundingSphere = Sphere.fromPoints(this.vertices);
+    return this.boundingSphere = Sphere.fromPoints(this.vertices);
   }
 
   updateMatrix() {

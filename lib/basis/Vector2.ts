@@ -34,15 +34,15 @@ export default class Vector2 {
     this.y = v;
   }
 
-  setScalar(s) {
+  setScalar(s: number) {
     this.x = this.y = s;
     return this;
   }
-  setX(x) {
+  setX(x: number) {
     this.x = x;
     return this;
   }
-  setY(y) {
+  setY(y: number) {
     this.y = y;
     return this;
   }
@@ -229,7 +229,7 @@ export default class Vector2 {
     return v.x === this.x && v.y === this.y;
   }
 
-  toArray(array = [], offset = 0) {
+  toArray(array: number[] = [], offset = 0) {
     array[offset] = this.x;
     array[offset + 1] = this.y;
     return array;

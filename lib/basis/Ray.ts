@@ -12,7 +12,7 @@ export default class Ray {
   constructor(
     public origin = new Vector3(),
     public direction = new Vector3()
-  ) {}
+  ) { }
 
   clone() {
     return new Ray(this.origin.clone(), this.direction.clone());
@@ -32,7 +32,7 @@ export default class Ray {
   }
 
   intersectedPointWithBox(box: Box3) {
-    let txmin, txmax, tymin, tymax, tzmin, tzmax;
+    let txmin: number, txmax: number, tymin: number, tymax: number, tzmin: number, tzmax: number;
 
     const invdirx = 1 / this.direction.x,
       invdiry = 1 / this.direction.y,
@@ -159,5 +159,126 @@ export default class Ray {
       .multiplyScalar(dist)
       .add(this.origin)
       .distanceToSquared(p);
+  }
+
+  private segCenter = new Vector3();
+  private segDir = new Vector3();
+  private diff = new Vector3();
+
+  distanceSqToSegment(vStart: Vector3, vEnd: Vector3, interRay?: Vector3, interSegment?: Vector3): any {
+    // from http://www.geometrictools.com/GTEngine/Include/Mathematics/GteDistRaySegment.h
+    // It returns the min distance between the ray and the segment
+    // defined by vStart and vEnd
+    // It can also set two optional targets :
+    // - The closest point on the ray
+    // - The closest point on the segment
+
+    this.segCenter = vStart.clone().add(vEnd).multiplyScalar(0.5);
+    this.segDir = vEnd.clone().sub(vStart).normalize();
+    this.diff = this.origin.clone().sub(this.segCenter);
+
+    const segExtent = vStart.distanceTo(vEnd) * 0.5;
+    const a01 = - this.direction.dot(this.segDir);
+    const b0 = this.diff.dot(this.direction);
+    const b1 = - this.diff.dot(this.segDir);
+    const c = this.diff.lengthSq();
+    const det = Math.abs(1 - a01 * a01);
+    let s0: number, s1: number, sqrDist: number, extDet: number;
+
+    if (det > 0) {
+
+      // The ray and segment are not parallel.
+
+      s0 = a01 * b1 - b0;
+      s1 = a01 * b0 - b1;
+      extDet = segExtent * det;
+
+      if (s0 >= 0) {
+
+        if (s1 >= - extDet) {
+
+          if (s1 <= extDet) {
+
+            // region 0
+            // Minimum at interior points of ray and segment.
+
+            const invDet = 1 / det;
+            s0 *= invDet;
+            s1 *= invDet;
+            sqrDist = s0 * (s0 + a01 * s1 + 2 * b0) + s1 * (a01 * s0 + s1 + 2 * b1) + c;
+
+          } else {
+
+            // region 1
+
+            s1 = segExtent;
+            s0 = Math.max(0, - (a01 * s1 + b0));
+            sqrDist = - s0 * s0 + s1 * (s1 + 2 * b1) + c;
+
+          }
+
+        } else {
+
+          // region 5
+
+          s1 = - segExtent;
+          s0 = Math.max(0, - (a01 * s1 + b0));
+          sqrDist = - s0 * s0 + s1 * (s1 + 2 * b1) + c;
+
+        }
+
+      } else {
+
+        if (s1 <= - extDet) {
+
+          // region 4
+
+          s0 = Math.max(0, - (- a01 * segExtent + b0));
+          s1 = (s0 > 0) ? - segExtent : Math.min(Math.max(- segExtent, - b1), segExtent);
+          sqrDist = - s0 * s0 + s1 * (s1 + 2 * b1) + c;
+
+        } else if (s1 <= extDet) {
+
+          // region 3
+
+          s0 = 0;
+          s1 = Math.min(Math.max(- segExtent, - b1), segExtent);
+          sqrDist = s1 * (s1 + 2 * b1) + c;
+
+        } else {
+
+          // region 2
+
+          s0 = Math.max(0, - (a01 * segExtent + b0));
+          s1 = (s0 > 0) ? segExtent : Math.min(Math.max(- segExtent, - b1), segExtent);
+          sqrDist = - s0 * s0 + s1 * (s1 + 2 * b1) + c;
+
+        }
+
+      }
+
+    } else {
+
+      // Ray and segment are parallel.
+
+      s1 = (a01 > 0) ? - segExtent : segExtent;
+      s0 = Math.max(0, - (a01 * s1 + b0));
+      sqrDist = - s0 * s0 + s1 * (s1 + 2 * b1) + c;
+
+    }
+
+    if (interRay !== undefined && interRay !== null) {
+
+      interRay = this.direction.clone().multiplyScalar(s0).add(this.origin);
+
+    }
+
+    if (interSegment !== undefined && interSegment !== null) {
+
+      interSegment = this.segDir.clone().multiplyScalar(s1).add(this.segCenter);
+
+    }
+
+    return sqrDist;
   }
 }

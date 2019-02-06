@@ -14,7 +14,7 @@ export default class Vector3 {
   constructor(
       public x: number = 0, public y: number = 0, public z: number = 0) {}
 
-  static fromSpherical(s) {
+  static fromSpherical(s: Spherical) {
     return Vector3.fromSphericalCoords(s.radius, s.phi, s.theta);
   }
 
@@ -28,7 +28,7 @@ export default class Vector3 {
     return new Vector3(x, y, z);
   }
 
-  static fromCylindrical(c) {
+  static fromCylindrical(c: Cylindrical) {
     return Vector3.fromCylindricalCoords(c.radius, c.theta, c.y);
   }
 

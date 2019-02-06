@@ -25,10 +25,10 @@ export default class PlaneMesh extends BufferMesh {
 
     // buffers
 
-    const indices = [];
-    const vertices = [];
-    const normals = [];
-    const uvs = [];
+    const indices: number[] = [];
+    const vertices: number[] = [];
+    const normals: number[] = [];
+    const uvs: number[] = [];
 
     // generate vertices, normals and uvs
 
@@ -74,9 +74,9 @@ export default class PlaneMesh extends BufferMesh {
     // build geometry
 
     this.setIndex(indices);
-    this.addAttribute('position', BufferAttribute.fromArray(Uint32Array, vertices, 3));
-    this.addAttribute('normal', BufferAttribute.fromArray(Uint32Array, normals, 3));
-    this.addAttribute('uv', BufferAttribute.fromArray(Uint32Array, uvs, 2));
+    this.addAttribute('position', BufferAttribute.fromArray(Float32Array, vertices, 3));
+    this.addAttribute('normal', BufferAttribute.fromArray(Float32Array, normals, 3));
+    this.addAttribute('uv', BufferAttribute.fromArray(Float32Array, uvs, 2));
 
   }
 }

@@ -5,6 +5,7 @@ import Transform from './Transform';
 import Triangle from './Triangle';
 import Vector2 from './Vector2';
 import Vector3 from './Vector3';
+import Material from '../materials/Material';
 
 /**
  * @author RkEclair / https://github.com/RkEclair
@@ -12,15 +13,18 @@ import Vector3 from './Vector3';
 
 export interface RaycastIntersection {
   distance: number;
+  distanceToRay?: number;
   point: Vector3;
+  index?: number;
   object: Transform;
-  uv: Vector2;
-  face: Face3;
+  uv?: Vector2;
+  face?: Face3;
   faceIndex: number;
 }
 
 export default class Raycaster {
   ray: Ray;
+  linePrecision: number;
   constructor(
       origin: Vector3, direction: Vector3, public near = 0,
       public far = Infinity) {
@@ -28,7 +32,7 @@ export default class Raycaster {
   }
 
   checkBufferMeshIntersection(
-      object: Transform, material, position: BufferAttribute,
+      object: Transform, material: Material, position: BufferAttribute,
       uvs: BufferAttribute, aIndex: number, bIndex: number, cIndex: number,
       intersectionPoint: Vector3) {
     const vA = Vector3.fromBufferAttribute(position, aIndex);
@@ -53,7 +57,7 @@ export default class Raycaster {
     if (distance < this.near || distance > this.far) return null;
 
     const uv = f.uv(intersectionPoint, [uvA, uvB, uvC]),
-          face = new Face3(vA, vB, vC);
+          face = new Face3(aIndex, bIndex, cIndex);
     face.normal = f.normal();
     return {
       distance: distance,
