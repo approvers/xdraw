@@ -53,7 +53,10 @@ export interface MaterialOptions {
   visible?: boolean;
 };
 
+let globalId = 0;
+
 export default class Material extends EventSource {
+  id: number;
   name = '';
 
   fog = true;
@@ -105,6 +108,7 @@ export default class Material extends EventSource {
 
   constructor(options: MaterialOptions) {
     super();
+    this.id = globalId++;
     (Object as any).assign(this, options);
   }
 };

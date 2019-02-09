@@ -25,24 +25,24 @@ import Mesh from './Mesh';
 
 export default class Model extends EventSource {
   static plane(width = 1, height = 1) {
-    return new Model(new PlaneMesh(width, height), new GLSLShader({
+    return new Model(new PlaneMesh(width, height), [new GLSLShader({
       name: 'BackgroundMaterial',
       shader: Background,
       side: 'Front',
       depthTest: false,
       depthWrite: false,
       fog: false
-    }));
+    })]);
   }
   static cube(width = 1, height = 1, depth = 1) {
-    return new Model(new BoxMesh(width, height, depth), new GLSLShader({
+    return new Model(new BoxMesh(width, height, depth), [new GLSLShader({
       name: 'BackgroundCubeMaterial',
       shader: Cube,
       side: 'Back',
       depthTest: true,
       depthWrite: false,
       fog: false
-    }));
+    })]);
   }
 
   transform: Transform;
@@ -50,9 +50,10 @@ export default class Model extends EventSource {
   morphTargetInfluences: number[] = [];
   morphTargetDictionary = {};
 
-  constructor(public mesh: Mesh = new BufferMesh(), public material: Material = new Unlit({})) {
+  constructor(public mesh: Mesh = new BufferMesh(), public materials: Material[] = [new Unlit({})]) {
     super();
-    if (material instanceof Unlit) material.color = new Color(Math.random() * 0xffffff);
+    const firstMat = materials[0];
+    if (firstMat instanceof Unlit) firstMat.color = new Color(Math.random() * 0xffffff);
     this.updateMorphTargets();
   }
 

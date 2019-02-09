@@ -189,7 +189,7 @@ export default class Matrix3 {
     return this;
   }
 
-  getNormalMatrix(matrix4: Matrix4) {
+  normalMatrix(matrix4: Matrix4) {
     return Matrix3.fromMatrix4(matrix4).inverse(this).transpose();
   }
 

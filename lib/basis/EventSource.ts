@@ -2,6 +2,8 @@
  * @author RkEclair / https://github.com/RkEclair
  */
 
+interface EventDispatcher { [key: string]: any, type: string};
+
 export default class EventSource {
   private listeners: {[key: string]: Function[]} = {};
 
@@ -30,7 +32,7 @@ export default class EventSource {
     }
   }
 
-  dispatchEvent(event: {type: string}) {
+  dispatchEvent(event: EventDispatcher) {
     const listenersOfType = this.listeners[event.type];
 
     if (listenersOfType !== undefined) {

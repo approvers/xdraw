@@ -1,10 +1,9 @@
 import Material, { MaterialOptions } from './Material';
-import Uniforms from './Uniforms';
 
 export interface Shader {
-  uniforms?: Uniforms;
-  vertexShader?: string;
-  fragmentShader?: string;
+  uniforms: {location: string; data: Float32Array | Int32Array;}[];
+  vertexShader: string;
+  fragmentShader: string;
 };
 
 interface GLSLShaderOptions extends MaterialOptions {
@@ -39,7 +38,7 @@ export default class GLSLShader extends Material {
   defines = {};
 
   shader = {
-    uniforms: new Uniforms({}),
+    uniforms: [],
     vertexShader: `
     void main() {
 	    gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );

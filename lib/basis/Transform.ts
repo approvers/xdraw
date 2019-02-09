@@ -8,6 +8,7 @@ import Matrix4 from './Matrix4';
 import Quaternion from './Quaternion';
 import Sphere from './Sphere';
 import Vector3 from './Vector3';
+import Matrix3 from './Matrix3';
 
 let globalId = 0;
 
@@ -21,18 +22,21 @@ export default class Transform extends EventSource {
   rotation: Euler;
   quaternion: Quaternion;
   scale = new Vector3(1, 1, 1);
-
-  vertices: Vector3[] = [];
+  visible = true;
 
   matrix = new Matrix4();
   matrixWorld = new Matrix4();
+  modelViewMatrix = new Matrix4();
+  normalMatrix = new Matrix3();
   matrixAutoUpdate = true;
   matrixWorldNeedsUpdate = true;
+
+  renderOrder: number = 0;
 
   // lazy boundings
   boundingSphere: Sphere | null;
 
-  constructor() {
+  constructor(public object: { [key: string]: any, transform: Transform }) {
     super();
     this.id = globalId++;
     this.name = '';
@@ -40,8 +44,8 @@ export default class Transform extends EventSource {
     this.children = [];
   }
 
-  computeBoundingSphere() {
-    return this.boundingSphere = Sphere.fromPoints(this.vertices);
+  computeBoundingSphere(vertices: Vector3[]) {
+    return this.boundingSphere = Sphere.fromPoints(vertices);
   }
 
   updateMatrix() {
@@ -50,7 +54,7 @@ export default class Transform extends EventSource {
     this.matrixWorldNeedsUpdate = true;
   }
 
-  updateMatrixWorld(force: boolean) {
+  updateMatrixWorld(force = false) {
     if (this.matrixAutoUpdate) this.updateMatrix();
 
     if (this.matrixWorldNeedsUpdate || force) {
@@ -58,12 +62,31 @@ export default class Transform extends EventSource {
         this.matrixWorld = this.matrix.clone();
       } else {
         this.matrixWorld =
-            this.parent.matrixWorld.clone().multiply(this.matrix);
+          this.parent.matrixWorld.clone().multiply(this.matrix);
       }
       this.matrixWorldNeedsUpdate = false;
       force = true;
     }
 
     this.children.forEach((e) => e.updateMatrixWorld(force));
+  }
+
+  private traversed: Transform[];
+
+  private traverseRecursive(func: (transform: Transform) => void) {
+    if (this.traversed.some(e => e === this)) return;
+    this.traversed.push(this);
+    this.children.forEach(e => {
+      func(e);
+      e.traverseRecursive(func);
+    });
+  }
+
+  traverse(func: (transform: Transform) => void) {
+    this.traversed = [];
+    this.children.forEach(e => {
+      func(e);
+      e.traverseRecursive(func);
+    });
   }
 }

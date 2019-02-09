@@ -511,7 +511,7 @@ export default class WebGLState {
     this.currentPremultipledAlpha = premultipliedAlpha;
   }
 
-  setMaterial(material: Material, frontFaceCW: boolean) {
+  setMaterial(material: Material, frontFaceCW: boolean = false) {
     if (material.side === 'Double')
       this.disable(this.gl.CULL_FACE);
     else
@@ -590,7 +590,7 @@ export default class WebGLState {
   private currentPolygonOffsetFactor: number;
   private currentPolygonOffsetUnits: number;
 
-  setPolygonOffset(hasPolygonOffset: boolean, factor: number, units: number) {
+  setPolygonOffset(hasPolygonOffset: boolean, factor: number = 0, units: number = 0) {
     if (hasPolygonOffset) {
       this.enable(this.gl.POLYGON_OFFSET_FILL);
 
