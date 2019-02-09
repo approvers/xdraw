@@ -28,6 +28,39 @@ export default class Matrix4 {
     return new Matrix4([1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]);
   }
 
+  static extractRotation(m: Matrix4) {  // does not support reflection matrices
+
+    const te = new Matrix4();
+    const me = m.elements;
+
+    const scaleX = 1 / Vector3.fromMatrixColumn(m, 0).length();
+    const scaleY = 1 / Vector3.fromMatrixColumn(m, 1).length();
+    const scaleZ = 1 / Vector3.fromMatrixColumn(m, 2).length();
+
+    te[0] = me[0] * scaleX;
+    te[1] = me[1] * scaleX;
+    te[2] = me[2] * scaleX;
+    te[3] = 0;
+
+    te[4] = me[4] * scaleY;
+    te[5] = me[5] * scaleY;
+    te[6] = me[6] * scaleY;
+    te[7] = 0;
+
+    te[8] = me[8] * scaleZ;
+    te[9] = me[9] * scaleZ;
+    te[10] = me[10] * scaleZ;
+    te[11] = 0;
+
+    te[12] = 0;
+    te[13] = 0;
+    te[14] = 0;
+    te[15] = 1;
+
+    return te;
+
+  }
+
   clone() {
     return new Matrix4(this.elements);
   }
@@ -315,5 +348,25 @@ export default class Matrix4 {
     te[15] = 1;
 
     return this;
+  }
+
+  makePerspective(left: number, right: number, top: number, bottom: number, near: number, far: number) {
+
+    const te = this.elements;
+    const x = 2 * near / (right - left);
+    const y = 2 * near / (top - bottom);
+
+    const a = (right + left) / (right - left);
+    const b = (top + bottom) / (top - bottom);
+    const c = - (far + near) / (far - near);
+    const d = - 2 * far * near / (far - near);
+
+    te[0] = x; te[4] = 0; te[8] = a; te[12] = 0;
+    te[1] = 0; te[5] = y; te[9] = b; te[13] = 0;
+    te[2] = 0; te[6] = 0; te[10] = c; te[14] = d;
+    te[3] = 0; te[7] = 0; te[11] = - 1; te[15] = 0;
+
+    return this;
+
   }
 }

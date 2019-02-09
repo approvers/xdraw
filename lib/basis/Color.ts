@@ -7,7 +7,7 @@ export default class Color {
   g: number;
   b: number;
 
-  constructor(hex: number) {
+  constructor(hex: number = 0) {
     hex = Math.floor(hex);
     this.r = ((hex >> 16) & 255) / 255;
     this.g = ((hex >> 8) & 255) / 255;
@@ -20,5 +20,12 @@ export default class Color {
     newC.g = this.g;
     newC.b = this.b;
     return newC;
+  }
+
+  multiplyScalar(intensity: number) {
+    this.r *= intensity;
+    this.g *= intensity;
+    this.b *= intensity;
+    return this;
   }
 }

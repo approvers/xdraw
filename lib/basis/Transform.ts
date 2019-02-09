@@ -13,6 +13,8 @@ import Matrix3 from './Matrix3';
 let globalId = 0;
 
 export default class Transform extends EventSource {
+  static DefaultUp = () => new Vector3(0, 1, 0);
+
   id: number;
   name: string;
   parent: Transform | null;

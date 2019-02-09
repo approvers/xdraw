@@ -797,8 +797,9 @@ export default class Renderer {
   // Compile
 
   compile(scene: Scene, camera: Camera) {
-    this.currentRenderState = this.renderStates.get(scene, camera);
-    this.currentRenderState.init();
+    this.renderStates.setCurrent(scene, camera)
+    const currentRenderState = this.renderStates.current;
+    currentRenderState.init();
 
     scene.transform.traverse(function(transform: Transform) {
       const object = transform.object;
@@ -811,12 +812,12 @@ export default class Renderer {
       }
     });
 
-    this.renderStates.current.setupLights(camera);
+    currentRenderState.setupLights(camera);
 
     scene.transform.traverse(function(transform: Transform) {
       const material = transform.object.material;
       if (material) {
-        this.initMaterial(transform.material, scene.fog, transform);
+        this.initMaterial(material, scene.fog, transform);
 
       } else if (transform.object.materials) {
         transform.object.materials.forEach(e => this.initMaterial(e, scene.fog, transform));
@@ -900,7 +901,7 @@ export default class Renderer {
 
     if (this.clippingEnabled) this.clipping.beginShadows();
 
-    const shadowsArray = currentRenderState.state.shadowsArray;
+    const shadowsArray = currentRenderState.shadowsArray;
 
     this.shadowMap.render(shadowsArray, scene, camera);
 
