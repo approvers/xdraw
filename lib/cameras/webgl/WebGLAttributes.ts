@@ -3,25 +3,48 @@
  * @author RkEclair / https://github.com/RkEclair
  */
 
-type WebGLAttribute = {
+import BufferAttribute from "../../basis/BufferAttribute";
+import InterleavedBufferAttribute from "../../basis/InterleavedBufferAttribute";
+
+export class WebGLAttribute {
   array: Float32Array |
-  Uint16Array |
-  Int16Array |
-  Uint32Array |
-  Int32Array |
-  Int8Array |
-  Uint8Array;
+    Uint16Array |
+    Int16Array |
+    Uint32Array |
+    Int32Array |
+    Int8Array |
+    Uint8Array;
   frequency: 'stream' | 'often' | 'stay';
   version: number;
   range: {
     offset: number;
     count: number;
+    stride: number;
   };
-  isInterleaved: boolean;
+  isInterleaved = false;
   onUploadCallback: Function;
+
+  static fromBufferAttribute(bufferAttribute: BufferAttribute) {
+    const newW = new WebGLAttribute();
+    newW.array = bufferAttribute.array;
+    newW.range.count = bufferAttribute.count;
+    newW.frequency = bufferAttribute.needsUpdate ? 'often' : 'stay';
+    return newW;
+  }
+
+  static fromInterleavedBufferAttribute(bufferAttribute: InterleavedBufferAttribute) {
+    const newW = new WebGLAttribute();
+    newW.array = bufferAttribute.array;
+    newW.range.count = bufferAttribute.count;
+    newW.range.offset = bufferAttribute.offset;
+    newW.range.stride = bufferAttribute.stride;
+    newW.frequency = bufferAttribute.needsUpdate ? 'often' : 'stay';
+    newW.isInterleaved = true;
+    return newW;
+  }
 };
 
-type WebGLBuffer = {
+type WebGLBufferInfo = {
   buffer: WebGLBuffer,
   type: number,
   bytesPerElement: number,
@@ -31,9 +54,9 @@ type WebGLBuffer = {
 export default class WebGLBuffers {
   constructor(private gl: WebGLRenderingContext) { }
 
-  private buffers = new WeakMap<object, WebGLBuffer>();
+  private buffers = new WeakMap<object, WebGLBufferInfo>();
 
-  private createBuffer(target: number, attribute: WebGLAttribute): WebGLBuffer {
+  private createBuffer(target: number, attribute: WebGLAttribute): WebGLBufferInfo {
 
     const array = attribute.array;
     let usage: number = this.gl.STATIC_DRAW;
@@ -131,15 +154,11 @@ export default class WebGLBuffers {
 
   get(attribute: WebGLAttribute) {
 
-    if (attribute.isInterleaved) attribute = attribute.data;
-
     return this.buffers.get(attribute);
 
   }
 
   remove(attribute: WebGLAttribute) {
-
-    if (attribute.isInterleaved) attribute = attribute.data;
 
     const data = this.buffers.get(attribute);
 
@@ -154,8 +173,6 @@ export default class WebGLBuffers {
   }
 
   update(target: number, attribute: WebGLAttribute) {
-
-    if (attribute.isInterleaved) attribute = attribute.data;
 
     const data = this.buffers.get(attribute);
 

@@ -2,15 +2,13 @@
 	* @author RkEclair / https://github.com/RkEclair
 	*/
 
-import Matrix3 from '../../basis/Matrix3';
 import { Shader } from '../GLSLShader';
-import Uniforms from '../Uniforms';
 
 const Background: Shader = {
-  uniforms: new Uniforms({
-    uvTransform: { value: new Matrix3() },
-    t2D: { value: null },
-  }),
+  uniforms: {
+    'uvTransform': new Float32Array(),
+    't2D': new Int32Array(),
+  },
   vertexShader: `
 		varying vec2 vUv;
 		uniform mat3 uvTransform;

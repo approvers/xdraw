@@ -5,6 +5,11 @@ import WebGLExtensions from './WebGLExtensions';
  * @author RkEclair / https://github.com/RkEclair
  */
 
+type WebGLCapabilitiesOptions = {
+  precision?: 'highp' | 'mediump' | 'lowp';
+  logarithmicDepthBuffer?: boolean;
+};
+
 export default class WebGLCapabilities {
   isWebGL2: boolean;
 
@@ -24,9 +29,10 @@ export default class WebGLCapabilities {
   vertexTextures: any;
   floatFragmentTextures: any;
   floatVertexTextures: any;
+
   constructor(
     private gl: WebGLRenderingContext, private extensions: WebGLExtensions,
-    parameters) {
+    parameters: WebGLCapabilitiesOptions) {
     this.isWebGL2 = gl instanceof WebGL2RenderingContext;
 
     this.precision =

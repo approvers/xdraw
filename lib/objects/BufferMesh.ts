@@ -1,15 +1,15 @@
+/**
+  * @author RkEclair / https://github.com/RkEclair
+  */
+
 import BufferAttribute from "../basis/BufferAttribute";
 import Mesh from "./Mesh";
 import Model from "./Model";
 
 export default class BufferMesh extends Mesh {
-  static fromModel(object: Model): BufferMesh {
-    return (object.mesh !== null && object.mesh instanceof BufferMesh) ? object.mesh.clone() : new BufferMesh();
-  }
-
   index: BufferAttribute;
   attributes: { [key: string]: BufferAttribute };
-  morphAttributes = {};
+  morphAttributes: { [key: string]: BufferAttribute[] };
   groups: { start: number; count: number; materialIndex: number }[];
   drawRange = { start: 0, count: Infinity };
   userData = {};

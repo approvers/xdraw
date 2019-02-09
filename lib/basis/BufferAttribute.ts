@@ -6,16 +6,15 @@ import Color from "./Color";
 /**
  * @author RkEclair / https://github.com/RkEclair
  */
-type TypedArray =
+
+export type TypedArray =
   | Int8Array
   | Uint8Array
-  | Uint8ClampedArray
   | Int16Array
   | Uint16Array
   | Int32Array
   | Uint32Array
-  | Float32Array
-  | Float64Array;
+  | Float32Array;
 
 export default class BufferAttribute {
   count: number;
@@ -33,7 +32,8 @@ export default class BufferAttribute {
   constructor(
     public array: TypedArray,
     private itemSize: number,
-    private normalized = false
+    private normalized = false,
+    public name = ''
   ) {
     this.count = array.length / itemSize;
   }

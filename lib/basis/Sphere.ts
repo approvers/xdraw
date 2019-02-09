@@ -1,5 +1,5 @@
 /**
- * @author RkEclait / https:  // RkEclair
+ * @author RkEclair / https://RkEclair
  */
 
 import Matrix4 from "./Matrix4";

@@ -1,3 +1,9 @@
+/**
+ * @author mrdoob / http://mrdoob.com/
+ * @author Mugen87 / https://github.com/Mugen87
+ * @author RkEclair / https://github.com/RkEclair
+ */
+
 import BufferAttribute from '../../basis/BufferAttribute';
 import Vector3 from '../../basis/Vector3';
 import BufferMesh from '../BufferMesh';

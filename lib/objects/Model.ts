@@ -49,10 +49,12 @@ export default class Model extends EventSource {
   drawMode: TraiangleDrawMode;
   morphTargetInfluences: number[] = [];
   morphTargetDictionary = {};
+  material: Material;
 
   constructor(public mesh: Mesh = new BufferMesh(), public materials: Material[] = [new Unlit({})]) {
     super();
     const firstMat = materials[0];
+    this.material = firstMat;
     if (firstMat instanceof Unlit) firstMat.color = new Color(Math.random() * 0xffffff);
     this.updateMorphTargets();
   }
@@ -63,6 +65,10 @@ export default class Model extends EventSource {
     newM.morphTargetInfluences = this.morphTargetInfluences.slice();
     newM.morphTargetDictionary = { ...this.morphTargetDictionary };
     return newM;
+  }
+
+  extractMesh(): BufferMesh {
+    return (this.mesh !== null && this.mesh instanceof BufferMesh) ? this.mesh.clone() : new BufferMesh();
   }
 
   updateMorphTargets() {

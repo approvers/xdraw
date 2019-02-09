@@ -1,8 +1,8 @@
 import Transform from "../../basis/Transform";
-import Mesh from "../../transforms/Mesh";
+import Mesh from "../../objects/Mesh";
 import Material from "../../materials/Material";
 import Camera from "../Camera";
-import Scene from "../../transforms/Scene";
+import Scene from "../../objects/Scene";
 
 /**
  * @author mrdoob / http://mrdoob.com/
@@ -48,7 +48,7 @@ export type RenderItem = {
   z: number
 };
 
-class WebGLRenderList {
+export class WebGLRenderList {
 
   private renderItems: RenderItem[] = [];
   private renderItemsIndex = 0;

@@ -18,7 +18,7 @@ import Vector3 from "./Vector3";
 export default class Matrix4 {
   constructor(
     public elements: number[] = [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]
-  ) {}
+  ) { }
 
   static zero() {
     return new Matrix4([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
@@ -264,6 +264,10 @@ export default class Matrix4 {
       detInv;
 
     return this;
+  }
+
+  makeRotationFromQuaternion(q: Quaternion) {
+    return this.compose(new Vector3(0, 0, 0), q, new Vector3(1, 1, 1));
   }
 
   compose(position: Vector3, quaternion: Quaternion, scale: Vector3) {

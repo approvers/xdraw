@@ -7,10 +7,11 @@ import Model from '../../objects/Model.js';
 import Mesh from '../../objects/Mesh.js';
 import BufferAttribute from '../../basis/BufferAttribute.js';
 import WebGLInfo from './WebGLInfo';
+import WebGLAttributes, { WebGLAttribute } from './WebGLAttributes';
 
 export default class WebGLGeometries {
   meshes: { [key: string]: BufferMesh };
-  wireframeAttributes = {};
+  wireframeAttributes: { [key: string]: BufferAttribute };
 
   constructor(private gl: WebGLRenderingContext, private attributes: WebGLAttributes, private info: WebGLInfo) { }
 
@@ -21,13 +22,13 @@ export default class WebGLGeometries {
 
     if (buffermesh.index !== null) {
 
-      this.attributes.remove(buffermesh.index);
+      this.attributes.remove(WebGLAttribute.fromBufferAttribute(buffermesh.index));
 
     }
 
     for (const name in buffermesh.attributes) {
 
-      this.attributes.remove(buffermesh.attributes[name]);
+      this.attributes.remove(WebGLAttribute.fromBufferAttribute(buffermesh.attributes[name]));
 
     }
 
@@ -39,7 +40,7 @@ export default class WebGLGeometries {
 
     if (attribute) {
 
-      this.attributes.remove(attribute);
+      this.attributes.remove(WebGLAttribute.fromBufferAttribute(attribute));
       delete this.wireframeAttributes[buffermesh.name];
 
     }
@@ -81,13 +82,13 @@ export default class WebGLGeometries {
 
     if (index !== null) {
 
-      this.attributes.update(index, this.gl.ELEMENT_ARRAY_BUFFER);
+      this.attributes.update(this.gl.ELEMENT_ARRAY_BUFFER, WebGLAttribute.fromBufferAttribute(index));
 
     }
 
     for (const name in meshAttributes) {
 
-      this.attributes.update(meshAttributes[name], this.gl.ARRAY_BUFFER);
+      this.attributes.update(this.gl.ARRAY_BUFFER, WebGLAttribute.fromBufferAttribute(meshAttributes[name]));
 
     }
 
@@ -96,7 +97,9 @@ export default class WebGLGeometries {
     const morphAttributes = mesh.morphAttributes;
 
     for (const name in morphAttributes) {
-      morphAttributes[name].forEach(e => this.attributes.update(e, this.gl.ARRAY_BUFFER));
+      morphAttributes[name].forEach(e =>
+        this.attributes.update(this.gl.ARRAY_BUFFER, WebGLAttribute.fromBufferAttribute(e))
+      );
     }
   }
 
@@ -148,7 +151,7 @@ export default class WebGLGeometries {
 			attribute = BufferAttribute.fromArray(Uint16Array, indices, 1);
 		}
 
-    this.attributes.update(attribute, this.gl.ELEMENT_ARRAY_BUFFER);
+    this.attributes.update(this.gl.ELEMENT_ARRAY_BUFFER, WebGLAttribute.fromBufferAttribute(attribute));
 
     this.wireframeAttributes[mesh.name] = attribute;
 

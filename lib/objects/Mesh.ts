@@ -214,10 +214,8 @@ export default class Mesh extends EventSource {
 
         }
 
-        group = {
-          start: i * 3,
-          materialIndex: materialIndex
-        };
+        group.start = i * 3;
+        group.materialIndex = materialIndex;
 
       }
 

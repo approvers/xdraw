@@ -1,4 +1,7 @@
 /**
+  * @author mrdoob / http://mrdoob.com/
+  * @author alteredq / http://alteredqualia.com/
+  * @author szimek / https://github.com/szimek/
 	* @author RkEclair / https://github.com/RkEclair
 	*/
 
@@ -22,7 +25,7 @@ export default class Texture extends EventSource {
   generateMipmaps = true;
   premultiplyAlpha = false;
   flipY = true;
-  unpackAlignment = 4;	// valid values: 1, 2, 4, 8 (see http://www.khronos.org/opengles/sdk/docs/man/xhtml/glPixelStorei.xml)
+  unpackAlignment: 1 | 2 | 4 | 8 = 4;	// valid values: 1, 2, 4, 8 (see http://www.khronos.org/opengles/sdk/docs/man/xhtml/glPixelStorei.xml)
 
   // Values of encoding !== THREE.LinearEncoding only supported on map, envMap and emissiveMap.
   //
@@ -90,7 +93,7 @@ export default class Texture extends EventSource {
 
   toJSON(meta: any) {
 
-    var isRootObject = (meta === undefined || typeof meta === 'string');
+    const isRootObject = (meta === undefined || typeof meta === 'string');
 
     if (!isRootObject && meta.textures[this.name] !== undefined) {
 
@@ -98,7 +101,7 @@ export default class Texture extends EventSource {
 
     }
 
-    var output = {
+    const output = {
 
       metadata: {
         version: 4.5,

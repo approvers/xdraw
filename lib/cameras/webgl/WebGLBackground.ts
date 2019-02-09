@@ -11,6 +11,8 @@ import WebGLObjects from './WebGLObjects';
 import Model from '../../objects/Model';
 import Camera from '../Camera';
 import BufferMesh from '../../objects/BufferMesh';
+import { WebGLRenderList } from './WebGLRenderLists';
+import Scene from '../../objects/Scene';
 
 export default class WebGLBackground {
   clearColor = new Color(0x000000);
@@ -28,7 +30,7 @@ export default class WebGLBackground {
     private renderer: Renderer, private state: WebGLState,
     private objects: WebGLObjects, private premultipliedAlpha: boolean) { }
 
-  render(renderList, scene: Scene, camera: Camera, forceClear: boolean) {
+  render(renderList: WebGLRenderList, scene: Scene, camera: Camera, forceClear: boolean) {
     const background = scene.background;
     let {
       clearColor,
@@ -100,7 +102,7 @@ export default class WebGLBackground {
       }
 
       // push to the pre-sorted opaque render list
-      renderList.unshift(boxModel, boxModel.mesh, boxModel.material, 0, null);
+      renderList.unshift(boxModel.transform, boxModel.mesh, boxModel.material, 0);
     } else if (background && background.isTexture) {
       if (planeModel === undefined) {
         planeModel =
@@ -141,7 +143,7 @@ export default class WebGLBackground {
 
       // push to the pre-sorted opaque render list
       renderList.unshift(
-        planeModel, planeModel.mesh, planeModel.material, 0, null);
+        planeModel.transform, planeModel.mesh, planeModel.material, 0);
     }
   }
 

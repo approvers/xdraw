@@ -1,3 +1,7 @@
+/**
+  * @author RkEclair / https://github.com/RkEclair
+  */
+
 import Matrix4 from './Matrix4';
 import Vector3 from './Vector3';
 import BufferAttribute from './BufferAttribute';

@@ -92,7 +92,9 @@ export default class Euler {
   }
 
   static fromQuaternion(q: Quaternion, order: RotationOrder) {
-    throw new Error('Not implemented');
+    const m = new Matrix4();
+    m.makeRotationFromQuaternion(q);
+    return Euler.fromRotationMatrix(m, order);
   }
 
   get x() {

@@ -1,7 +1,11 @@
+/**
+  * @author RkEclair / https://github.com/RkEclair
+  */
+
 import Material, { MaterialOptions } from './Material';
 
 export interface Shader {
-  uniforms: {location: string; data: Float32Array | Int32Array;}[];
+  uniforms: {[location: string]: Float32Array | Int32Array;};
   vertexShader: string;
   fragmentShader: string;
 };
