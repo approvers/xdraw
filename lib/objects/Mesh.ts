@@ -193,7 +193,7 @@ export default class Mesh extends EventSource {
 
   computeGroups(mesh: Mesh) {
     const groups: Group[] = [];
-    let i = 0, group: Group, materialIndex = -1;
+    let i = 0, tag: string, materialIndex = -1;
 
     const faces = mesh.faces;
 

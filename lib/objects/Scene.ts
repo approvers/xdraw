@@ -18,3 +18,13 @@ export default class Scene extends EventSource {
     this.dispatchEvent({ type: 'dispose' });
   }
 }
+
+export class Fog {
+  name = '';
+
+  color: Color;
+
+  constructor(color: number, public near = 1, public far = 1000) {
+    this.color = new Color(color);
+  }
+}

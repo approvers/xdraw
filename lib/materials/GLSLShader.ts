@@ -3,7 +3,7 @@
   */
 
 import Material, { MaterialOptions } from './Material';
-import WebGLUniforms from '../cameras/webgl/WebGLUniforms';
+import { WebGLProgramService } from '../cameras/webgl/WebGLPrograms';
 
 export interface Shader {
   uniforms: { [location: string]: Float32Array | Int32Array; };
@@ -41,18 +41,6 @@ interface GLSLShaderOptions extends MaterialOptions {
 
 export default class GLSLShader extends Material {
   defines = {};
-
-  shader = {
-    uniforms: [],
-    vertexShader: `
-    void main() {
-	    gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
-    }`,
-    fragmentShader: `
-    void main() {
-	    gl_FragColor = vec4( 1.0, 0.0, 0.0, 1.0 );
-    }`
-  };
 
   linewidth = 1;
 
@@ -104,7 +92,8 @@ export default class GLSLShader extends Material {
     throw new Error('Not implemented');
   }
 
-  refreshUniforms(uniforms: WebGLUniforms) {
+  refreshUniforms(program: WebGLProgramService) {
+    const uniforms = program.uniforms;
     this.shader.uniforms.forEach(e => {
       uniforms.update(e);
     });

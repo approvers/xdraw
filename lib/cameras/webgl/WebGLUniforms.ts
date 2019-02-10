@@ -3,7 +3,7 @@
   */
 
 export default class WebGLUniforms {
-  private uniformList: {    [name: string]: Function;  };
+  private uniformList: { [name: string]: Function; };
 
   constructor(private gl: WebGLRenderingContext, private program: WebGLProgram) { }
 

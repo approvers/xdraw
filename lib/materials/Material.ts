@@ -7,6 +7,7 @@
 import EventSource from '../basis/EventSource';
 import { BlendMode, FaceSide, BlendFactor, BlendFunc, DepthFunc } from '../cameras/DrawTypes';
 import Texture from '../textures/Texture';
+import BufferAttribute from '../basis/BufferAttribute';
 
 export interface MaterialOptions {
   name?: string;
@@ -54,6 +55,16 @@ export interface MaterialOptions {
   visible?: boolean;
 };
 
+type MaterialUniform = {
+  name: string;
+  value: any;
+};
+
+type MaterialAttribute = {
+    name: string;
+    buffer: BufferAttribute;
+};
+
 let globalId = 0;
 
 export default class Material extends EventSource {
@@ -91,7 +102,7 @@ export default class Material extends EventSource {
   colorWrite = true;
 
   precision: 'highp' | 'mediump' | 'lowp'; // override the renderer's default precision for this material
-  maps: {[name: string]: Texture[]};
+  maps: { [name: string]: Texture[] };
 
   polygonOffset = false;
   polygonOffsetFactor = 0;
@@ -104,6 +115,13 @@ export default class Material extends EventSource {
 
   visible = true;
 
+  shader: {
+    uniforms: MaterialUniform[];
+    attributes: MaterialAttribute[];
+    vertexShader: string;
+    fragmentShader: string;
+  };
+
   userData = {};
 
   needsUpdate = true;
@@ -112,5 +130,13 @@ export default class Material extends EventSource {
     super();
     this.id = globalId++;
     (Object as any).assign(this, options);
+  }
+
+  addAttribute(attribute: MaterialAttribute) {
+    this.shader.attributes.push(attribute);
+  }
+
+  addUniform(uniform: MaterialUniform) {
+    this.shader.uniforms.push(uniform);
   }
 };

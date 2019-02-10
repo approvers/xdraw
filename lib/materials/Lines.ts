@@ -36,3 +36,11 @@ export default class Lines extends Material {
     throw new Error('Not implemented');
   }
 }
+
+export class LineSegments extends Lines {
+
+}
+
+export class LineLoop extends Lines {
+  
+}

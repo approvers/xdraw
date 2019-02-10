@@ -9,13 +9,41 @@ import Quaternion from './Quaternion';
 import Sphere from './Sphere';
 import Vector3 from './Vector3';
 import Matrix3 from './Matrix3';
+import Renderer from '../cameras/Renderer';
+import Scene from '../objects/Scene';
+import Camera from '../cameras/Camera';
+import Material from '../materials/Material';
+import BufferMesh from '../objects/BufferMesh';
+import Mesh from '../objects/Mesh';
 
 let globalId = 0;
 
 export class XObject {
   [key: string]: any;
   transform: Transform;
+  castShadow: true;
   recieveShadow: true;
+
+  onBeforeRender: (
+    renderer: Renderer,
+    scene: Scene,
+    camera: Camera,
+    mesh: Mesh | BufferMesh,
+    material: Material,
+    tag: string
+  ) => void;
+
+  /**
+   * Calls after rendering object
+   */
+  onAfterRender: (
+    renderer: Renderer,
+    scene: Scene,
+    camera: Camera,
+    mesh: Mesh | BufferMesh,
+    material: Material,
+    tag: string
+  ) => void;
 }
 
 export default class Transform extends EventSource {

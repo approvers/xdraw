@@ -17,9 +17,8 @@ import WebGLCapabilities from './webgl/WebGLCapabilities';
 import WebGLState from './webgl/WebGLState';
 import WebGLBackground from './webgl/WebGLBackground';
 import WebGLObjects from './webgl/WebGLObjects';
-import WebGLMeshes from './webgl/WebGLMeshes';
 import WebGLInfo from './webgl/WebGLInfo';
-import Camera, { OrthoCamera, PersCamera } from './Camera';
+import Camera, { OrthoCamera, PersCamera, ArrayCamera } from './Camera';
 import Transform from '../basis/Transform';
 import Mesh from '../objects/Mesh';
 import Material from '../materials/Material';
@@ -27,7 +26,7 @@ import WebGLRenderLists, { RenderItem } from './webgl/WebGLRenderLists';
 import GLSLShader from '../materials/GLSLShader';
 import WebGLUniforms from './webgl/WebGLUniforms';
 import Model from '../objects/Model';
-import Scene from '../objects/Scene';
+import Scene, { Fog } from '../objects/Scene';
 import Path from '../objects/Path';
 import Points from '../materials/Points';
 import WebGLRenderStates from './webgl/WebGLRenderStates';
@@ -530,7 +529,7 @@ export default class Renderer {
     this.gl.drawArrays(this.gl.TRIANGLES, 0, requires.length);
   }
 
-  renderBufferDirect(camera: Camera, fog: Fog, mesh: Mesh | null, material: Material, transform: Transform, group: Group) {
+  renderBufferDirect(camera: Camera, fog: Fog, mesh: Mesh | null, material: Material, transform: Transform, tag: string) {
     const frontFaceCW =
       (transform.object instanceof Model && transform.normalMatrix.determinant() < 0);
 
@@ -1062,7 +1061,7 @@ export default class Renderer {
     }
   }
 
-  private renderObject(transform: Transform, scene: Scene, camera: Camera, mesh: Mesh | null, material: Material, group: Group) {
+  private renderObject(transform: Transform, scene: Scene, camera: Camera, mesh: Mesh | null, material: Material, tag: string) {
     transform.dispatchEvent({
       type: 'before-render',
       transform,

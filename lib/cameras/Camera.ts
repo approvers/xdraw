@@ -138,3 +138,7 @@ export class PersCamera extends Camera {
 
   }
 }
+
+export class ArrayCamera extends PersCamera {
+  cameras: Camera[];
+}
