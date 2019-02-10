@@ -6,6 +6,7 @@
 
 import EventSource from '../basis/EventSource';
 import { BlendMode, FaceSide, BlendFactor, BlendFunc, DepthFunc } from '../cameras/DrawTypes';
+import Texture from '../textures/Texture';
 
 export interface MaterialOptions {
   name?: string;
@@ -89,7 +90,8 @@ export default class Material extends EventSource {
 
   colorWrite = true;
 
-  precision = null; // override the renderer's default precision for this material
+  precision: 'highp' | 'mediump' | 'lowp'; // override the renderer's default precision for this material
+  maps: {[name: string]: Texture[]};
 
   polygonOffset = false;
   polygonOffsetFactor = 0;

@@ -3,9 +3,10 @@
   */
 
 import Material, { MaterialOptions } from './Material';
+import WebGLUniforms from '../cameras/webgl/WebGLUniforms';
 
 export interface Shader {
-  uniforms: {[location: string]: Float32Array | Int32Array;};
+  uniforms: { [location: string]: Float32Array | Int32Array; };
   vertexShader: string;
   fragmentShader: string;
 };
@@ -75,7 +76,7 @@ export default class GLSLShader extends Material {
 
   // When rendered geometry doesn't include these attributes but the material does,
   // use these default values in WebGL. This avoids errors when buffer data is missing.
-  defaultAttributeValues = {
+  static defaultAttributeValues = {
     'color': [1, 1, 1],
     'uv': [0, 0],
     'uv2': [0, 0]
@@ -101,5 +102,11 @@ export default class GLSLShader extends Material {
 
   toJSON() {
     throw new Error('Not implemented');
+  }
+
+  refreshUniforms(uniforms: WebGLUniforms) {
+    this.shader.uniforms.forEach(e => {
+      uniforms.update(e);
+    });
   }
 }

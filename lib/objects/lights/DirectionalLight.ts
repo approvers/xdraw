@@ -34,7 +34,7 @@ export default class DirectionalLight extends Light {
   }
 
   clone() {
-    const newL = super.clone() as DirectionalLight;
+    const newL = new DirectionalLight(this.color, this.intensity);
 
     newL.target = this.target.object.clone().transform;
 

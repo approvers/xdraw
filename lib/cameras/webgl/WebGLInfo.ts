@@ -1,3 +1,5 @@
+import { WebGLProgramService } from "./WebGLPrograms";
+
 /**
  * @author Mugen87 / https://github.com/Mugen87
  * @author RkEclair / https://github.com/RkEclair
@@ -16,7 +18,7 @@ export default class WebGLInfo {
     points: 0,
     lines: 0
   };
-  programs: null;
+  programs: {[key: string]: WebGLProgramService};
   autoReset: true;
 
   constructor(private gl: WebGLRenderingContext) {}

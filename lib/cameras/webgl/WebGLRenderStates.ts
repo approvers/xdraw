@@ -3,9 +3,10 @@
  * @author RkEclair / https://github.com/RkEclair
  */
 
-import { WebGLLights } from './WebGLLights';
 import Scene from '../../objects/Scene';
 import Camera from '../Camera';
+import Light from '../../objects/Light';
+import WebGLLights from './WebGLLights';
 
 class WebGLRenderState {
 	lights = new WebGLLights();

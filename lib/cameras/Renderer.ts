@@ -19,11 +19,11 @@ import WebGLBackground from './webgl/WebGLBackground';
 import WebGLObjects from './webgl/WebGLObjects';
 import WebGLGeometries from './webgl/WebGLMeshes';
 import WebGLInfo from './webgl/WebGLInfo';
-import Camera from './Camera';
+import Camera, { OrthoCamera, PersCamera } from './Camera';
 import Transform from '../basis/Transform';
 import Mesh from '../objects/Mesh';
 import Material from '../materials/Material';
-import WebGLAttributes from './webgl/WebGLAttributes';
+import WebGLAttributes, { WebGLAttribute } from './webgl/WebGLAttributes';
 import WebGLRenderLists, { RenderItem } from './webgl/WebGLRenderLists';
 import GLSLShader from '../materials/GLSLShader';
 import WebGLUniforms from './webgl/WebGLUniforms';
@@ -32,6 +32,10 @@ import Scene from '../objects/Scene';
 import Path from '../objects/Path';
 import Points from '../materials/Points';
 import WebGLRenderStates from './webgl/WebGLRenderStates';
+import WebGLPrograms, { WebGLProgramService } from './webgl/WebGLPrograms';
+import { TypedArray } from '../basis/BufferAttribute';
+import Light from '../objects/Light';
+import WebGLMorphtargets from './webgl/WebGLMorphtargets';
 
 type RendererParameters = {
   canvas?: HTMLCanvasElement;
@@ -120,7 +124,7 @@ export default class Renderer {
 
   private currentViewport = new Vector4();
   private currentScissor = new Vector4();
-  private currentScissorTest = null;
+  private currentScissorTest = false;
 
   private usedTextureUnits = 0;
 
@@ -444,8 +448,8 @@ export default class Renderer {
   private onContextLost =
     (event) => {
       event.preventDefault();
-      console.log('Context Lost.');
       this.isContextLost = true;
+      console.log('Context Lost.');
     }
 
   private onContextRestore =
@@ -475,84 +479,63 @@ export default class Renderer {
   releaseMaterialProgramReference(material: Material) {
     const programInfo = this.properties.get(material).program;
 
-    material.program = undefined;
+    if (material instanceof GLSLShader)
+      delete material.shader;
 
-    if (programInfo !== undefined) {
-      this.programCache.releaseProgram(programInfo);
+    if (programInfo instanceof WebGLProgramService) {
+      programInfo.release();
     }
   }
 
   // Buffer rendering
 
-  renderObjectImmediate(transform: Transform, program: WebGLPrograms) {
-    transform.render(function(transform) {
-      this.renderBufferImmediate(transform, program);
+  renderObjectImmediate(transform: Transform, program: WebGLProgramService,
+    requires: {
+      key: string;
+      array: TypedArray;
+      size: number;
+      normalized?: boolean;
+      stride?: number;
+      offset?: number;
+    }[]
+  ) {
+    transform.traverse((transform) => {
+      this.renderBufferImmediate(transform, program, requires);
     });
   }
 
-  renderBufferImmediate(transform: Transform, program: WebGLPrograms) {
+  renderBufferImmediate(transform: Transform, program: WebGLProgramService,
+    requires: {
+      key: string;
+      array: TypedArray;
+      size: number;
+      normalized?: boolean;
+      stride?: number;
+      offset?: number;
+    }[]
+  ) {
     this.state.initAttributes();
 
-    const buffers = this.properties.get(transform);
+    const buffers = this.properties.get(transform.object);
+    const programAttributes = program.attributes;
 
-    if (transform.hasPositions && !buffers.position)
-      buffers.position = this.gl.createBuffer();
-    if (transform.hasNormals && !buffers.normal)
-      buffers.normal = this.gl.createBuffer();
-    if (transform.hasUvs && !buffers.uv) buffers.uv = this.gl.createBuffer();
-    if (transform.hasColors && !buffers.color)
-      buffers.color = this.gl.createBuffer();
-
-    const programAttributes = program.getAttributes();
-
-    if (transform.hasPositions) {
-      this.gl.bindBuffer(this.gl.ARRAY_BUFFER, buffers.position);
-      this.gl.bufferData(
-        this.gl.ARRAY_BUFFER, transform.positionArray, this.gl.DYNAMIC_DRAW);
-
-      this.state.enableAttribute(programAttributes.position);
-      this.gl.vertexAttribPointer(
-        programAttributes.position, 3, this.gl.FLOAT, false, 0, 0);
-    }
-
-    if (transform.hasNormals) {
-      this.gl.bindBuffer(this.gl.ARRAY_BUFFER, buffers.normal);
-      this.gl.bufferData(
-        this.gl.ARRAY_BUFFER, transform.normalArray, this.gl.DYNAMIC_DRAW);
-
-      this.state.enableAttribute(programAttributes.normal);
-      this.gl.vertexAttribPointer(
-        programAttributes.normal, 3, this.gl.FLOAT, false, 0, 0);
-    }
-
-    if (transform.hasUvs) {
-      this.gl.bindBuffer(this.gl.ARRAY_BUFFER, buffers.uv);
-      this.gl.bufferData(
-        this.gl.ARRAY_BUFFER, transform.uvArray, this.gl.DYNAMIC_DRAW);
-
-      this.state.enableAttribute(programAttributes.uv);
-      this.gl.vertexAttribPointer(
-        programAttributes.uv, 2, this.gl.FLOAT, false, 0, 0);
-    }
-
-    if (transform.hasColors) {
-      this.gl.bindBuffer(this.gl.ARRAY_BUFFER, buffers.color);
-      this.gl.bufferData(
-        this.gl.ARRAY_BUFFER, transform.colorArray, this.gl.DYNAMIC_DRAW);
-
-      this.state.enableAttribute(programAttributes.color);
-      this.gl.vertexAttribPointer(
-        programAttributes.color, 3, this.gl.FLOAT, false, 0, 0);
-    }
+    requires.forEach(e => {
+      if (Object.getOwnPropertyNames(buffers).includes(e.key)) {
+        buffers[e.key] = this.gl.createBuffer();
+      }
+      this.gl.bindBuffer(this.gl.ARRAY_BUFFER, buffers[e.key]);
+      this.gl.bufferData(this.gl.ARRAY_BUFFER, e.array, this.gl.DYNAMIC_DRAW);
+      const target = programAttributes.targetId(e.key);
+      this.state.enableAttribute(target);
+      this.gl.vertexAttribPointer(target, e.size, this.gl.FLOAT, e.normalized || false, e.stride || 0, e.offset || 0);
+    });
 
     this.state.disableUnusedAttributes();
 
-    this.gl.drawArrays(this.gl.TRIANGLES, 0, transform.count);
-
-    transform.count = 0;
+    this.gl.drawArrays(this.gl.TRIANGLES, 0, requires.length);
   }
 
-  renderBufferDirect(camera: Camera, fog: Fog, mesh: Mesh, material: Material, transform: Transform, group: Group) {
+  renderBufferDirect(camera: Camera, fog: Fog, mesh: Mesh | null, material: Material, transform: Transform, group: Group) {
     const frontFaceCW =
       (transform.object instanceof Model && transform.normalMatrix.determinant() < 0);
 
@@ -642,7 +625,7 @@ export default class Renderer {
           material.wireframeLinewidth * this.getTargetPixelRatio());
         renderer.setMode(this.gl.LINES);
       } else {
-        switch (object.drawMode as TraiangleDrawMode) {
+        switch (object.drawMode) {
           case 'Normal':
             renderer.setMode(this.gl.TRIANGLES);
             break;
@@ -679,7 +662,7 @@ export default class Renderer {
       renderer.setMode(this.gl.TRIANGLES);
     }
 
-    if (mesh && mesh.isInstancedBufferGeometry) {
+    if (mesh instanceof InstancedBufferMesh) {
       if (mesh.maxInstancedCount > 0) {
         renderer.renderInstances(mesh, drawStart, drawCount);
       }
@@ -689,8 +672,8 @@ export default class Renderer {
     }
   };
 
-  setupVertexAttributes(material: Material, program: WebGLPrograms, mesh: Mesh) {
-    if (mesh instanceof InstancedBufferGeometry && !this.capabilities.isWebGL2) {
+  setupVertexAttributes(material: Material, program: WebGLProgramService, mesh: Mesh) {
+    if (mesh instanceof InstancedBufferMesh && !this.capabilities.isWebGL2) {
       if (this.extensions.get('ANGLE_instanced_arrays') === null) {
         console.error(
           'using InstancedBufferGeometry but hardware does not support extension ANGLE_instanced_arrays.');
@@ -702,7 +685,7 @@ export default class Renderer {
 
     const meshAttributes = mesh.attributes;
 
-    const programAttributes = program.getAttributes();
+    const programAttributes = program.attributes;
 
     const materialDefaultAttributeValues = material.defaultAttributeValues();
 
@@ -731,7 +714,7 @@ export default class Renderer {
             const stride = data.stride;
             const offset = meshAttribute.offset;
 
-            if (data && data.isInstancedInterleavedBuffer) {
+            if (data && data instanceof InstancedInterleavedBuffer) {
               this.state.enableAttributeAndDivisor(
                 programAttribute, data.meshPerAttribute);
 
@@ -749,7 +732,7 @@ export default class Renderer {
               stride * bytesPerElement, offset * bytesPerElement);
 
           } else {
-            if (meshAttribute.isInstancedBufferAttribute) {
+            if (meshAttribute instanceof InstancedBufferAttribute) {
               this.state.enableAttributeAndDivisor(
                 programAttribute, meshAttribute.meshPerAttribute);
 
@@ -801,25 +784,25 @@ export default class Renderer {
     const currentRenderState = this.renderStates.current;
     currentRenderState.init();
 
-    scene.transform.traverse(function(transform: Transform) {
+    scene.transform.traverse((transform) => {
       const object = transform.object;
       if (object instanceof Light) {
-        this.currentRenderState.pushLight(transform);
+        this.renderStates.current.pushLight(object);
 
         if (object.castShadow) {
-          this.currentRenderState.pushShadow(transform);
+          this.renderStates.current.pushShadow(object);
         }
       }
     });
 
     currentRenderState.setupLights(camera);
 
-    scene.transform.traverse(function(transform: Transform) {
+    scene.transform.traverse((transform) => {
       const material = transform.object.material;
       if (material) {
         this.initMaterial(material, scene.fog, transform);
 
-      } else if (transform.object.materials) {
+      } else if (transform.object instanceof Model) {
         transform.object.materials.forEach(e => this.initMaterial(e, scene.fog, transform));
       }
     });
@@ -985,10 +968,10 @@ export default class Renderer {
 
     if (visible) {
       if (object instanceof Light) {
-        currentRenderState.pushLight(transform);
+        currentRenderState.pushLight(object);
 
-        if (transform.castShadow) {
-          currentRenderState.pushShadow(transform);
+        if (object.castShadow) {
+          currentRenderState.pushShadow(object);
         }
 
       } else if (object instanceof Sprite) {
@@ -1005,17 +988,17 @@ export default class Renderer {
             transform, mesh, material, this.vector3.z);
         }
 
-      } else if (transform.immediateRender) {
+      } else if (object.immediateRender) {
         if (sortObjects) {
           this.vector3 = Vector3.fromMatrixPosition(transform.matrixWorld);
           this.vector3.applyMatrix4(this.projScreenMatrix);
         }
 
         currentRenderList.push(
-          transform, null, transform.material, this.vector3.z, null);
+          transform, null, object.material, this.vector3.z);
 
       } else if (object instanceof Model) {
-        if (object instanceof Humanoid) {
+        if (object instanceof Outfit) {
           transform.skeleton.update();
         }
 
@@ -1025,7 +1008,7 @@ export default class Renderer {
             this.vector3.applyMatrix4(this.projScreenMatrix);
           }
 
-          const mesh = this.transforms.update(transform.object);
+          const mesh = this.transforms.update(object);
           const materials = transform.object.materials;
 
           const groups = mesh.groups;
@@ -1055,9 +1038,7 @@ export default class Renderer {
       if (camera instanceof ArrayCamera) {
         this.currentArrayCamera = camera;
 
-        const cameras = camera.cameras;
-
-        for (const subCamera of cameras) {
+        for (const subCamera of camera.cameras) {
           if (transform.layers.test(subCamera.layers)) {
             if ('viewport' in subCamera) {  // XR
               this.currentViewport = subCamera.viewport.clone();
@@ -1069,11 +1050,11 @@ export default class Renderer {
               const width = bounds.z * this.width;
               const height = bounds.w * this.height;
 
-              this.state.viewport(this.currentViewport.set(x, y, width, height)
+              this.state.viewport(this.currentViewport = new Vector4(x, y, width, height)
                 .multiplyScalar(this.pixelRatio));
             }
 
-            this.currentRenderState.setupLights(subCamera);
+            this.renderStates.current.setupLights(subCamera);
 
             this.renderObject(
               transform, scene, subCamera, mesh, material, group);
@@ -1086,7 +1067,7 @@ export default class Renderer {
     }
   }
 
-  private renderObject(transform: Transform, scene: Scene, camera: Camera, mesh: Mesh, material: Material, group: Group) {
+  private renderObject(transform: Transform, scene: Scene, camera: Camera, mesh: Mesh | null, material: Material, group: Group) {
     transform.dispatchEvent({
       type: 'before-render',
       transform,
@@ -1103,7 +1084,7 @@ export default class Renderer {
       camera.matrixWorldInverse.multiply(transform.matrixWorld);
     transform.normalMatrix = transform.normalMatrix.normalMatrix(transform.modelViewMatrix);
 
-    if (transform.immediateRender) {
+    if (transform.object.immediateRender) {
       this.state.setMaterial(material);
 
       const program = this.setProgram(camera, scene.fog, material, transform);
@@ -1112,7 +1093,7 @@ export default class Renderer {
       this.currentGeometryProgram.program = null;
       this.currentGeometryProgram.wireframe = false;
 
-      this.renderObjectImmediate(transform, program);
+      this.renderObjectImmediate(transform, program, []);
 
     } else {
       this.renderBufferDirect(
@@ -1130,11 +1111,10 @@ export default class Renderer {
   private initMaterial(material: Material, fog: Fog, transform: Transform) {
     const materialProperties = this.properties.get(material);
     const currentRenderState = this.renderStates.current;
-    const lights = currentRenderState.state.lights;
-    const shadowsArray = currentRenderState.state.shadowsArray;
+    const lights = currentRenderState.lights;
 
     let lightsHash = materialProperties.lightsHash;
-    const lightsStateHash = lights.state.hash;
+    const lightsStateHash = lights.hash;
 
     const parameters = this.programCache.getParameters(
       this.clipping.numPlanes, this.clipping.numIntersection, transform);
@@ -1180,24 +1160,11 @@ export default class Renderer {
     }
 
     if (programChange) {
-      if (parameters.shaderID) {
-        const shader = new StandardShader(parameters.shaderID);
+      materialProperties.shader = {
+        name: material.type,
+        shader: material.shader
+      };
 
-        materialProperties.shader = {
-          name: material.type,
-          uniforms: shader.uniforms.clone(),
-          vertexShader: shader.vertexShader,
-          fragmentShader: shader.fragmentShader
-        };
-
-      } else {
-        materialProperties.shader = {
-          name: material.type,
-          uniforms: material.uniforms,
-          vertexShader: material.vertexShader,
-          fragmentShader: material.fragmentShader
-        };
-      }
 
       material.onBeforeCompile(materialProperties.shader, this);
 
@@ -1287,10 +1254,10 @@ export default class Renderer {
     this.usedTextureUnits = 0;
 
     const materialProperties = this.properties.get(material);
-    const lights = this.currentRenderState.state.lights;
+    const lights = this.renderStates.current.lights;
 
     const lightsHash = materialProperties.lightsHash;
-    const lightsStateHash = lights.state.hash;
+    const lightsStateHash = lights.hash;
 
     if (this.clippingEnabled) {
       if (this.localClippingEnabled || camera !== this.currentCamera) {
@@ -1361,7 +1328,8 @@ export default class Renderer {
     if (refreshProgram || this.currentCamera !== camera) {
       p_uniforms.setValue(this.gl, 'projectionMatrix', camera.projectionMatrix);
 
-      if (this.capabilities.logarithmicDepthBuffer) {
+      if (this.capabilities.logarithmicDepthBuffer &&
+        (camera instanceof OrthoCamera || camera instanceof PersCamera)) {
         p_uniforms.setValue(
           this.gl, 'logDepthBufFC',
           2.0 / (Math.log(camera.far + 1.0) / Math.LN2));
@@ -1386,8 +1354,7 @@ export default class Renderer {
         const uCamPos = p_uniforms.map.cameraPosition;
 
         if (uCamPos !== undefined) {
-          this.vector3 = camera.matrixWorld.clone();
-          uCamPos.setValue(this.gl, this.vector3);
+          uCamPos.setValue(this.gl, camera.matrixWorld.clone());
         }
       }
 
@@ -1562,7 +1529,7 @@ export default class Renderer {
 
   // Uniforms (refresh uniforms transforms)
 
-  private refreshUniformsCommon(uniforms: Uniforms, material) {
+  private refreshUniformsCommon(uniforms: WebGLUniforms, material) {
     uniforms.opacity.value = material.opacity;
 
     if (material.color) {
@@ -1696,18 +1663,6 @@ export default class Renderer {
     }
 
   private setTexture2D = (texture, slot) => {
-    let warned = false;
-
-    if (texture && texture.isWebGLRenderTarget) {
-      if (!warned) {
-        console.warn(
-          'don\'t use render targets as textures. Use their .texture property instead.');
-        warned = true;
-      }
-
-      texture = texture.texture;
-    }
-
     this.textures.setTexture2D(texture, slot);
   };
 
@@ -1716,31 +1671,10 @@ export default class Renderer {
   };
 
   private setTexture = (texture, slot) => {
-    let warned = false;
-
-    if (!warned) {
-      console.warn(
-        'WebGLRenderer: .setTexture is deprecated, use setTexture2D instead.');
-      warned = true;
-    }
-
     this.textures.setTexture2D(texture, slot);
   };
 
   private setTextureCube = (texture, slot) => {
-    let warned = false;
-
-    // backwards compatibility: peel texture.texture
-    if (texture && texture.isWebGLRenderTargetCube) {
-      if (!warned) {
-        console.warn(
-          'don\'t use cube render targets as textures. Use their .texture property instead.');
-        warned = true;
-      }
-
-      texture = texture.texture;
-    }
-
     // currently relying on the fact that WebGLRenderTargetCube.texture is
     // a Texture and NOT a CubeTexture
     // TODO: unify these code paths
@@ -1768,7 +1702,7 @@ export default class Renderer {
     return this.currentRenderTarget;
   }
 
-  private setRenderTarget(renderTarget) {
+  private setRenderTarget(renderTarget: WebGLRenderTarget) {
     this.currentRenderTarget = renderTarget;
 
     if (renderTarget &&

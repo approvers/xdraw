@@ -45,7 +45,7 @@ export default class Texture extends EventSource {
     private format: TextureFormat = 'RGBA',
     private type: TextureDataType = 'UnsignedByte',
     private anisotropy = 1,
-    private encoding: TextureEncoding = 'Linear'
+    public readonly encoding: TextureEncoding = 'Linear'
   ) {
     super();
   }

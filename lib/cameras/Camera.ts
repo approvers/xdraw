@@ -13,7 +13,7 @@ import Vector3 from '../basis/Vector3';
 import Renderer from './Renderer';
 
 export default class Camera {
-  private renderer: Renderer;
+  renderer?: Renderer;
 
   transform: Transform;
   matrixWorld = new Matrix4();
@@ -27,7 +27,7 @@ export default class Camera {
     return new Vector3(-e[8], -e[9], -e[10]).normalize();
   }
 
-  get canvas() { return this.renderer.domElement; }
+  get canvas() { return this.renderer === undefined ? null : this.renderer.domElement; }
 
   updateMatrixWorld(force: boolean) {
     this.transform.updateMatrixWorld(force);

@@ -12,6 +12,12 @@ import Matrix3 from './Matrix3';
 
 let globalId = 0;
 
+export class XObject {
+  [key: string]: any;
+  transform: Transform;
+  recieveShadow: true;
+}
+
 export default class Transform extends EventSource {
   static DefaultUp = () => new Vector3(0, 1, 0);
 
@@ -38,7 +44,7 @@ export default class Transform extends EventSource {
   // lazy boundings
   boundingSphere: Sphere | null;
 
-  constructor(public object: { [key: string]: any, transform: Transform }) {
+  constructor(public object: XObject) {
     super();
     this.id = globalId++;
     this.name = '';

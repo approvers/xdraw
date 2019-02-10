@@ -31,50 +31,44 @@ export default class WebGLLights {
 
   private cache = new LightUniformsCache();
 
-  state = {
+  private id = count++;
 
-    id: count++,
-
-    hash: {
-      stateID: -1,
-      directionalLength: -1,
-      pointLength: -1,
-      spotLength: -1,
-      rectAreaLength: -1,
-      hemiLength: -1,
-      shadowsLength: -1
-    },
-
-    ambient: [0, 0, 0],
-    directional: new Array(),
-    spot: new Array(),
-    rectArea: new Array(),
-    point: new Array(),
-    hemi: new Array()
-
+  hash = {
+    stateID: -1,
+    directionalLength: -1,
+    pointLength: -1,
+    spotLength: -1,
+    rectAreaLength: -1,
+    hemiLength: -1,
+    shadowsLength: -1
   };
 
+  private ambient = [0, 0, 0];
+  private directional = new Array();
+  private spot = new Array();
+  private rectArea = new Array();
+  private point = new Array();
+  private hemi = new Array();
+
   setup(lights: Light[], shadows: Light[], camera: Camera) {
-    const state = this.state;
+    this.ambient = [];
 
-    state.ambient = [];
-
-    state.directional = [];
-    state.spot = [];
-    state.rectArea = [];
-    state.point = [];
-    state.hemi = [];
+    this.directional = [];
+    this.spot = [];
+    this.rectArea = [];
+    this.point = [];
+    this.hemi = [];
 
     let viewMatrix = camera.matrixWorldInverse;
 
-    lights.forEach(e => e.shine(this.state, this.cache, viewMatrix));
+    lights.forEach(e => e.shine(this, this.cache, viewMatrix));
 
-    state.hash.stateID = state.id;
-    state.hash.directionalLength = state.directional.length;
-    state.hash.pointLength = state.point.length;
-    state.hash.spotLength = state.spot.length;
-    state.hash.rectAreaLength = state.rectArea.length;
-    state.hash.hemiLength = state.hemi.length;
-    state.hash.shadowsLength = shadows.length;
+    this.hash.thisID = this.id;
+    this.hash.directionalLength = this.directional.length;
+    this.hash.pointLength = this.point.length;
+    this.hash.spotLength = this.spot.length;
+    this.hash.rectAreaLength = this.rectArea.length;
+    this.hash.hemiLength = this.hemi.length;
+    this.hash.shadowsLength = shadows.length;
   }
 }

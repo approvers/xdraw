@@ -51,9 +51,16 @@ type WebGLBufferInfo = {
   version: number
 };
 
-export default class WebGLBuffers {
-  constructor(private gl: WebGLRenderingContext) { }
+export default class WebGLAttributes {
+  constructor(private gl: WebGLRenderingContext, program: WebGLProgram) {
+    for (let i = 0; i < gl.getProgramParameter(program, gl.ACTIVE_ATTRIBUTES); ++i) {
+      const info = gl.getActiveAttrib(program, i);
+      if (info === null) continue;
+      this.targets[info.name] = gl.getAttribLocation(program, info.name);
+    }
+  }
 
+  private targets: {[name: string]: number};
   private buffers = new WeakMap<object, WebGLBufferInfo>();
 
   private createBuffer(target: number, attribute: WebGLAttribute): WebGLBufferInfo {
@@ -152,6 +159,10 @@ export default class WebGLBuffers {
 
   }
 
+  targetId(name: string) {
+    return this.targets[name] || -1;
+  }
+
   get(attribute: WebGLAttribute) {
 
     return this.buffers.get(attribute);
@@ -172,8 +183,9 @@ export default class WebGLBuffers {
 
   }
 
-  update(target: number, attribute: WebGLAttribute) {
+  update(name: string, attribute: WebGLAttribute) {
 
+    const target = this.targets[name];
     const data = this.buffers.get(attribute);
 
     if (data === undefined) {

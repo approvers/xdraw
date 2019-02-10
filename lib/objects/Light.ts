@@ -7,7 +7,7 @@ import Color from "../basis/Color";
 import Vector2 from "../basis/Vector2";
 import Matrix4 from "../basis/Matrix4";
 import Camera from "../cameras/Camera";
-import { LightUniformsCache } from "../cameras/webgl/WebGLLights";
+import WebGLLights, { LightUniformsCache } from "../cameras/webgl/WebGLLights";
 
 export class LightShadow {
   constructor(public camera: Camera) { }
@@ -46,7 +46,7 @@ export default class Light {
     return {};
   }
 
-  shine(_state: any, _cache: LightUniformsCache, _viewMatrix: Matrix4) { // like render
+  shine(_state: WebGLLights, _cache: LightUniformsCache, _viewMatrix: Matrix4) { // like render
     throw new Error('This funciton is for override');
   }
 }

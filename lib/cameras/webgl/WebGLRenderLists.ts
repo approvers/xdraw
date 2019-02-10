@@ -42,7 +42,7 @@ function reversePainterSortStable(a: RenderItem, b: RenderItem) {
 export type RenderItem = {
   id: number,
   transform: Transform,
-  mesh: Mesh,
+  mesh: Mesh | null,
   material: Material,
   renderOrder: number,
   z: number
@@ -65,7 +65,7 @@ export class WebGLRenderList {
 
   }
 
-  private getNextRenderItem(transform: Transform, mesh: Mesh, material: Material, z: number) {
+  private getNextRenderItem(transform: Transform, mesh: Mesh | null, material: Material, z: number) {
 
     let renderItem = this.renderItems[this.renderItemsIndex];
 
@@ -99,7 +99,7 @@ export class WebGLRenderList {
 
   }
 
-  push(transform: Transform, mesh: Mesh, material: Material, z: number) {
+  push(transform: Transform, mesh: Mesh | null, material: Material, z: number) {
 
     const renderItem = this.getNextRenderItem(transform, mesh, material, z);
 
@@ -107,7 +107,7 @@ export class WebGLRenderList {
 
   }
 
-  unshift(transform: Transform, mesh: Mesh, material: Material, z: number) {
+  unshift(transform: Transform, mesh: Mesh | null, material: Material, z: number) {
 
     const renderItem = this.getNextRenderItem(transform, mesh, material, z);
 
