@@ -11,19 +11,18 @@ import Frustum from '../basis/Frustum';
 import Matrix4 from '../basis/Matrix4';
 import Vector3 from '../basis/Vector3';
 import Vector4 from '../basis/Vector4';
-import { ToneMapping, TraiangleDrawMode } from './DrawTypes.js';
+import { ToneMapping } from './DrawTypes.js';
 import WebGLExtensions from './webgl/WebGLExtensions';
 import WebGLCapabilities from './webgl/WebGLCapabilities';
 import WebGLState from './webgl/WebGLState';
 import WebGLBackground from './webgl/WebGLBackground';
 import WebGLObjects from './webgl/WebGLObjects';
-import WebGLGeometries from './webgl/WebGLMeshes';
+import WebGLMeshes from './webgl/WebGLMeshes';
 import WebGLInfo from './webgl/WebGLInfo';
 import Camera, { OrthoCamera, PersCamera } from './Camera';
 import Transform from '../basis/Transform';
 import Mesh from '../objects/Mesh';
 import Material from '../materials/Material';
-import WebGLAttributes, { WebGLAttribute } from './webgl/WebGLAttributes';
 import WebGLRenderLists, { RenderItem } from './webgl/WebGLRenderLists';
 import GLSLShader from '../materials/GLSLShader';
 import WebGLUniforms from './webgl/WebGLUniforms';
@@ -36,11 +35,14 @@ import WebGLPrograms, { WebGLProgramService } from './webgl/WebGLPrograms';
 import { TypedArray } from '../basis/BufferAttribute';
 import Light from '../objects/Light';
 import WebGLMorphtargets from './webgl/WebGLMorphtargets';
+import WebGLBufferRenderer from './webgl/WebGLBufferRenderer';
+import WebGLIndexedBufferRenderer from './webgl/WebGLIndexedBufferRenderer';
+import WebGLTextures from './webgl/WebGLTextures';
 
 type RendererParameters = {
   canvas?: HTMLCanvasElement;
   context?: WebGLRenderingContext;
-  precision?: string;
+  precision?:  'highp' | 'mediump' | 'lowp';
   alpha?: boolean;
   depth?: boolean;
   stencil?: boolean;
@@ -97,9 +99,7 @@ export default class Renderer {
   private renderStates: WebGLRenderStates;
   private programCache: WebGLPrograms;
   private morphtargets: WebGLMorphtargets;
-  private geometries: WebGLGeometries;
   private bufferRenderer: WebGLBufferRenderer;
-  private attributes: WebGLAttributes;
   private indexedBufferRenderer: WebGLIndexedBufferRenderer;
   private capabilities: WebGLCapabilities;
   private info: WebGLInfo;
@@ -235,9 +235,7 @@ export default class Renderer {
       renderStates,
       programCache,
       morphtargets,
-      geometries,
       bufferRenderer,
-      attributes,
       indexedBufferRenderer,
       capabilities,
       info,
@@ -268,11 +266,8 @@ export default class Renderer {
 
     info = new WebGLInfo(this.gl);
     properties = new WeakMap();
-    textures = new WebGLTextures(
-      this.gl, extensions, state, properties, capabilities, info);
-    attributes = new WebGLAttributes(this.gl);
-    geometries = new WebGLGeometries(this.gl, attributes, info);
-    transforms = new WebGLObjects(geometries, info);
+    textures = new WebGLTextures(this.gl);
+    transforms = new WebGLObjects(info);
     morphtargets = new WebGLMorphtargets(this.gl);
     programCache = new WebGLPrograms(this, extensions, capabilities);
     renderLists = new WebGLRenderLists();
@@ -568,7 +563,7 @@ export default class Renderer {
     let rangeFactor = 1;
 
     if (material instanceof Wireframe) {
-      index = this.geometries.getWireframeAttribute(mesh);
+      index = mateiral.getWireframeAttribute(mesh);
       rangeFactor = 2;
     }
 

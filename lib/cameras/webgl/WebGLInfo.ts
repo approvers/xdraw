@@ -23,9 +23,7 @@ export default class WebGLInfo {
 
   constructor(private gl: WebGLRenderingContext) {}
 
-  update(count: number, mode: number, instanceCount: number) {
-
-    instanceCount = instanceCount || 1;
+  update(count: number, mode: number, instanceCount: number = 1) {
 
     this.render.calls++;
 

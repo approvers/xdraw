@@ -7,67 +7,45 @@ import BufferAttribute from "../../basis/BufferAttribute";
 import InterleavedBufferAttribute from "../../basis/InterleavedBufferAttribute";
 
 export class WebGLAttribute {
-  array: Float32Array |
-    Uint16Array |
-    Int16Array |
-    Uint32Array |
-    Int32Array |
-    Int8Array |
-    Uint8Array;
-  frequency: 'stream' | 'often' | 'stay';
   version: number;
+  type: number;
   range: {
     offset: number;
     count: number;
     stride: number;
   };
   isInterleaved = false;
-  onUploadCallback: Function;
+  onUpload: Function;
 
-  static fromBufferAttribute(bufferAttribute: BufferAttribute) {
-    const newW = new WebGLAttribute();
-    newW.array = bufferAttribute.array;
+  static fromBufferAttribute(gl: WebGLRenderingContext, target: number, bufferAttribute: BufferAttribute) {
+    const newW = new WebGLAttribute(gl, target, bufferAttribute.array, bufferAttribute.needsUpdate ? 'often' : 'stay');
     newW.range.count = bufferAttribute.count;
-    newW.frequency = bufferAttribute.needsUpdate ? 'often' : 'stay';
     return newW;
   }
 
-  static fromInterleavedBufferAttribute(bufferAttribute: InterleavedBufferAttribute) {
-    const newW = new WebGLAttribute();
-    newW.array = bufferAttribute.array;
+  static fromInterleavedBufferAttribute(gl: WebGLRenderingContext, target: number, bufferAttribute: InterleavedBufferAttribute) {
+    const newW = new WebGLAttribute(gl, target, bufferAttribute.array, bufferAttribute.needsUpdate ? 'often' : 'stay');
     newW.range.count = bufferAttribute.count;
     newW.range.offset = bufferAttribute.offset;
     newW.range.stride = bufferAttribute.stride;
-    newW.frequency = bufferAttribute.needsUpdate ? 'often' : 'stay';
     newW.isInterleaved = true;
     return newW;
   }
-};
 
-type WebGLBufferInfo = {
-  buffer: WebGLBuffer,
-  type: number,
-  bytesPerElement: number,
-  version: number
-};
+  private buffer: WebGLBuffer;
 
-export default class WebGLAttributes {
-  constructor(private gl: WebGLRenderingContext, program: WebGLProgram) {
-    for (let i = 0; i < gl.getProgramParameter(program, gl.ACTIVE_ATTRIBUTES); ++i) {
-      const info = gl.getActiveAttrib(program, i);
-      if (info === null) continue;
-      this.targets[info.name] = gl.getAttribLocation(program, info.name);
-    }
-  }
+  constructor(private gl: WebGLRenderingContext, public target: number,
+    public array: Float32Array |
+      Uint16Array |
+      Int16Array |
+      Uint32Array |
+      Int32Array |
+      Int8Array |
+      Uint8Array,
+    public frequency: 'stream' | 'often' | 'stay') {
 
-  private targets: {[name: string]: number};
-  private buffers = new WeakMap<object, WebGLBufferInfo>();
-
-  private createBuffer(target: number, attribute: WebGLAttribute): WebGLBufferInfo {
-
-    const array = attribute.array;
     let usage: number = this.gl.STATIC_DRAW;
-    switch (attribute.frequency) {
+    switch (frequency) {
       case 'stream':
         usage = this.gl.STREAM_DRAW;
         break;
@@ -87,8 +65,6 @@ export default class WebGLAttributes {
 
     this.gl.bindBuffer(target, buffer);
     this.gl.bufferData(target, array, usage);
-
-    attribute.onUploadCallback();
 
     let type = this.gl.FLOAT;
 
@@ -121,30 +97,22 @@ export default class WebGLAttributes {
       type = this.gl.UNSIGNED_BYTE;
 
     }
-
-    return {
-      buffer: buffer,
-      type: type,
-      bytesPerElement: array.BYTES_PER_ELEMENT,
-      version: attribute.version
-    };
-
+    this.type = type;
   }
 
-  private updateBuffer(buffer: WebGLBuffer, target: number, attribute: WebGLAttribute) {
+  active() {
+    const array = this.array;
+    const updateRange = this.range;
 
-    const array = attribute.array;
-    const updateRange = attribute.range;
+    this.gl.bindBuffer(this.target, this.buffer);
 
-    this.gl.bindBuffer(target, buffer);
+    if (this.frequency === 'stay') {
 
-    if (attribute.frequency === 'stay') {
-
-      this.gl.bufferData(target, array, this.gl.STATIC_DRAW);
+      this.gl.bufferData(this.target, array, this.gl.STATIC_DRAW);
 
     } else if (updateRange.count <= -1) {
 
-      this.gl.bufferSubData(target, 0, array);
+      this.gl.bufferSubData(this.target, 0, array);
 
     } else if (updateRange.count === 0) {
 
@@ -152,54 +120,43 @@ export default class WebGLAttributes {
 
     } else {
 
-      this.gl.bufferSubData(target, updateRange.offset * array.BYTES_PER_ELEMENT,
+      this.gl.bufferSubData(this.target, updateRange.offset * array.BYTES_PER_ELEMENT,
         array.subarray(updateRange.offset, updateRange.offset + updateRange.count));
 
     }
+    this.onUpload(this);
+  }
+};
+
+export default class WebGLAttributes {
+  constructor(private gl: WebGLRenderingContext, private program: WebGLProgram) { }
+
+  private attributes: { [name: string]: WebGLAttribute }[];
+
+  addAttributes(index: number, array: Float32Array |
+    Uint16Array |
+    Int16Array |
+    Uint32Array |
+    Int32Array |
+    Int8Array |
+    Uint8Array,
+    frequency: 'stream' | 'often' | 'stay') {
+    const info = this.gl.getActiveAttrib(this.program, index);
+    if (info === null) return;
+    this.attributes[info.name] =
+      new WebGLAttribute(this.gl, this.gl.getAttribLocation(this.program, info.name), array, frequency);
 
   }
 
   targetId(name: string) {
-    return this.targets[name] || -1;
+    return this.attributes[name].target || -1;
   }
 
-  get(attribute: WebGLAttribute) {
-
-    return this.buffers.get(attribute);
-
+  get(name: string) {
+    return this.attributes[name];
   }
 
-  remove(attribute: WebGLAttribute) {
-
-    const data = this.buffers.get(attribute);
-
-    if (data) {
-
-      this.gl.deleteBuffer(data.buffer);
-
-      this.buffers.delete(attribute);
-
-    }
-
+  remove(name: string) {
+    delete this.attributes[name];
   }
-
-  update(name: string, attribute: WebGLAttribute) {
-
-    const target = this.targets[name];
-    const data = this.buffers.get(attribute);
-
-    if (data === undefined) {
-
-      this.buffers.set(attribute, this.createBuffer(target, attribute));
-
-    } else if (data.version < attribute.version) {
-
-      this.updateBuffer(data.buffer, target, attribute);
-
-      data.version = attribute.version;
-
-    }
-
-  }
-
 }
