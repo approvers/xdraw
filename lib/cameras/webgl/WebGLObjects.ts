@@ -3,19 +3,16 @@
  * @author RkEclair / https://github.com/RkEclair
  */
 
-import Mesh from '../../objects/Mesh';
 import Model from '../../objects/Model';
-import WebGLInfo from './WebGLInfo';
-import BufferMesh from '../../objects/BufferMesh';
+import BufferMesh from '../../meshes/BufferMesh';
 
 export default class WebGLObjects {
 	private updateList = {};
 
-  constructor(private info: WebGLInfo) {  }
+  constructor() {  }
 
-	update(object: Model) {
+	update(object: Model, frame: number) {
 
-		const frame = this.info.render.frame;
 
 		const mesh = object.mesh;
 
@@ -38,8 +35,6 @@ export default class WebGLObjects {
 	}
 
 	dispose() {
-
 		this.updateList = {};
-
 	}
 }

@@ -42,7 +42,7 @@ export class Sprite implements XObject {
     const viewWorldMatrix = this.transform.matrixWorld.multiply(this.transform.modelViewMatrix.inverse(Matrix4.identity()));
     const mvPosition = Vector3.fromMatrixPosition(this.transform.modelViewMatrix);
 
-    const rotation = this.material.props.propsrotation;
+    const rotation = this.material.props.rotation;
     let sin = 0, cos = 0;
     if (rotation !== 0) {
       cos = Math.cos(rotation);

@@ -71,3 +71,4 @@ export enum TextureCompressionFormat {
   RGBA_ASTC_12x12_Format = 37821
 }
 export type CombineOperation = 'Multiply' | 'Mix' | 'Add';
+export type NormalMapType = 'TangentSpace' | 'ObjectSpace';

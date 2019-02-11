@@ -5,7 +5,7 @@
  */
 
 import EventSource from '../basis/EventSource';
-import { BlendMode, FaceSide, BlendFactor, BlendFunc, DepthFunc } from '../cameras/DrawTypes';
+import { BlendMode, FaceSide, BlendFactor, BlendFunc, DepthFunc, NormalMapType } from '../cameras/DrawTypes';
 import Texture from '../textures/Texture';
 import { WebGLProgramService } from '../cameras/webgl/WebGLPrograms';
 import Mesh from '../meshes/Mesh';
@@ -186,7 +186,9 @@ export class MaterialProperties extends EventSource {
 
   index0AttributeName = undefined;
   uniformsNeedUpdate = false;
-
+  normalMapType: NormalMapType;
+  sizeAttenuation = true;
+  depthPacking?: boolean;
 
   constructor(options: MaterialPropertiesOptions) {
     super();

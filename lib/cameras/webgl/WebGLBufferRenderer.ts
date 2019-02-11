@@ -5,13 +5,13 @@
 
 import WebGLExtensions from "./WebGLExtensions";
 import WebGLCapabilities from "./WebGLCapabilities";
-import Mesh from "../../objects/Mesh";
+import Mesh from "../../meshes/Mesh";
 
 export default class WebGLBufferRenderer {
 
-  constructor(private gl: WebGLRenderingContext, private extensions: WebGLExtensions, private capabilities: WebGLCapabilities) { }
+  constructor(protected gl: WebGLRenderingContext, protected extensions: WebGLExtensions, protected capabilities: WebGLCapabilities) { }
 
-  private mode: number;
+  protected mode: number;
 
   setMode(value: number) {
 

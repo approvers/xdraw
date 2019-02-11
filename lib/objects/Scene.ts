@@ -29,3 +29,9 @@ export class Fog {
     this.color = new Color(color);
   }
 }
+
+export class FogExp2 extends Fog {
+  constructor(color: number, public density: number){
+    super(color);
+  }
+}

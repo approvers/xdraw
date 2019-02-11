@@ -512,32 +512,32 @@ export default class WebGLState {
   }
 
   setMaterial(material: Material, frontFaceCW: boolean = false) {
-    if (material.props.propsside === 'Double')
+    if (material.props.side === 'Double')
       this.disable(this.gl.CULL_FACE);
     else
       this.enable(this.gl.CULL_FACE);
 
-    let flipSided = material.props.propsside === 'Back';
+    let flipSided = material.props.side === 'Back';
     if (frontFaceCW) flipSided = !flipSided;
 
     this.setFlipSided(flipSided);
 
-    material.props.propsblending === 'Normal' && material.props.propstransparent === false ?
+    material.props.blending === 'Normal' && material.props.transparent === false ?
       this.setBlending('None') :
       this.setBlending(
-        material.props.propsblending, material.props.propsblendEquation, material.props.propsblendSrc,
-        material.props.propsblendDst, material.props.propsblendEquationAlpha,
-        material.props.propsblendSrcAlpha, material.props.propsblendDstAlpha,
-        material.props.propspremultipliedAlpha);
+        material.props.blending, material.props.blendEquation, material.props.blendSrc,
+        material.props.blendDst, material.props.blendEquationAlpha,
+        material.props.blendSrcAlpha, material.props.blendDstAlpha,
+        material.props.premultipliedAlpha);
 
-    this.depthBuffer.setFunc(material.props.propsdepthFunc);
-    this.depthBuffer.setTest(material.props.propsdepthTest);
-    this.depthBuffer.setMask(material.props.propsdepthWrite);
-    this.colorBuffer.setMask(material.props.propscolorWrite);
+    this.depthBuffer.setFunc(material.props.depthFunc);
+    this.depthBuffer.setTest(material.props.depthTest);
+    this.depthBuffer.setMask(material.props.depthWrite);
+    this.colorBuffer.setMask(material.props.colorWrite);
 
     this.setPolygonOffset(
-      material.props.propspolygonOffset, material.props.propspolygonOffsetFactor,
-      material.props.propspolygonOffsetUnits);
+      material.props.polygonOffset, material.props.polygonOffsetFactor,
+      material.props.polygonOffsetUnits);
   }
 
   private currentFlipSided = false;

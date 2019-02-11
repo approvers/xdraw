@@ -13,7 +13,7 @@ import { LightShadow } from '../../objects/Light.js';
 import { XObject } from '../../basis/Transform.js';
 import WebGLUniforms from './WebGLUniforms.js';
 import WebGLAttributes from './WebGLAttributes.js';
-import { Fog } from '../../objects/Scene.js';
+import { Fog, FogExp2 } from '../../objects/Scene.js';
 import Outfit from '../../objects/Outfit.js';
 
 const vertProgramTemplate = (program = `
@@ -191,12 +191,12 @@ export default class WebGLPrograms {
     return {
       precision: precision,
       supportsVertexTextures: this.capabilities.vertexTextures,
-      outputEncoding: this.getTextureEncodingFromMap((!currentRenderTarget) ? null : currentRenderTarget.texture, this.renderer.gammaOutput),
+      outputEncoding: this.getTextureEncodingFromMap(currentRenderTarget !== null ? currentRenderTarget.texture : undefined, this.renderer.gammaOutput),
       mapKeys: Object.keys(material.props.maps),
       encodings: Object.values(material.props.maps).map(maps => this.getTextureEncodingFromMap(maps[0], this.renderer.gammaInput)),
-      envMapMode: material.props.maps.envMap.mapping,
-      envMapCubeUV: (!!material.props.envMap) && ((material.props.envMap.mapping === CubeUVReflectionMapping) || (material.props.envMap.mapping === CubeUVRefractionMapping)),
-      objectSpaceNormalMap: material.props.normalMapType === ObjectSpaceNormalMap,
+      envMapMode: material.props.maps.envMap[0].mapping,
+      envMapCubeUV: (material.props.maps.envMap) && ((material.props.maps.envMap[0].mapping === 'CubeUVReflection') || (material.props.maps.envMap[0].mapping === 'CubeUVRefraction')),
+      objectSpaceNormalMap: material.props.normalMapType === 'ObjectSpace',
       combine: material.props.combine,
       vertexColors: material.props.vertexColors,
       fog: !!fog,

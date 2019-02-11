@@ -4,8 +4,8 @@
  * @author RkEclair / https://github.com/RkEclair
  */
 
-import BufferMesh from '../BufferMesh';
-import BufferAttribute from '../../basis/BufferAttribute';
+import BufferAttribute from '../basis/BufferAttribute';
+import BufferMesh from './BufferMesh';
 
 export default class PlaneMesh extends BufferMesh {
 

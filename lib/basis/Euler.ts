@@ -92,8 +92,7 @@ export default class Euler {
   }
 
   static fromQuaternion(q: Quaternion, order: RotationOrder) {
-    const m = new Matrix4();
-    m.makeRotationFromQuaternion(q);
+    const m = Matrix4.makeRotationFromQuaternion(q);
     return Euler.fromRotationMatrix(m, order);
   }
 

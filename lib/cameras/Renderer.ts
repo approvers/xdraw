@@ -17,13 +17,10 @@ import WebGLCapabilities from './webgl/WebGLCapabilities';
 import WebGLState from './webgl/WebGLState';
 import WebGLBackground from './webgl/WebGLBackground';
 import WebGLObjects from './webgl/WebGLObjects';
-import WebGLInfo from './webgl/WebGLInfo';
-import Camera, { OrthoCamera, PersCamera, ArrayCamera } from './Camera';
+import Camera, { OrthoCamera, PersCamera } from './Camera';
 import Transform from '../basis/Transform';
-import Mesh from '../objects/Mesh';
 import Material from '../materials/Material';
 import WebGLRenderLists, { RenderItem } from './webgl/WebGLRenderLists';
-import GLSLShader from '../materials/GLSLShader';
 import WebGLUniforms from './webgl/WebGLUniforms';
 import Model from '../objects/Model';
 import Scene, { Fog } from '../objects/Scene';
@@ -37,13 +34,16 @@ import WebGLMorphtargets from './webgl/WebGLMorphtargets';
 import WebGLBufferRenderer from './webgl/WebGLBufferRenderer';
 import WebGLIndexedBufferRenderer from './webgl/WebGLIndexedBufferRenderer';
 import WebGLTextures from './webgl/WebGLTextures';
-import { LineSegments } from '../materials/Lines';
-import BufferMesh from '../objects/BufferMesh';
+import { LineSegments, LineLoop } from '../materials/Lines';
+import Mesh from '../meshes/Mesh';
+import BufferMesh from '../meshes/BufferMesh';
+import { Sprite } from '../objects/Sprite';
+import WebGLRenderTarget from './webgl/WebGLRenderTarget';
 
 type RendererParameters = {
   canvas?: HTMLCanvasElement;
   context?: WebGLRenderingContext;
-  precision?:  'highp' | 'mediump' | 'lowp';
+  precision?: 'highp' | 'mediump' | 'lowp';
   alpha?: boolean;
   depth?: boolean;
   stencil?: boolean;
@@ -103,13 +103,12 @@ export default class Renderer {
   private bufferRenderer: WebGLBufferRenderer;
   private indexedBufferRenderer: WebGLIndexedBufferRenderer;
   private capabilities: WebGLCapabilities;
-  private info: WebGLInfo;
   private textures: WebGLTextures;
 
   private isContextLost = false;
   private framebuffer = null;
 
-  private currentRenderTarget = null;
+  private currentRenderTarget: WebGLRenderTarget | null = null;
   private currentFramebuffer = null;
   private currentMaterialId = -1;
 
@@ -121,7 +120,7 @@ export default class Renderer {
   };
 
   private currentCamera: Camera | null;
-  private currentArrayCamera: ArrayCamera | null;
+  private currentArrayCamera: Camera[] | null;
 
   private currentViewport = new Vector4();
   private currentScissor = new Vector4();
@@ -239,7 +238,6 @@ export default class Renderer {
       bufferRenderer,
       indexedBufferRenderer,
       capabilities,
-      info,
       textures
     } = this;
 
@@ -265,12 +263,11 @@ export default class Renderer {
     this.currentViewport = this.viewport.clone();
     state.viewport(this.currentViewport.multiplyScalar(this.pixelRatio));
 
-    info = new WebGLInfo(this.gl);
     properties = new WeakMap();
     textures = new WebGLTextures(this.gl);
-    transforms = new WebGLObjects(info);
-    morphtargets = new WebGLMorphtargets(this.gl);
-    programCache = new WebGLPrograms(this, extensions, capabilities);
+    transforms = new WebGLObjects();
+    morphtargets = new WebGLMorphtargets();
+    programCache = new WebGLPrograms(this, capabilities);
     renderLists = new WebGLRenderLists();
     renderStates = new WebGLRenderStates();
 
@@ -278,11 +275,9 @@ export default class Renderer {
       new WebGLBackground(this, state, transforms, options.premultipliedAlpha || false);
 
     bufferRenderer =
-      new WebGLBufferRenderer(this.gl, extensions, info, capabilities);
+      new WebGLBufferRenderer(this.gl, extensions, capabilities);
     indexedBufferRenderer =
-      new WebGLIndexedBufferRenderer(this.gl, extensions, info, capabilities);
-
-    info.programs = programCache.programs;
+      new WebGLIndexedBufferRenderer(this.gl, extensions, capabilities);
 
     this.context = this.gl;
   }
@@ -459,7 +454,7 @@ export default class Renderer {
     (event) => {
       const material = event.target;
 
-      material.props.propsremoveEventListener('dispose', this.onMaterialDispose);
+      material.props.removeEventListener('dispose', this.onMaterialDispose);
 
       this.deallocateMaterial(material);
     }
@@ -475,8 +470,7 @@ export default class Renderer {
   releaseMaterialProgramReference(material: Material) {
     const programInfo = this.properties.get(material).program;
 
-    if (material instanceof GLSLShader)
-      delete material.props.propsshader;
+    delete material.props.shader;
 
     if (programInfo instanceof WebGLProgramService) {
       programInfo.release();
@@ -564,7 +558,7 @@ export default class Renderer {
     let rangeFactor = 1;
 
     if (material instanceof LineSegments) {
-      index = material.props.propsgetAttribute('LineSegments');
+      index = material.props.getAttribute('LineSegments');
       rangeFactor = 2;
     }
 
@@ -618,7 +612,7 @@ export default class Renderer {
     if (object instanceof Model) {
       if (material instanceof LineSegments) {
         this.state.setLineWidth(
-          material.props.propswireframeLinewidth * this.getTargetPixelRatio());
+          material.props.wireframeLinewidth * this.getTargetPixelRatio());
         renderer.setMode(this.gl.LINES);
       } else {
         switch (object.drawMode) {
@@ -635,7 +629,7 @@ export default class Renderer {
       }
     } else if (object instanceof Path) {
       const material = object.material;
-      let lineWidth = material.props.propslinewidth;
+      let lineWidth = material.props.linewidth;
 
       if (lineWidth === undefined) lineWidth = 1;  // Not using Line*Material
 
@@ -683,7 +677,7 @@ export default class Renderer {
 
     const programAttributes = program.attributes;
 
-    const materialDefaultAttributeValues = material.props.propsdefaultAttributeValues();
+    const materialDefaultAttributeValues = material.props.defaultAttributeValues();
 
     for (const name in programAttributes) {
       const programAttribute = programAttributes[name];
@@ -1122,7 +1116,7 @@ export default class Renderer {
 
     if (program === undefined) {
       // new material
-      material.props.propsaddEventListener('dispose', this.onMaterialDispose);
+      material.props.addEventListener('dispose', this.onMaterialDispose);
 
     } else if (program.code !== code) {
       // changed glsl or parameters
@@ -1157,12 +1151,12 @@ export default class Renderer {
 
     if (programChange) {
       materialProperties.shader = {
-        name: material.props.propstype,
-        shader: material.props.propsshader
+        name: material.props.type,
+        shader: material.props.shader
       };
 
 
-      material.props.propsonBeforeCompile(materialProperties.shader, this);
+      material.props.onBeforeCompile(materialProperties.shader, this);
 
       // Computing code again as onBeforeCompile may have changed the shaders
       code = this.programCache.getProgramCode(material, parameters);
@@ -1171,35 +1165,35 @@ export default class Renderer {
         material, materialProperties.shader, parameters, code);
 
       materialProperties.program = program;
-      material.props.propsprogram = program;
+      material.props.program = program;
     }
 
     const programAttributes = program.getAttributes();
 
-    if (material.props.propsmorphTargets) {
-      material.props.propsnumSupportedMorphTargets = 0;
+    if (material.props.morphTargets) {
+      material.props.numSupportedMorphTargets = 0;
 
       for (let i = 0; i < this.maxMorphTargets; i++) {
         if (programAttributes['morphTarget' + i] >= 0) {
-          material.props.propsnumSupportedMorphTargets++;
+          material.props.numSupportedMorphTargets++;
         }
       }
     }
 
-    if (material.props.propsmorphNormals) {
-      material.props.propsnumSupportedMorphNormals = 0;
+    if (material.props.morphNormals) {
+      material.props.numSupportedMorphNormals = 0;
 
       for (let i = 0; i < this.maxMorphNormals; i++) {
         if (programAttributes['morphNormal' + i] >= 0) {
-          material.props.propsnumSupportedMorphNormals++;
+          material.props.numSupportedMorphNormals++;
         }
       }
     }
 
     const uniforms = materialProperties.shader.uniforms;
 
-    if (!material.props.propsisShaderMaterial && !material.props.propsisRawShaderMaterial ||
-      material.props.propsclipping === true) {
+    if (!material.props.isShaderMaterial && !material.props.isRawShaderMaterial ||
+      material.props.clipping === true) {
       materialProperties.numClippingPlanes = this.clipping.numPlanes;
       materialProperties.numIntersection = this.clipping.numIntersection;
       uniforms.clippingPlanes = this.clipping.uniform;
@@ -1220,7 +1214,7 @@ export default class Renderer {
     lightsHash.hemiLength = lightsStateHash.hemiLength;
     lightsHash.shadowsLength = lightsStateHash.shadowsLength;
 
-    if (material.props.propslights) {
+    if (material.props.lights) {
       // wire up the material to this renderer's lighting state
 
       uniforms.ambientLightColor.value = lights.state.ambient;
@@ -1258,26 +1252,26 @@ export default class Renderer {
     if (this.clippingEnabled) {
       if (this.localClippingEnabled || camera !== this.currentCamera) {
         const useCache = camera === this.currentCamera &&
-          material.props.propsid === this.currentMaterialId;
+          material.props.id === this.currentMaterialId;
 
         // we might want to call this function with some ClippingGroup
         // transform instead of the material, once it becomes feasible
         // (#8465, #8379)
         this.clipping.setState(
-          material.props.propsclippingPlanes, material.props.propsclipIntersection,
-          material.props.propsclipShadows, camera, materialProperties, useCache);
+          material.props.clippingPlanes, material.props.clipIntersection,
+          material.props.clipShadows, camera, materialProperties, useCache);
       }
     }
 
-    if (material.props.propsneedsUpdate === false) {
+    if (material.props.needsUpdate === false) {
       if (materialProperties.program === undefined) {
-        material.props.propsneedsUpdate = true;
+        material.props.needsUpdate = true;
 
-      } else if (material.props.propsfog && materialProperties.fog !== fog) {
-        material.props.propsneedsUpdate = true;
+      } else if (material.props.fog && materialProperties.fog !== fog) {
+        material.props.needsUpdate = true;
 
       } else if (
-        material.props.propslights &&
+        material.props.lights &&
         (lightsHash.stateID !== lightsStateHash.stateID ||
           lightsHash.directionalLength !== lightsStateHash.directionalLength ||
           lightsHash.pointLength !== lightsStateHash.pointLength ||
@@ -1285,20 +1279,20 @@ export default class Renderer {
           lightsHash.rectAreaLength !== lightsStateHash.rectAreaLength ||
           lightsHash.hemiLength !== lightsStateHash.hemiLength ||
           lightsHash.shadowsLength !== lightsStateHash.shadowsLength)) {
-        material.props.propsneedsUpdate = true;
+        material.props.needsUpdate = true;
 
       } else if (
         materialProperties.numClippingPlanes !== undefined &&
         (materialProperties.numClippingPlanes !== this.clipping.numPlanes ||
           materialProperties.numIntersection !==
           this.clipping.numIntersection)) {
-        material.props.propsneedsUpdate = true;
+        material.props.needsUpdate = true;
       }
     }
 
-    if (material.props.propsneedsUpdate) {
+    if (material.props.needsUpdate) {
       this.initMaterial(material, fog, transform);
-      material.props.propsneedsUpdate = false;
+      material.props.needsUpdate = false;
     }
 
     let refreshProgram = false;
@@ -1315,8 +1309,8 @@ export default class Renderer {
       refreshLights = true;
     }
 
-    if (material.props.propsid !== this.currentMaterialId) {
-      this.currentMaterialId = material.props.propsid;
+    if (material.props.id !== this.currentMaterialId) {
+      this.currentMaterialId = material.props.id;
 
       refreshMaterial = true;
     }
@@ -1345,8 +1339,8 @@ export default class Renderer {
       // load material specific uniforms
       // (shader material also gets them for the sake of genericity)
 
-      if (material.props.propsisShaderMaterial || material.props.propsisMeshPhongMaterial ||
-        material.props.propsisMeshStandardMaterial || material.props.propsenvMap) {
+      if (material.props.isShaderMaterial || material.props.isMeshPhongMaterial ||
+        material.props.isMeshStandardMaterial || material.props.envMap) {
         const uCamPos = p_uniforms.map.cameraPosition;
 
         if (uCamPos !== undefined) {
@@ -1354,9 +1348,9 @@ export default class Renderer {
         }
       }
 
-      if (material.props.propsisMeshPhongMaterial || material.props.propsisMeshLambertMaterial ||
-        material.props.propsisMeshBasicMaterial || material.props.propsisMeshStandardMaterial ||
-        material.props.propsisShaderMaterial || material.props.propsskinning) {
+      if (material.props.isMeshPhongMaterial || material.props.isMeshLambertMaterial ||
+        material.props.isMeshBasicMaterial || material.props.isMeshStandardMaterial ||
+        material.props.isShaderMaterial || material.props.skinning) {
         p_uniforms.setValue(this.gl, 'viewMatrix', camera.matrixWorldInverse);
       }
     }
@@ -1365,7 +1359,7 @@ export default class Renderer {
     // auto-setting of texture unit for bone texture must go before other
     // textures not sure why, but otherwise weird things happen
 
-    if (material.props.propsskinning) {
+    if (material.props.skinning) {
       p_uniforms.setOptional(this.gl, transform, 'bindMatrix');
       p_uniforms.setOptional(this.gl, transform, 'bindMatrixInverse');
 
@@ -1419,7 +1413,7 @@ export default class Renderer {
       p_uniforms.setValue(
         this.gl, 'toneMappingWhitePoint', this.toneMappingWhitePoint);
 
-      if (material.props.propslights) {
+      if (material.props.lights) {
         // the current material requires lighting info
 
         // note: all lighting uniforms are always set correctly
@@ -1434,83 +1428,83 @@ export default class Renderer {
 
       // refresh uniforms common to several materials
 
-      if (fog && material.props.propsfog) {
+      if (fog && material.props.fog) {
         this.refreshUniformsFog(m_uniforms, fog);
       }
 
-      if (material.props.propsisMeshBasicMaterial) {
+      if (material.props.isMeshBasicMaterial) {
         this.refreshUniformsCommon(m_uniforms, material);
 
-      } else if (material.props.propsisMeshLambertMaterial) {
+      } else if (material.props.isMeshLambertMaterial) {
         this.refreshUniformsCommon(m_uniforms, material);
         this.refreshUniformsLambert(m_uniforms, material);
 
-      } else if (material.props.propsisMeshPhongMaterial) {
+      } else if (material.props.isMeshPhongMaterial) {
         this.refreshUniformsCommon(m_uniforms, material);
 
-        if (material.props.propsisMeshToonMaterial) {
+        if (material.props.isMeshToonMaterial) {
           this.refreshUniformsToon(m_uniforms, material);
 
         } else {
           this.refreshUniformsPhong(m_uniforms, material);
         }
 
-      } else if (material.props.propsisMeshStandardMaterial) {
+      } else if (material.props.isMeshStandardMaterial) {
         this.refreshUniformsCommon(m_uniforms, material);
 
-        if (material.props.propsisMeshPhysicalMaterial) {
+        if (material.props.isMeshPhysicalMaterial) {
           this.refreshUniformsPhysical(m_uniforms, material);
 
         } else {
           this.refreshUniformsStandard(m_uniforms, material);
         }
 
-      } else if (material.props.propsisMeshMatcapMaterial) {
+      } else if (material.props.isMeshMatcapMaterial) {
         this.refreshUniformsCommon(m_uniforms, material);
 
         this.refreshUniformsMatcap(m_uniforms, material);
 
-      } else if (material.props.propsisMeshDepthMaterial) {
+      } else if (material.props.isMeshDepthMaterial) {
         this.refreshUniformsCommon(m_uniforms, material);
         this.refreshUniformsDepth(m_uniforms, material);
 
-      } else if (material.props.propsisMeshDistanceMaterial) {
+      } else if (material.props.isMeshDistanceMaterial) {
         this.refreshUniformsCommon(m_uniforms, material);
         this.refreshUniformsDistance(m_uniforms, material);
 
-      } else if (material.props.propsisMeshNormalMaterial) {
+      } else if (material.props.isMeshNormalMaterial) {
         this.refreshUniformsCommon(m_uniforms, material);
         this.refreshUniformsNormal(m_uniforms, material);
 
-      } else if (material.props.propsisLineBasicMaterial) {
+      } else if (material.props.isLineBasicMaterial) {
         this.refreshUniformsLine(m_uniforms, material);
 
-        if (material.props.propsisLineDashedMaterial) {
+        if (material.props.isLineDashedMaterial) {
           this.refreshUniformsDash(m_uniforms, material);
         }
 
-      } else if (material.props.propsisPointsMaterial) {
+      } else if (material.props.isPointsMaterial) {
         this.refreshUniformsPoints(m_uniforms, material);
 
-      } else if (material.props.propsisSpriteMaterial) {
+      } else if (material.props.isSpriteMaterial) {
         this.refreshUniformsSprites(m_uniforms, material);
 
-      } else if (material.props.propsisShadowMaterial) {
-        m_uniforms.color.value = material.props.propscolor;
-        m_uniforms.opacity.value = material.props.propsopacity;
+      } else if (material.props.isShadowMaterial) {
+        m_uniforms.color.value = material.props.color;
+        m_uniforms.opacity.value = material.props.opacity;
       }
 
       WebGLUniforms.upload(
         this.gl, materialProperties.uniformsList, m_uniforms, this);
     }
 
-    if (material instanceof GLSLShader && material.props.propsuniformsNeedUpdate === true) {
+    if (material instanceof GLSLShader && material.props.uniformsNeedUpdate === true) {
       WebGLUniforms.upload(
         this.gl, materialProperties.uniformsList, m_uniforms, this);
-      material.props.propsuniformsNeedUpdate = false;
+      material.props.uniformsNeedUpdate = false;
     }
 
-    if (material.props.propsisSpriteMaterial) {
+    if (material.props.isSpriteMaterial) {
       p_uniforms.setValue(this.gl, 'center', transform.center);
     }
 
@@ -1526,31 +1520,31 @@ export default class Renderer {
   // Uniforms (refresh uniforms transforms)
 
   private refreshUniformsCommon(uniforms: WebGLUniforms, material) {
-    uniforms.opacity.value = material.props.propsopacity;
+    uniforms.opacity.value = material.props.opacity;
 
-    if (material.props.propscolor) {
-      uniforms.diffuse.value = material.props.propscolor;
+    if (material.props.color) {
+      uniforms.diffuse.value = material.props.color;
     }
 
-    if (material.props.propsemissive) {
-      uniforms.emissive.value.copy(material.props.propsemissive)
-        .multiplyScalar(material.props.propsemissiveIntensity);
+    if (material.props.emissive) {
+      uniforms.emissive.value.copy(material.props.emissive)
+        .multiplyScalar(material.props.emissiveIntensity);
     }
 
-    if (material.props.propsmap) {
-      uniforms.map.value = material.props.propsmap;
+    if (material.props.map) {
+      uniforms.map.value = material.props.map;
     }
 
-    if (material.props.propsalphaMap) {
-      uniforms.alphaMap.value = material.props.propsalphaMap;
+    if (material.props.alphaMap) {
+      uniforms.alphaMap.value = material.props.alphaMap;
     }
 
-    if (material.props.propsspecularMap) {
-      uniforms.specularMap.value = material.props.propsspecularMap;
+    if (material.props.specularMap) {
+      uniforms.specularMap.value = material.props.specularMap;
     }
 
-    if (material.props.propsenvMap) {
-      uniforms.envMap.value = material.props.propsenvMap;
+    if (material.props.envMap) {
+      uniforms.envMap.value = material.props.envMap;
 
       // don't flip CubeTexture envMaps, flip everything else:
       //  WebGLRenderTargetCube will be flipped for backwards compatibility
@@ -1558,23 +1552,23 @@ export default class Renderer {
       //  and NOT a CubeTexture
       // this check must be handled differently, or removed entirely, if
       // WebGLRenderTargetCube uses a CubeTexture in the future
-      uniforms.flipEnvMap.value = material.props.propsenvMap.isCubeTexture ? -1 : 1;
+      uniforms.flipEnvMap.value = material.props.envMap.isCubeTexture ? -1 : 1;
 
-      uniforms.reflectivity.value = material.props.propsreflectivity;
-      uniforms.refractionRatio.value = material.props.propsrefractionRatio;
+      uniforms.reflectivity.value = material.props.reflectivity;
+      uniforms.refractionRatio.value = material.props.refractionRatio;
 
       uniforms.maxMipLevel.value =
-        this.properties.get(material.props.propsenvMap).__maxMipLevel;
+        this.properties.get(material.props.envMap).__maxMipLevel;
     }
 
-    if (material.props.propslightMap) {
-      uniforms.lightMap.value = material.props.propslightMap;
-      uniforms.lightMapIntensity.value = material.props.propslightMapIntensity;
+    if (material.props.lightMap) {
+      uniforms.lightMap.value = material.props.lightMap;
+      uniforms.lightMapIntensity.value = material.props.lightMapIntensity;
     }
 
-    if (material.props.propsaoMap) {
-      uniforms.aoMap.value = material.props.propsaoMap;
-      uniforms.aoMapIntensity.value = material.props.propsaoMapIntensity;
+    if (material.props.aoMap) {
+      uniforms.aoMap.value = material.props.aoMap;
+      uniforms.aoMapIntensity.value = material.props.aoMapIntensity;
     }
 
     // uv repeat and offset setting priorities
@@ -1587,32 +1581,32 @@ export default class Renderer {
 
     let uvScaleMap;
 
-    if (material.props.propsmap) {
-      uvScaleMap = material.props.propsmap;
+    if (material.props.map) {
+      uvScaleMap = material.props.map;
 
-    } else if (material.props.propsspecularMap) {
-      uvScaleMap = material.props.propsspecularMap;
+    } else if (material.props.specularMap) {
+      uvScaleMap = material.props.specularMap;
 
-    } else if (material.props.propsdisplacementMap) {
-      uvScaleMap = material.props.propsdisplacementMap;
+    } else if (material.props.displacementMap) {
+      uvScaleMap = material.props.displacementMap;
 
-    } else if (material.props.propsnormalMap) {
-      uvScaleMap = material.props.propsnormalMap;
+    } else if (material.props.normalMap) {
+      uvScaleMap = material.props.normalMap;
 
-    } else if (material.props.propsbumpMap) {
-      uvScaleMap = material.props.propsbumpMap;
+    } else if (material.props.bumpMap) {
+      uvScaleMap = material.props.bumpMap;
 
-    } else if (material.props.propsroughnessMap) {
-      uvScaleMap = material.props.propsroughnessMap;
+    } else if (material.props.roughnessMap) {
+      uvScaleMap = material.props.roughnessMap;
 
-    } else if (material.props.propsmetalnessMap) {
-      uvScaleMap = material.props.propsmetalnessMap;
+    } else if (material.props.metalnessMap) {
+      uvScaleMap = material.props.metalnessMap;
 
-    } else if (material.props.propsalphaMap) {
-      uvScaleMap = material.props.propsalphaMap;
+    } else if (material.props.alphaMap) {
+      uvScaleMap = material.props.alphaMap;
 
-    } else if (material.props.propsemissiveMap) {
-      uvScaleMap = material.props.propsemissiveMap;
+    } else if (material.props.emissiveMap) {
+      uvScaleMap = material.props.emissiveMap;
     }
 
     if (uvScaleMap !== undefined) {

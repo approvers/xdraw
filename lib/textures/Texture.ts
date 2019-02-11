@@ -38,7 +38,7 @@ export default class Texture extends EventSource {
 
   constructor(
     private image: HTMLImageElement | HTMLCanvasElement | HTMLVideoElement | null = null,
-    private mapping: TextureMapping = 'UV',
+    public readonly mapping: TextureMapping = 'UV',
     private wrapS = TextureWrapping.ClampToEdgeWrapping,
     private wrapT = TextureWrapping.ClampToEdgeWrapping,
     private magFilter: TextureFilter = 'Linear',
