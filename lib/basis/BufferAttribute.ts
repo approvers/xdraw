@@ -17,7 +17,7 @@ export type TypedArray =
   | Float32Array;
 
 export default class BufferAttribute {
-  count: number;
+  public readonly count: number;
   needsUpdate: boolean;
 
   static fromArray<T extends TypedArray>(
@@ -40,20 +40,53 @@ export default class BufferAttribute {
 
   get length() { return this.count; }
 
+  clone() {
+    const newB = new BufferAttribute(this.array, this.itemSize, this.normalized, this.name);
+    newB.needsUpdate = this.needsUpdate;
+    return newB;
+  }
+
   getX(i: number) {
     return this.array[i * this.itemSize];
   }
 
   getY(i: number) {
-    return this.array[i * this.itemSize];
+    return this.array[i * this.itemSize + 1];
   }
 
   getZ(i: number) {
-    return this.array[i * this.itemSize];
+    return this.array[i * this.itemSize + 2];
   }
 
   getW(i: number) {
-    return this.array[i * this.itemSize];
+    return this.array[i * this.itemSize + 3];
+  }
+
+  setX(i: number, v: number) {
+    this.array[i * this.itemSize] = v;
+  }
+
+  setY(i: number, v: number) {
+    this.array[i * this.itemSize + 1] = v;
+  }
+
+  setZ(i: number, v: number) {
+    this.array[i * this.itemSize + 2] = v;
+  }
+
+  setW(i: number, v: number) {
+    this.array[i * this.itemSize + 3] = v;
+  }
+
+  setXY(index: number, x: number, y: number) {
+
+    index *= this.itemSize;
+
+    this.array[index + 0] = x;
+    this.array[index + 1] = y;
+
+    return this;
+
   }
 
   setXYZ(index: number, x: number, y: number, z: number) {
@@ -81,7 +114,7 @@ export default class BufferAttribute {
 
   }
 
-  copyArray(array: any[]) {
+  copyArray(array: ArrayLike<number>) {
     this.array.set(array);
     return this;
   }

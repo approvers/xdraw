@@ -7,6 +7,14 @@ export default class Color {
   g: number;
   b: number;
 
+  static rgb(r: number, g: number, b: number) {
+    const newC = new Color();
+    newC.r = r;
+    newC.g = g;
+    newC.b = b;
+    return newC;
+  }
+
   constructor(hex: number = 0) {
     hex = Math.floor(hex);
     this.r = ((hex >> 16) & 255) / 255;
