@@ -192,40 +192,31 @@ export default class Mesh extends EventSource {
   }
 
   computeGroups(mesh: Mesh) {
-    const groups: Group[] = [];
-    let i = 0, tag: string, materialIndex = -1;
+    const groups: { start: number; count: number; materialIndex: number }[] = [];
+    let i = 0, group: { start: number; count: number; materialIndex: number } = {
+      start: 0, count: 0, materialIndex: 0
+    }, materialIndex = -1;
 
     const faces = mesh.faces;
 
     for (; i < faces.length; i++) {
-
       const face = faces[i];
 
       // materials
-
       if (face.materialIndex !== materialIndex) {
-
         materialIndex = face.materialIndex;
 
-        if (group !== undefined) {
-
-          group.count = (i * 3) - group.start;
-          groups.push(group);
-
-        }
+        group.count = (i * 3) - group.start;
+        groups.push(group);
 
         group.start = i * 3;
         group.materialIndex = materialIndex;
-
       }
-
     }
 
     if (group !== undefined) {
-
       group.count = (i * 3) - group.start;
       groups.push(group);
-
     }
 
     this.groups = groups;

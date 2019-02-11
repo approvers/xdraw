@@ -89,13 +89,13 @@ export default class WebGLBackground {
 
       const texture =
         background.isWebGLRenderTargetCube ? background.texture : background;
-      boxModel.material.shader.uniforms['tCube'].value = texture;
-      boxModel.material.shader.uniforms['tFlip'].value =
+      boxModel.material.props.propsshader.uniforms['tCube'].value = texture;
+      boxModel.material.props.propsshader.uniforms['tFlip'].value =
         background.isWebGLRenderTargetCube ? 1 : -1;
 
       if (currentBackground !== background ||
         currentBackgroundVersion !== texture.version) {
-        boxModel.material.needsUpdate = true;
+        boxModel.material.props.propsneedsUpdate = true;
 
         currentBackground = background;
         currentBackgroundVersion = texture.version;
@@ -125,17 +125,17 @@ export default class WebGLBackground {
 
       if (planeModel === null || !(planeModel.material instanceof GLSLShader)) return;
 
-      planeModel.material.shader.uniforms['t2D'].value = background;
+      planeModel.material.props.propsshader.uniforms['t2D'].value = background;
 
       if (background.matrixAutoUpdate === true) {
         background.updateMatrix();
       }
 
-      planeModel.material.shader.uniforms['uvTransform'].value = background.matrix.clone();
+      planeModel.material.props.propsshader.uniforms['uvTransform'].value = background.matrix.clone();
 
       if (currentBackground !== background ||
         currentBackgroundVersion !== background.version) {
-        planeModel.material.needsUpdate = true;
+        planeModel.material.props.propsneedsUpdate = true;
 
         currentBackground = background;
         currentBackgroundVersion = background.version;

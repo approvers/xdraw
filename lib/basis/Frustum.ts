@@ -7,10 +7,11 @@
 
 import Plane from './Plane';
 import Sphere from './Sphere';
-import Transform from './Transform';
 import Vector3 from './Vector3';
 import Matrix4 from './Matrix4';
 import Box3 from './Box3';
+import Model from '../objects/Model';
+import { Sprite } from '../objects/Sprite';
 
 export default class Frustum {
   planes: Plane[];
@@ -57,19 +58,15 @@ export default class Frustum {
     return this;
   }
 
-  intersectsObject(t: Transform) {
-    const sphere = (t.boundingSphere === null) ? t.computeBoundingSphere() : t.boundingSphere;;
-    sphere.applyMatrix4(t.matrixWorld);
+  intersectsObject(m: Model) {
+    const sphere = m.transform.boundingSphere || m.computeBoundingSphere();
+    sphere.applyMatrix4(m.transform.matrixWorld);
     return this.intersectsSphere(sphere);
   }
 
   intersectsSprite(sprite: Sprite) {
-    const sphere = new Sphere();
-
-    sphere.center = new Vector3(0, 0, 0);
-    sphere.radius = 0.7071067811865476;
+    const sphere = new Sphere(new Vector3(0, 0, 0), Math.sqrt(2) / 2);
     sphere.applyMatrix4(sprite.transform.matrixWorld);
-
     return this.intersectsSphere(sphere);
   }
 

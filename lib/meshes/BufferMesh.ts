@@ -4,7 +4,7 @@
 
 import BufferAttribute from "../basis/BufferAttribute";
 import Mesh from "./Mesh";
-import Model from "./Model";
+import Model from "../objects/Model";
 
 export default class BufferMesh extends Mesh {
   index: BufferAttribute;

@@ -7,6 +7,8 @@ import Transform from "../../basis/Transform";
 import Color from "../../basis/Color";
 import Vector3 from "../../basis/Vector3";
 import Vector2 from "../../basis/Vector2";
+import Matrix4 from "../../basis/Matrix4";
+import WebGLLights, { LightUniformsCache } from "../../cameras/webgl/WebGLLights";
 
 
 export default class AmbientLight extends Light {
@@ -31,7 +33,7 @@ export default class AmbientLight extends Light {
     };
   }
 
-	shine(state: {[key: string]: any, ambient: number[]}) {
+	shine(state: WebGLLights, _cache: LightUniformsCache, _viewMatrix: Matrix4) {
 		const ambient = state.ambient;
 		ambient[0] += this.color.r * this.intensity;
 		ambient[1] += this.color.g * this.intensity;

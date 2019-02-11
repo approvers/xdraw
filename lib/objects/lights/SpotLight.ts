@@ -8,10 +8,9 @@ import Transform from "../../basis/Transform";
 import Color from "../../basis/Color";
 import Vector3 from "../../basis/Vector3";
 import Vector2 from "../../basis/Vector2";
-import { LightUniformsCache } from "../../cameras/webgl/WebGLLights";
+import WebGLLights, { LightUniformsCache } from "../../cameras/webgl/WebGLLights";
 import Matrix4 from "../../basis/Matrix4";
 import { PersCamera } from "../../cameras/Camera";
-import Texture from "../../textures/Texture";
 
 export class SpotLightShadow extends LightShadow {
 	constructor() {
@@ -60,11 +59,7 @@ export default class SpotLight extends Light {
 		};
   }
 
-  shine(state: {[key: string]: any, spot: {
-    uniforms: any,
-    texture: Texture,
-    matrix: Matrix4
-  }[]}, cache: LightUniformsCache, viewMatrix: Matrix4) {
+  shine(state: WebGLLights, cache: LightUniformsCache, viewMatrix: Matrix4) {
 		const uniforms = cache.get(this);
 
 		uniforms.position.setFromMatrixPosition(this.transform.matrixWorld);

@@ -8,7 +8,7 @@ import Color from "../../basis/Color";
 import Transform from "../../basis/Transform";
 import Vector3 from "../../basis/Vector3";
 import Matrix4 from "../../basis/Matrix4";
-import { LightUniformsCache } from "../../cameras/webgl/WebGLLights";
+import WebGLLights, { LightUniformsCache } from "../../cameras/webgl/WebGLLights";
 
 export default class HemisphereLight extends Light {
   constructor(skyColor: Color, public groundColor: Color, intensity: number) {
@@ -26,9 +26,7 @@ export default class HemisphereLight extends Light {
 		};
 	}
 
-	shine(state: {[key: string]: any, hemi: {
-    uniforms: any
-  }[]}, cache: LightUniformsCache, viewMatrix: Matrix4) {
+	shine(state: WebGLLights, cache: LightUniformsCache, viewMatrix: Matrix4) {
 		const uniforms = cache.get(this);
 
 		uniforms.direction.setFromMatrixPosition(this.transform.matrixWorld);

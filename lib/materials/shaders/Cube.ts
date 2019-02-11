@@ -2,15 +2,14 @@
 	* @author RkEclair / https://github.com/RkEclair
 	*/
 
-import { Shader } from '../GLSLShader';
-import Uniforms from '../Uniforms';
+import { Shader } from "../Material";
 
 const Cube: Shader = {
-  uniforms: new Uniforms({
-    tCube: { value: null },
-    tFlip: { value: - 1 },
-    opacity: { value: 1.0 }
-  }),
+  uniforms: {
+    tCube: new Float32Array([]),
+    tFlip: new Int32Array([-1]),
+    opacity: new Float32Array([1.0])
+  },
   vertexShader: `
 		varying vec3 vWorldDirection;
 		#include <common>

@@ -7,9 +7,8 @@ import Light from "../Light";
 import Color from "../../basis/Color";
 import Vector3 from "../../basis/Vector3";
 import Vector2 from "../../basis/Vector2";
-import { LightUniformsCache } from "../../cameras/webgl/WebGLLights";
+import WebGLLights, { LightUniformsCache } from "../../cameras/webgl/WebGLLights";
 import Matrix4 from "../../basis/Matrix4";
-
 
 export default class RectAreaLight extends Light {
   constructor(color: Color, intensity: number, public width = 10, public height = 10) {
@@ -32,9 +31,7 @@ export default class RectAreaLight extends Light {
 		};
 	}
 
-	shine(state: {[key: string]: any, rectArea: {
-    uniforms: any
-  }[]}, cache: LightUniformsCache, viewMatrix: Matrix4) {
+	shine(state: WebGLLights, cache: LightUniformsCache, viewMatrix: Matrix4) {
 		const uniforms = cache.get(this);
 
 		// (a) intensity is the total visible this emitted

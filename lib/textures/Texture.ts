@@ -9,6 +9,7 @@ import EventSource from '../basis/EventSource';
 import { TextureDataType, TextureEncoding, TextureFilter, TextureFormat, TextureMapping, TextureWrapping } from '../cameras/DrawTypes';
 import Matrix3 from '../basis/Matrix3';
 import Vector2 from '../basis/Vector2';
+import { TypedArray } from '../basis/BufferAttribute';
 
 export default class Texture extends EventSource {
   name = '';
@@ -45,7 +46,7 @@ export default class Texture extends EventSource {
     private format: TextureFormat = 'RGBA',
     private type: TextureDataType = 'UnsignedByte',
     private anisotropy = 1,
-    public readonly encoding: TextureEncoding = 'Linear'
+    public encoding: TextureEncoding = 'Linear'
   ) {
     super();
   }
@@ -232,4 +233,24 @@ export default class Texture extends EventSource {
   set needsUpdate(value: boolean) {
     if (value === true) this.version++;
   }
+}
+
+
+export class DataTexture {
+  constructor(
+    public data: ArrayBuffer | TypedArray,
+    public width: number,
+    public height: number,
+    public format?: TextureFormat,
+    public type?: TextureDataType,
+    private mapping?: TextureMapping,
+    private wrapS?: TextureWrapping,
+    private wrapT?: TextureWrapping,
+    public magFilter?: TextureFilter,
+    public minFilter?: TextureFilter,
+    public anisotropy?: number,
+    public encoding?: TextureEncoding
+  ) {}
+
+  texture: Texture;
 }

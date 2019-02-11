@@ -7,6 +7,7 @@ import Transform from '../basis/Transform';
 import Material from '../materials/Material';
 import Color from '../basis/Color';
 import Texture from '../textures/Texture';
+import WebGLRenderTarget from '../cameras/webgl/WebGLRenderTarget';
 
 export default class Scene extends EventSource {
   transform: Transform;

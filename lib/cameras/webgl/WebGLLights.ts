@@ -43,12 +43,12 @@ export default class WebGLLights {
     shadowsLength: -1
   };
 
-  private ambient = [0, 0, 0];
-  private directional = new Array();
-  private spot = new Array();
-  private rectArea = new Array();
-  private point = new Array();
-  private hemi = new Array();
+  ambient = [0, 0, 0];
+  directional = new Array();
+  spot = new Array();
+  rectArea = new Array();
+  point = new Array();
+  hemi = new Array();
 
   setup(lights: Light[], shadows: Light[], camera: Camera) {
     this.ambient = [];
@@ -63,7 +63,7 @@ export default class WebGLLights {
 
     lights.forEach(e => e.shine(this, this.cache, viewMatrix));
 
-    this.hash.thisID = this.id;
+    this.hash.stateID = this.id;
     this.hash.directionalLength = this.directional.length;
     this.hash.pointLength = this.point.length;
     this.hash.spotLength = this.spot.length;

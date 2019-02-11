@@ -5,7 +5,22 @@
   "main": "./lib/main.js",
   "types": "./lib/main.d.ts",
   "scripts": {
-    "test": "jest"
+    "test": "jest",
+    "tsc": "tsc"
+  },
+  "jest": {
+    "transform": {
+      "^.+\\.tsx?$": "ts-jest"
+    },
+    "testRegex": "(/__tests__/.*|(\\.|/)(test|spec))\\.(jsx?|tsx?)$",
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js",
+      "jsx",
+      "json",
+      "node"
+    ]
   },
   "repository": {
     "type": "git",
@@ -21,7 +36,9 @@
   },
   "homepage": "https://github.com/RkEclair/xdraw#readme",
   "devDependencies": {
-    "jest": "^23.6.0"
+    "@types/jest": "^24.0.0",
+    "jest": "^23.6.0",
+    "ts-jest": "^23.10.5"
   },
   "dependencies": {
     "@types/webgl2": "^0.0.4"

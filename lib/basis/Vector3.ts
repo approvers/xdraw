@@ -3,12 +3,13 @@
  */
 
 import Camera from '../cameras/Camera';
-
 import BufferAttribute from './BufferAttribute';
 import Euler from './Euler';
 import Matrix3 from './Matrix3';
 import Matrix4 from './Matrix4';
 import Quaternion from './Quaternion';
+import Spherical from './Spherical';
+import Cylindrical from './Cylindrical';
 
 export default class Vector3 {
   constructor(

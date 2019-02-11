@@ -4,13 +4,12 @@
  */
 
 import WebGLExtensions from "./WebGLExtensions";
-import WebGLInfo from "./WebGLInfo";
 import WebGLCapabilities from "./WebGLCapabilities";
 import Mesh from "../../objects/Mesh";
 
 export default class WebGLBufferRenderer {
 
-  constructor(private gl: WebGLRenderingContext, private extensions: WebGLExtensions, private info: WebGLInfo, private capabilities: WebGLCapabilities) { }
+  constructor(private gl: WebGLRenderingContext, private extensions: WebGLExtensions, private capabilities: WebGLCapabilities) { }
 
   private mode: number;
 
@@ -23,8 +22,6 @@ export default class WebGLBufferRenderer {
   render(start: number, count: number) {
 
     this.gl.drawArrays(this.mode, start, count);
-
-    this.info.update(count, this.mode);
 
   }
 
@@ -50,8 +47,6 @@ export default class WebGLBufferRenderer {
     }
 
     extension[this.capabilities.isWebGL2 ? 'drawArraysInstanced' : 'drawArraysInstancedANGLE'](this.mode, start, count, mesh.maxInstancedCount);
-
-    this.info.update(count, this.mode, mesh.maxInstancedCount);
 
   }
 }

@@ -40,10 +40,10 @@ export default class Raycaster {
     const vC = Vector3.fromBufferAttribute(position, cIndex);
     const f = new Triangle(vA, vB, vC);
 
-    if (material.side === 'Back') {
+    if (material.props.propsside === 'Back') {
       if (!this.ray.intersectsWithTriangle(f, true)) return null;
     } else {
-      if (!this.ray.intersectsWithTriangle(f, material.side !== 'Double'))
+      if (!this.ray.intersectsWithTriangle(f, material.props.propsside !== 'Double'))
         return null;
     }
 

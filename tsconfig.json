@@ -24,7 +24,9 @@
 
 		"emitDecoratorMetadata": true,
 		"experimentalDecorators": true,
-		"sourceMap": false
+		"sourceMap": false,
+
+		"outDir": "./dist/"
 	},
 
 	"exclude": [

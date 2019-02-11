@@ -6,8 +6,7 @@
 import Light, { LightShadow } from "../Light";
 import { PersCamera } from "../../cameras/Camera";
 import Color from "../../basis/Color";
-import { LightUniformsCache } from "../../cameras/webgl/WebGLLights";
-import Texture from "../../textures/Texture";
+import WebGLLights, { LightUniformsCache } from "../../cameras/webgl/WebGLLights";
 import Matrix4 from "../../basis/Matrix4";
 import Vector3 from "../../basis/Vector3";
 import Vector2 from "../../basis/Vector2";
@@ -53,11 +52,7 @@ export default class PointLight extends Light {
 		};
 	}
 
-  shine(state: {[key: string]: any, point: {
-    uniforms: any,
-    texture: Texture,
-    matrix: Matrix4
-  }[]}, cache: LightUniformsCache, viewMatrix: Matrix4) {
+  shine(state: WebGLLights, cache: LightUniformsCache, viewMatrix: Matrix4) {
     const uniforms = cache.get(this);
 
     uniforms.position.setFromMatrixPosition(this.transform.matrixWorld);

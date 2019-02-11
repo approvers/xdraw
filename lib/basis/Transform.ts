@@ -13,37 +13,14 @@ import Renderer from '../cameras/Renderer';
 import Scene from '../objects/Scene';
 import Camera from '../cameras/Camera';
 import Material from '../materials/Material';
-import BufferMesh from '../objects/BufferMesh';
-import Mesh from '../objects/Mesh';
+import Mesh from '../meshes/Mesh';
+import BufferMesh from '../meshes/BufferMesh';
 
 let globalId = 0;
 
-export class XObject {
+export interface XObject {
   [key: string]: any;
   transform: Transform;
-  castShadow: true;
-  recieveShadow: true;
-
-  onBeforeRender: (
-    renderer: Renderer,
-    scene: Scene,
-    camera: Camera,
-    mesh: Mesh | BufferMesh,
-    material: Material,
-    tag: string
-  ) => void;
-
-  /**
-   * Calls after rendering object
-   */
-  onAfterRender: (
-    renderer: Renderer,
-    scene: Scene,
-    camera: Camera,
-    mesh: Mesh | BufferMesh,
-    material: Material,
-    tag: string
-  ) => void;
 }
 
 export default class Transform extends EventSource {
@@ -69,6 +46,27 @@ export default class Transform extends EventSource {
 
   renderOrder: number = 0;
 
+  castShadow: true;
+  recieveShadow: true;
+
+  onBeforeRender: (
+    renderer: Renderer,
+    scene: Scene,
+    camera: Camera,
+    mesh: BufferMesh,
+    material: Material,
+    tag: string
+  ) => void;
+
+  onAfterRender: (
+    renderer: Renderer,
+    scene: Scene,
+    camera: Camera,
+    mesh: BufferMesh,
+    material: Material,
+    tag: string
+  ) => void;
+
   // lazy boundings
   boundingSphere: Sphere | null;
 
@@ -85,7 +83,7 @@ export default class Transform extends EventSource {
   }
 
   updateMatrix() {
-    this.matrix.compose(this.position, this.quaternion, this.scale);
+    this.matrix = Matrix4.compose(this.position, this.quaternion, this.scale);
 
     this.matrixWorldNeedsUpdate = true;
   }

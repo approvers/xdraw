@@ -103,7 +103,7 @@ export class WebGLRenderList {
 
     const renderItem = this.getNextRenderItem(transform, mesh, material, z);
 
-    (material.transparent === true ? this.transparent : this.opaque).push(renderItem);
+    (material.props.propstransparent === true ? this.transparent : this.opaque).push(renderItem);
 
   }
 
@@ -111,7 +111,7 @@ export class WebGLRenderList {
 
     const renderItem = this.getNextRenderItem(transform, mesh, material, z);
 
-    (material.transparent === true ? this.transparent : this.opaque).unshift(renderItem);
+    (material.props.propstransparent === true ? this.transparent : this.opaque).unshift(renderItem);
 
   }
 

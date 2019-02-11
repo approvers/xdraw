@@ -2,7 +2,7 @@
 	* @author RkEclair / https://github.com/RkEclair
 	*/
 
-import Transform from "../basis/Transform";
+import Transform, { XObject } from "../basis/Transform";
 import Color from "../basis/Color";
 import Vector2 from "../basis/Vector2";
 import Matrix4 from "../basis/Matrix4";
@@ -27,7 +27,7 @@ export class LightShadow {
   }
 }
 
-export default class Light {
+export default class Light implements XObject {
   transform: Transform;
 	castShadow = true;
   recieveShadow = true;

@@ -292,7 +292,7 @@ export default class Quaternion {
 
   rotateTowards(q: Quaternion, step: number) {
     const oneAngle = step / this.angleTo(q),
-      works = [];
+      works: Promise<Quaternion>[] = [];
     if (oneAngle === 0 || Number.isFinite(oneAngle))
       return [new Promise((resolve) => resolve(this))];
     for (let i = 0; i < step; ++i) {

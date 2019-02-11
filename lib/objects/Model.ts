@@ -67,6 +67,10 @@ export default class Model extends EventSource {
     return newM;
   }
 
+  computeBoundingSphere() {
+    return this.transform.computeBoundingSphere(this.mesh.vertices);
+  }
+
   extractMesh(): BufferMesh {
     return (this.mesh !== null && this.mesh instanceof BufferMesh) ? this.mesh.clone() : new BufferMesh();
   }

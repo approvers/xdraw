@@ -65,6 +65,34 @@ export default class Matrix4 {
     return new Matrix4(this.elements);
   }
 
+  toArray(offset: number = 0) {
+    const array: number[] = [];
+
+		const te = this.elements;
+
+		array[ offset ] = te[ 0 ];
+		array[ offset + 1 ] = te[ 1 ];
+		array[ offset + 2 ] = te[ 2 ];
+		array[ offset + 3 ] = te[ 3 ];
+
+		array[ offset + 4 ] = te[ 4 ];
+		array[ offset + 5 ] = te[ 5 ];
+		array[ offset + 6 ] = te[ 6 ];
+		array[ offset + 7 ] = te[ 7 ];
+
+		array[ offset + 8 ] = te[ 8 ];
+		array[ offset + 9 ] = te[ 9 ];
+		array[ offset + 10 ] = te[ 10 ];
+		array[ offset + 11 ] = te[ 11 ];
+
+		array[ offset + 12 ] = te[ 12 ];
+		array[ offset + 13 ] = te[ 13 ];
+		array[ offset + 14 ] = te[ 14 ];
+		array[ offset + 15 ] = te[ 15 ];
+
+		return array;
+  }
+
   multiply(m: Matrix4) {
     const ae = this.elements;
     const be = m.elements;
@@ -135,8 +163,8 @@ export default class Matrix4 {
     return Math.sqrt(Math.max(scaleXSq, scaleYSq, scaleZSq));
   }
 
-  inverse(m: Matrix4) {
-    const te = this.elements,
+  inverse(m: Matrix4 = Matrix4.identity()) {
+    const te = new Matrix4(),
       me = m.elements,
       n11 = me[0],
       n21 = me[1],
@@ -296,15 +324,15 @@ export default class Matrix4 {
         n11 * n22 * n33) *
       detInv;
 
-    return this;
+    return te;
   }
 
-  makeRotationFromQuaternion(q: Quaternion) {
-    return this.compose(new Vector3(0, 0, 0), q, new Vector3(1, 1, 1));
+  static makeRotationFromQuaternion(q: Quaternion) {
+    return Matrix4.compose(new Vector3(0, 0, 0), q, new Vector3(1, 1, 1));
   }
 
-  compose(position: Vector3, quaternion: Quaternion, scale: Vector3) {
-    const te = this.elements;
+  static compose(position: Vector3, quaternion: Quaternion, scale: Vector3) {
+    const te = new Matrix4();
 
     const x = quaternion.x,
       y = quaternion.y,
@@ -347,7 +375,100 @@ export default class Matrix4 {
     te[14] = position.z;
     te[15] = 1;
 
-    return this;
+    return te;
+  }
+
+  decompose(): {
+    position: Vector3, quaternion: Quaternion, scale: Vector3
+  } {
+
+    const te = this.elements;
+    const position = new Vector3();
+    const sx = new Vector3(te[0], te[1], te[2]).length();
+    const sy = new Vector3(te[4], te[5], te[6]).length();
+    const sz = new Vector3(te[8], te[9], te[10]).length();
+
+    // if determine is negative, we need to invert one scale
+    const det = this.determinant();
+    const scale = new Vector3((det < 0) ? -sx : sx, sy, sz);
+
+    position.x = te[12];
+    position.y = te[13];
+    position.z = te[14];
+
+    // scale the rotation part
+    const matrix = new Matrix4();
+
+    const invSX = 1 / sx;
+    const invSY = 1 / sy;
+    const invSZ = 1 / sz;
+
+    matrix.elements[0] *= invSX;
+    matrix.elements[1] *= invSX;
+    matrix.elements[2] *= invSX;
+
+    matrix.elements[4] *= invSY;
+    matrix.elements[5] *= invSY;
+    matrix.elements[6] *= invSY;
+
+    matrix.elements[8] *= invSZ;
+    matrix.elements[9] *= invSZ;
+    matrix.elements[10] *= invSZ;
+
+    const quaternion = Quaternion.fromRotationMatrix(matrix);
+
+    return { position, quaternion, scale };
+
+  }
+
+  determinant() {
+
+    const te = this.elements;
+
+    const n11 = te[0], n12 = te[4], n13 = te[8], n14 = te[12];
+    const n21 = te[1], n22 = te[5], n23 = te[9], n24 = te[13];
+    const n31 = te[2], n32 = te[6], n33 = te[10], n34 = te[14];
+    const n41 = te[3], n42 = te[7], n43 = te[11], n44 = te[15];
+
+    //TODO: make this more efficient
+    //( based on http://www.euclideanspace.com/maths/algebra/matrix/functions/inverse/fourD/index.htm )
+
+    return (
+      n41 * (
+        + n14 * n23 * n32
+        - n13 * n24 * n32
+        - n14 * n22 * n33
+        + n12 * n24 * n33
+        + n13 * n22 * n34
+        - n12 * n23 * n34
+      ) +
+      n42 * (
+        + n11 * n23 * n34
+        - n11 * n24 * n33
+        + n14 * n21 * n33
+        - n13 * n21 * n34
+        + n13 * n24 * n31
+        - n14 * n23 * n31
+      ) +
+      n43 * (
+        + n11 * n24 * n32
+        - n11 * n22 * n34
+        - n14 * n21 * n32
+        + n12 * n21 * n34
+        + n14 * n22 * n31
+        - n12 * n24 * n31
+      ) +
+      n44 * (
+        - n13 * n22 * n31
+        - n11 * n23 * n32
+        + n11 * n22 * n33
+        + n13 * n21 * n32
+        - n12 * n21 * n33
+        + n12 * n23 * n31
+      )
+
+    );
+
   }
 
   makePerspective(left: number, right: number, top: number, bottom: number, near: number, far: number) {
