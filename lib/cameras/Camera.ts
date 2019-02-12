@@ -6,24 +6,18 @@
  * @author RkEclair / https://github.com/RkEclair
  */
 
-import Matrix4 from '../basis/Matrix4';
-import Transform from '../basis/Transform';
+import Transform, { XObject } from '../basis/Transform';
 import Vector3 from '../basis/Vector3';
-
 import Renderer from './Renderer';
 
-export default class Camera {
+export default class Camera  {
   renderer?: Renderer;
 
-  transform: Transform;
-  matrixWorld = new Matrix4();
-  matrixWorldInverse = new Matrix4();
-  projectionMatrix = new Matrix4();
-  projectionMatrixInverse = new Matrix4();
+  transform: Transform = new Transform(this);
 
   get worldDirection() {
     this.updateMatrixWorld(true);
-    const e = this.matrixWorld.elements;
+    const e = this.transform.matrixWorld.elements;
     return new Vector3(-e[8], -e[9], -e[10]).normalize();
   }
 
@@ -31,13 +25,13 @@ export default class Camera {
 
   updateMatrixWorld(force: boolean) {
     this.transform.updateMatrixWorld(force);
-    this.matrixWorldInverse.inverse(this.matrixWorld);
+    this.transform.matrixWorldInverse.inverse(this.transform.matrixWorld);
   }
 }
 
 export class OrthoCamera extends Camera {
   zoom = 1;
-  view: null | {
+  view?: {
     enabled: boolean;
     fullWidth: number;
     fullHeight: number;
@@ -71,7 +65,7 @@ export class OrthoCamera extends Camera {
 }
 
 export class PersCamera extends Camera {
-  view: null | {
+  view?: {
     enabled: boolean;
     fullWidth: number;
     fullHeight: number;
@@ -117,7 +111,7 @@ export class PersCamera extends Camera {
       width = this.aspect * height,
       left = - 0.5 * width;
 
-    if (view !== null && view.enabled) {
+    if (view !== undefined && view.enabled) {
 
       var fullWidth = view.fullWidth,
         fullHeight = view.fullHeight;
@@ -132,9 +126,9 @@ export class PersCamera extends Camera {
     var skew = this.filmOffset;
     if (skew !== 0) left += near * skew / this.getFilmWidth();
 
-    this.projectionMatrix.makePerspective(left, left + width, top, top - height, near, this.far);
+    this.transform.projectionMatrix.makePerspective(left, left + width, top, top - height, near, this.far);
 
-    this.projectionMatrixInverse.inverse(this.projectionMatrix);
+    this.transform.projectionMatrixInverse.inverse(this.transform.projectionMatrix);
 
   }
 }

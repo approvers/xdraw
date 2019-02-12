@@ -9,6 +9,7 @@ import { BlendMode, FaceSide, BlendFactor, BlendFunc, DepthFunc, NormalMapType }
 import Texture from '../textures/Texture';
 import { WebGLProgramService } from '../cameras/webgl/WebGLPrograms';
 import Mesh from '../meshes/Mesh';
+import Color from '../basis/Color';
 
 export interface Shader {
   uniforms: { [location: string]: Float32Array | Int32Array; };
@@ -49,7 +50,9 @@ export interface MaterialPropertiesOptions {
 
   colorWrite?: boolean;
 
-  precision?: string;
+  precision?: 'highp' | 'mediump' | 'lowp';
+  maps?: { [name: string]: {textures: Texture[]; [key: string]: any}};
+
   polygonOffset?: boolean;
   polygonOffsetFactor?: number;
   polygonOffsetUnits?: number;
@@ -64,10 +67,14 @@ export interface MaterialPropertiesOptions {
   defines?: any;
   shader?: Shader;
 
+  specularColor?: Color;
+
   linewidth?: number;
 
   wireframe?: boolean;
   wireframeLinewidth?: number;
+  wireframeLinecap?: string;
+  wireframeLinejoin?: string;
 
   clipping?: boolean;  // set to use user-defined clipping planes
 
@@ -111,9 +118,9 @@ export class MaterialProperties extends EventSource {
   opacity = 1;
   transparent = false;
 
-  blendSrc = BlendFactor.SrcAlphaFactor;
-  blendDst = BlendFactor.OneMinusSrcAlphaFactor;
-  blendEquation = BlendFunc.AddEquation;
+  blendSrc = 'SrcAlpha';
+  blendDst = '1-SrcAlpha';
+  blendEquation = 'Add';
   blendSrcAlpha: BlendFactor;
   blendDstAlpha: BlendFactor;
   blendEquationAlpha: BlendFunc;
@@ -130,8 +137,8 @@ export class MaterialProperties extends EventSource {
 
   colorWrite = true;
 
-  precision: 'highp' | 'mediump' | 'lowp'; // override the renderer's default precision for this material
-  maps: { [name: string]: Texture[] };
+  precision: 'highp' | 'mediump' | 'lowp' = 'highp'; // override the renderer's default precision for this material
+  maps: { [name: string]: {textures: Texture[]; [key: string]: any}};
 
   polygonOffset = false;
   polygonOffsetFactor = 0;
@@ -158,10 +165,13 @@ export class MaterialProperties extends EventSource {
   needsUpdate = true;
   defines = {};
 
+  specularColor: Color;
   linewidth = 1;
 
   wireframe = false;
   wireframeLinewidth = 1;
+  wireframeLinecap = 'round';
+  wireframeLinejoin = 'round';
 
   clipping = false; // set to use user-defined clipping planes
 

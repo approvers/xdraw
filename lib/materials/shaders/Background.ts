@@ -2,7 +2,7 @@
 	* @author RkEclair / https://github.com/RkEclair
 	*/
 
-import { Shader } from '../GLSLShader';
+import { Shader } from "../Material";
 
 const Background: Shader = {
   uniforms: {

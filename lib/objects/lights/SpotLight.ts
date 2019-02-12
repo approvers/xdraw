@@ -30,7 +30,7 @@ export default class SpotLight extends Light {
 	) {
     super(color, intensity);
 
-    this.transform.position = Transform.DefaultUp();
+    this.transform.position = Transform.up();
     this.transform.updateMatrix();
   }
 

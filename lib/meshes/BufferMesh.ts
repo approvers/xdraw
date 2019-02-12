@@ -8,7 +8,7 @@ import Model from "../objects/Model";
 
 export default class BufferMesh extends Mesh {
   index: BufferAttribute;
-  attributes: { [key: string]: BufferAttribute };
+  attributes: { [key: string]: BufferAttribute } = {};
   morphAttributes: { [key: string]: BufferAttribute[] };
   groups: { start: number; count: number; materialIndex: number }[];
   drawRange = { start: 0, count: Infinity };

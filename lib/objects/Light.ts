@@ -27,8 +27,8 @@ export class LightShadow {
   }
 }
 
-export default class Light implements XObject {
-  transform: Transform;
+export default class Light  {
+  transform: Transform = new Transform(this);
 	castShadow = true;
   recieveShadow = true;
   shadow: LightShadow;
@@ -37,6 +37,7 @@ export default class Light implements XObject {
 
 	clone() {
 		const newL = new Light(this.color, this.intensity);
+    newL.transform = this.transform.clone();
 		newL.castShadow = this.castShadow;
 	  newL.recieveShadow = this.recieveShadow;
 		return newL;

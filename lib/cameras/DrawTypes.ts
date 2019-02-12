@@ -25,26 +25,8 @@ export type DepthFunc = |'Never' | 'Always' | 'Less' | 'LessEqual' | 'Equal' |
 export type CullFaceMode = 'None' | 'Back' | 'Front' | 'FrontBack';
 export type BlendMode =
   |'None' | 'Normal' | 'Additive' | 'Subtractive' | 'Multiply' | 'Custom';
-export enum BlendFunc {
-  AddEquation = WebGLRenderingContext.FUNC_ADD,
-  SubtractEquation = WebGLRenderingContext.FUNC_SUBTRACT,
-  ReverseSubtractEquation = WebGLRenderingContext.FUNC_REVERSE_SUBTRACT,
-  MinEquation = WebGL2RenderingContext.MIN,
-  MaxEquation = WebGL2RenderingContext.MAX
-}
-export enum BlendFactor {
-  ZeroFactor = WebGLRenderingContext.ZERO,
-  OneFactor = WebGLRenderingContext.ONE,
-  SrcColorFactor = WebGLRenderingContext.SRC_COLOR,
-  OneMinusSrcColorFactor = WebGLRenderingContext.ONE_MINUS_SRC_COLOR,
-  SrcAlphaFactor = WebGLRenderingContext.SRC_ALPHA,
-  OneMinusSrcAlphaFactor = WebGLRenderingContext.ONE_MINUS_SRC_ALPHA,
-  DstAlphaFactor = WebGLRenderingContext.DST_ALPHA,
-  OneMinusDstAlphaFactor = WebGLRenderingContext.ONE_MINUS_DST_ALPHA,
-  DstColorFactor = WebGLRenderingContext.DST_COLOR,
-  OneMinusDstColorFactor = WebGLRenderingContext.ONE_MINUS_DST_COLOR,
-  SrcAlphaSaturateFactor = WebGLRenderingContext.SRC_ALPHA_SATURATE
-}
+export type BlendFunc = 'Add' | 'Sub' | 'ReverseSub' | 'Min' | 'Max';
+export type BlendFactor = '0' | '1' | 'SrcColor' | '1-SrcColor' | 'SrcAlpha' | '1-SrcAlpha' | 'DstColor' | '1-DstColor' | 'DstAlpha' | '1-DstAlpha' | 'SrcAlphaSaturate';
 export enum TextureCompressionFormat {
   RGB_S3TC_DXT1_Format = 33776,
   RGBA_S3TC_DXT1_Format = 33777,

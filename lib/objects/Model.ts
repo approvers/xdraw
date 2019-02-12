@@ -13,19 +13,18 @@ import Raycaster, { RaycastIntersection } from '../basis/Raycaster';
 import Transform from '../basis/Transform';
 import Vector3 from '../basis/Vector3';
 import { TraiangleDrawMode } from '../cameras/DrawTypes';
-import GLSLShader from '../materials/GLSLShader';
 import Unlit from '../materials/Unlit';
 import Background from '../materials/shaders/Background';
 import Cube from '../materials/shaders/Cube';
 import Material from '../materials/Material';
-import BufferMesh from './BufferMesh';
-import BoxMesh from './meshes/BoxMesh';
-import PlaneMesh from './meshes/PlaneMesh';
-import Mesh from './Mesh';
+import PlaneMesh from '../meshes/PlaneMesh';
+import BoxMesh from '../meshes/BoxMesh';
+import Mesh from '../meshes/Mesh';
+import BufferMesh from '../meshes/BufferMesh';
 
 export default class Model extends EventSource {
   static plane(width = 1, height = 1) {
-    return new Model(new PlaneMesh(width, height), [new GLSLShader({
+    return new Model(new PlaneMesh(width, height), [new Unlit({
       name: 'BackgroundMaterial',
       shader: Background,
       side: 'Front',
@@ -35,7 +34,7 @@ export default class Model extends EventSource {
     })]);
   }
   static cube(width = 1, height = 1, depth = 1) {
-    return new Model(new BoxMesh(width, height, depth), [new GLSLShader({
+    return new Model(new BoxMesh(width, height, depth), [new Unlit({
       name: 'BackgroundCubeMaterial',
       shader: Cube,
       side: 'Back',
@@ -55,7 +54,7 @@ export default class Model extends EventSource {
     super();
     const firstMat = materials[0];
     this.material = firstMat;
-    if (firstMat instanceof Unlit) firstMat.color = new Color(Math.random() * 0xffffff);
+    if (firstMat instanceof Unlit) firstMat.props.specularColor = new Color(Math.random() * 0xffffff);
     this.updateMorphTargets();
   }
 

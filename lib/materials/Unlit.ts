@@ -3,104 +3,54 @@
  */
 
 import Color from '../basis/Color';
-import { CombineOperation } from '../cameras/DrawTypes';
-import Texture from '../textures/Texture';
-import Material from './Material';
+import Material, { MaterialProperties } from './Material';
 
-interface UnlitOptions {
-  color?: Color;
+export default class Unlit implements Material {
+  props: MaterialProperties;
 
-  map?: Texture;
+  constructor(options?: any) {
+    const props = new MaterialProperties(options || {
+      specularColor: new Color(0xffffff),
 
-  lightMap?: Texture;
-  lightMapIntensity?: number;
+      maps: {
+        lightMap: { textures: [], intensity: 1.0 },
+        aoMap: { textures: [], intensity: 1.0 },
+        specularMap: {
+          textures: [],
+          combine: 'Multiply',
+          reflectivity: 1,
+          refractionRatio: 0.98,
+        },
+        alphaMap: {textures: []},
+        envMap: {textures: []},
+      },
 
-  aoMap?: Texture;
-  aoMapIntensity?: number;
+      wireframe: false,
+      wireframeLinewidth: 1,
+      wireframeLinecap: 'round',
+      wireframeLinejoin: 'round',
 
-  specularMap?: Texture;
+      skinning: false,
+      morphTargets: false,
 
-  alphaMap?: Texture;
-
-  envMap?: Texture;
-  combine?: CombineOperation;
-  reflectivity?: number;
-  refractionRatio?: number;
-
-  wireframe?: boolean;
-  wireframeLinewidth?: number;
-  wireframeLinecap?: string;
-  wireframeLinejoin?: string;
-
-  skinning?: boolean;
-  morphTargets?: boolean;
-
-  lights?: boolean;
-};
-
-export default class Unlit extends Material {
-  color = new Color(0xffffff);
-
-  map = null;
-
-  lightMap = null;
-  lightMapIntensity = 1.0;
-
-  aoMap = null;
-  aoMapIntensity = 1.0;
-
-  specularMap = null;
-
-  alphaMap = null;
-
-  envMap = null;
-  combine: CombineOperation = 'Multiply';
-  reflectivity = 1;
-  refractionRatio = 0.98;
-
-  wireframe = false;
-  wireframeLinewidth = 1;
-  wireframeLinecap = 'round';
-  wireframeLinejoin = 'round';
-
-  skinning = false;
-  morphTargets = false;
-
-  lights = false;
-
-  constructor(options: UnlitOptions) {
-    super(options);
-    (Object as any).assign(this, options);
+      lights: false,
+    });
+    (Object as any).assign(this.props, props);
   }
 
   clone() {
-    const newM = new Unlit({});
-    newM.color = this.color.clone();
+    const newM = new Unlit(new MaterialProperties({}));
+    newM.props.specularColor = this.props.specularColor.clone();
 
-    newM.map = this.map;
+    newM.props.maps = this.props.maps; // TODO: make it deep copy
 
-    newM.lightMap = this.lightMap;
-    newM.lightMapIntensity = this.lightMapIntensity;
+    newM.props.wireframe = this.props.wireframe;
+    newM.props.wireframeLinewidth = this.props.wireframeLinewidth;
+    newM.props.wireframeLinecap = this.props.wireframeLinecap;
+    newM.props.wireframeLinejoin = this.props.wireframeLinejoin;
 
-    newM.aoMap = this.aoMap;
-    newM.aoMapIntensity = this.aoMapIntensity;
-
-    newM.specularMap = this.specularMap;
-
-    newM.alphaMap = this.alphaMap;
-
-    newM.envMap = this.envMap;
-    newM.combine = this.combine;
-    newM.reflectivity = this.reflectivity;
-    newM.refractionRatio = this.refractionRatio;
-
-    newM.wireframe = this.wireframe;
-    newM.wireframeLinewidth = this.wireframeLinewidth;
-    newM.wireframeLinecap = this.wireframeLinecap;
-    newM.wireframeLinejoin = this.wireframeLinejoin;
-
-    newM.skinning = this.skinning;
-    newM.morphTargets = this.morphTargets;
+    newM.props.skinning = this.props.skinning;
+    newM.props.morphTargets = this.props.morphTargets;
   }
 
   toJSON() {

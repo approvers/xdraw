@@ -8,11 +8,9 @@ import Quaternion from './Quaternion';
 type RotationOrder = 'XYZ'|'YZX'|'ZXY'|'XZY'|'YXZ'|'ZYX';
 
 export default class Euler {
-  private onChange: Function = () => {};
-
   constructor(
-      private _x: number = 0, private _y: number = 0, private _z: number = 0,
-      private _order: RotationOrder = 'XYZ') {}
+      public readonly x: number = 0, public readonly y: number = 0, public readonly z: number = 0,
+      public readonly order: RotationOrder = 'XYZ') {}
 
   static fromRotationMatrix(m: Matrix4, order: RotationOrder) {
     const clamp = (src: number, min: number, max: number) => Math.max(Math.min(src, max), min);
@@ -96,44 +94,7 @@ export default class Euler {
     return Euler.fromRotationMatrix(m, order);
   }
 
-  get x() {
-    return this._x;
-  }
-  set x(v) {
-    this._x = v;
-    this.onChange();
-  }
-
-  get y() {
-    return this._y;
-  }
-  set y(v) {
-    this._y = v;
-    this.onChange();
-  }
-
-  get z() {
-    return this._z;
-  }
-  set z(v) {
-    this._z = v;
-    this.onChange();
-  }
-
-  get order() {
-    return this._order;
-  }
-  set order(v) {
-    this._order = v;
-    this.onChange();
-  }
-
-  set(x: number, y: number, z: number, order: RotationOrder) {
-    this._x = x;
-    this._y = y;
-    this._z = z;
-    this._order = order;
-    this.onChange();
-    return this;
+  clone() {
+    return new Euler(this.x, this.y, this.z, this.order);
   }
 }

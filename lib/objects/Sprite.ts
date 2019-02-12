@@ -10,7 +10,7 @@ import Matrix4 from '../basis/Matrix4';
 import Triangle from '../basis/Triangle';
 import Billboard from '../materials/Billboard';
 
-export class Sprite implements XObject {
+export class Sprite  {
   transform: Transform;
   center = new Vector2(0.5, 0.5);
 

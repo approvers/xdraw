@@ -14,7 +14,7 @@ export default class HemisphereLight extends Light {
   constructor(skyColor: Color, public groundColor: Color, intensity: number) {
     super(skyColor, intensity);
 
-    this.transform.position = Transform.DefaultUp();
+    this.transform.position = Transform.up();
     this.transform.updateMatrix();
   }
 

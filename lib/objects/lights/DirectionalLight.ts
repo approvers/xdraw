@@ -27,7 +27,7 @@ export default class DirectionalLight extends Light {
   constructor(color: Color, intensity: number) {
     super(color, intensity);
 
-    this.transform.position = Transform.DefaultUp();
+    this.transform.position = Transform.up();
     this.transform.updateMatrix();
   }
 

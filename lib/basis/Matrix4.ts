@@ -68,29 +68,29 @@ export default class Matrix4 {
   toArray(offset: number = 0) {
     const array: number[] = [];
 
-		const te = this.elements;
+    const te = this.elements;
 
-		array[ offset ] = te[ 0 ];
-		array[ offset + 1 ] = te[ 1 ];
-		array[ offset + 2 ] = te[ 2 ];
-		array[ offset + 3 ] = te[ 3 ];
+    array[offset] = te[0];
+    array[offset + 1] = te[1];
+    array[offset + 2] = te[2];
+    array[offset + 3] = te[3];
 
-		array[ offset + 4 ] = te[ 4 ];
-		array[ offset + 5 ] = te[ 5 ];
-		array[ offset + 6 ] = te[ 6 ];
-		array[ offset + 7 ] = te[ 7 ];
+    array[offset + 4] = te[4];
+    array[offset + 5] = te[5];
+    array[offset + 6] = te[6];
+    array[offset + 7] = te[7];
 
-		array[ offset + 8 ] = te[ 8 ];
-		array[ offset + 9 ] = te[ 9 ];
-		array[ offset + 10 ] = te[ 10 ];
-		array[ offset + 11 ] = te[ 11 ];
+    array[offset + 8] = te[8];
+    array[offset + 9] = te[9];
+    array[offset + 10] = te[10];
+    array[offset + 11] = te[11];
 
-		array[ offset + 12 ] = te[ 12 ];
-		array[ offset + 13 ] = te[ 13 ];
-		array[ offset + 14 ] = te[ 14 ];
-		array[ offset + 15 ] = te[ 15 ];
+    array[offset + 12] = te[12];
+    array[offset + 13] = te[13];
+    array[offset + 14] = te[14];
+    array[offset + 15] = te[15];
 
-		return array;
+    return array;
   }
 
   multiply(m: Matrix4) {
@@ -469,6 +469,39 @@ export default class Matrix4 {
 
     );
 
+  }
+
+  static lookAt(eye: Vector3, target: Vector3, up: Vector3) {
+    const te = new Matrix4();
+    const z = eye.clone().sub(target);
+
+    if (z.lengthSq() === 0) {
+      // eye and target are in the same position
+      z.z = 1;
+    }
+
+    z.normalize();
+    let x = up.cross(z);
+
+    if (x.lengthSq() === 0) {
+      // up and z are parallel
+      if (Math.abs(up.z) === 1) {
+        z.x += 0.0001;
+      } else {
+        z.z += 0.0001;
+      }
+      z.normalize();
+      x = up.cross(z);
+    }
+
+    x.normalize();
+    const y = z.cross(x);
+
+    te[0] = x.x; te[4] = y.x; te[8] = z.x;
+    te[1] = x.y; te[5] = y.y; te[9] = z.y;
+    te[2] = x.z; te[6] = y.z; te[10] = z.z;
+
+    return te;
   }
 
   makePerspective(left: number, right: number, top: number, bottom: number, near: number, far: number) {
