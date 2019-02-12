@@ -9,6 +9,7 @@ import { XStore } from '../../basis/Components';
 import Transform from '../../basis/Transform';
 import BufferAttribute from '../../basis/BufferAttribute';
 import Vector3 from '../../basis/Vector3';
+import { packMesh } from './MeshUtils';
 
 const SphereMesh = (radius = 1, widthSegments = 8, heightSegments = 6, phiStart = 0, phiLength = Math.PI * 2, thetaStart = 0, thetaLength = Math.PI) => (store: XStore, _transform: Transform) => {
 
@@ -71,13 +72,8 @@ const SphereMesh = (radius = 1, widthSegments = 8, heightSegments = 6, phiStart 
     }
   }
 
-  // build geometry
-  store.set('mesh', {
-    indices,
-    position: BufferAttribute.fromArray(Float32Array, vertices, 3),
-    normal: BufferAttribute.fromArray(Float32Array, normals, 3),
-    uv: BufferAttribute.fromArray(Float32Array, uvs, 2)
-  });
+
+  packMesh(store, indices, vertices, normals, uvs);
   return store;
 }
 
