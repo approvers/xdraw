@@ -4,8 +4,47 @@
 
 import Transform from "./Transform";
 
+export class XBind<T> {
+  constructor(private value: T, private clamper: (newValue: T) => T) {}
+
+  get() {
+    return {
+      value: this.value,
+      set: (newValue: T) => {
+        this.value = this.clamper(newValue);
+      }
+    }
+  }
+}
+
+export function rangeClamper(min: number, max: number) {
+  return (newValue: number) => Math.min(Math.max(min, newValue), max);
+}
+
+export function selectClamper(selects: string[]) {
+  return (newValue: string) => {
+    if (selects.some(e => e === newValue)) return newValue;
+    return selects[0];
+  };
+}
+
 export class XStore {
   constructor(private props: { [key: string]: any } = {}) { }
+
+  private binds: {[key: string]: XBind<any>} = {};
+
+  getBindValues(key: string) {
+    return Object.keys(this.binds).filter(e => e.startsWith(key)).reduce((prev, e) => prev[e.slice(key.length)] = this.binds[e].get().value, {});
+  }
+
+  hasBind(key: string) {
+    return this.binds[key] !== undefined;
+  }
+
+  addBind<T>(key: string, initValue: T, clamper: (newValue: T) => T = (v: T) => v) {
+    this.binds[key] = new XBind<T>(initValue, clamper);
+    return this;
+  }
 
   get(key: string) {
     return this.props[key];
@@ -17,6 +56,7 @@ export class XStore {
 
   set(key: string, obj: any) {
     this.props[key] = obj;
+    return this;
   }
 }
 

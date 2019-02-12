@@ -9,8 +9,6 @@ import Quaternion from './Quaternion';
 import Sphere from './Sphere';
 import Vector3 from './Vector3';
 import Matrix3 from './Matrix3';
-import Camera from '../cameras/Camera';
-import Light from '../objects/Light';
 import Components from './Components';
 
 let globalId = 0;
@@ -46,7 +44,7 @@ export default class Transform extends EventSource {
   // lazy boundings
   boundingSphere: Sphere | null;
 
-  constructor(public readonly components = new Components()) {
+  constructor(public readonly comps = new Components()) {
     super();
     this.id = globalId++;
     this.name = `${this.id}`;

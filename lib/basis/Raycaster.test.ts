@@ -5,10 +5,10 @@
 
 import Raycaster from './Raycaster';
 import Vector3 from './Vector3';
-import Model from '../objects/Model';
-import { PersCamera, OrthoCamera } from '../cameras/Camera';
-import SphereMesh from '../meshes/SphereMesh';
 import Transform from './Transform';
+import SphereMesh from '../components/meshes/SphereMesh';
+import Camera from '../components/cameras/Camera';
+import { XStore } from './Components';
 
 function checkRayDirectionAgainstReferenceVector(rayDirection: Vector3, refVector: Vector3) {
   expect(refVector.x - rayDirection.x).toBeLessThanOrEqual(Number.EPSILON);
@@ -25,38 +25,38 @@ function getRaycaster() {
   );
 }
 
+function getSphere() {
+  const sphere = new Transform();
+  sphere.comps.addComponent(SphereMesh(1, 100, 100));
+  return sphere;
+}
+
 function getObjectsToCheck() {
-  const objects: Model[] = [];
+  const objects: Transform[] = [];
 
   const sphere1 = getSphere();
-  sphere1.transform.position = new Vector3(0, 0, - 10);
-  sphere1.transform.name = '1';
+  sphere1.position = new Vector3(0, 0, - 10);
+  sphere1.name = '1';
   objects.push(sphere1);
 
   const sphere11 = getSphere();
-  sphere11.transform.position = new Vector3(0, 0, 1);
-  sphere11.transform.name = '11';
-  sphere1.transform.add(sphere11.transform);
+  sphere11.position = new Vector3(0, 0, 1);
+  sphere11.name = '11';
+  sphere1.add(sphere11);
 
   const sphere12 = getSphere();
-  sphere12.transform.position = new Vector3(0, 0, - 1);
-  sphere12.transform.name = '12';
-  sphere1.transform.add(sphere12.transform);
+  sphere12.position = new Vector3(0, 0, - 1);
+  sphere12.name = '12';
+  sphere1.add(sphere12);
 
   const sphere2 = getSphere();
-  sphere2.transform.position = new Vector3(- 5, 0, - 5);
-  sphere2.transform.name = '2';
+  sphere2.position = new Vector3(- 5, 0, - 5);
+  sphere2.name = '2';
   objects.push(sphere2);
 
-  objects.forEach(e => e.transform.updateMatrixWorld());
+  objects.forEach(e => e.updateMatrixWorld());
 
   return objects;
-}
-
-function getSphere() {
-
-  return new Model(new SphereMesh(1, 100, 100));
-
 }
 
 test('constructor', () => {
@@ -81,12 +81,12 @@ test('constructor', () => {
 test('setFromCamera (Perspective)', () => {
 
   const raycaster = new Raycaster();
-  const camera = new PersCamera(90, 1, 1, 1000);
+  const store = Camera('Perspective', 90, 1, 1, 1000)(new XStore, new Transform);
 
   raycaster.setFromCamera({
     x: 0,
     y: 0
-  }, camera);
+  }, store);
   expect(raycaster.ray.direction).toEqual(Transform.front);
 
   const step = 0.1;
@@ -96,7 +96,7 @@ test('setFromCamera (Perspective)', () => {
       raycaster.setFromCamera({
         x,
         y
-      }, camera);
+      }, store);
 
       const refVector = new Vector3(x, y, 1).normalize();
       checkRayDirectionAgainstReferenceVector(raycaster.ray.direction, refVector);
@@ -107,14 +107,14 @@ test('setFromCamera (Perspective)', () => {
 test('setFromCamera (Orthographic)', () => {
 
   const raycaster = new Raycaster();
-  const camera = new OrthoCamera(-1, 1, 1, -1, 0, 1000);
+  const store = Camera('Orthographic', -1, 1, 1, -1, 0, 1000)(new XStore, new Transform);
   const expectedOrigin = new Vector3(0, 0, 0);
   const expectedDirection = Transform.front;
 
   raycaster.setFromCamera({
     x: 0,
     y: 0
-  }, camera);
+  }, store);
 
   expect(raycaster.ray.origin).toEqual(expectedOrigin);
   expect(raycaster.ray.direction).toEqual(expectedDirection);
