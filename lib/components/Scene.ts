@@ -10,7 +10,7 @@ import Texture from '../textures/Texture';
 import WebGLRenderTarget from '../cameras/webgl/WebGLRenderTarget';
 
 export default class Scene extends EventSource {
-  transform: Transform;
+  
   name = '';
   overrideMaterial?: Material;
   background?: Color | Texture | WebGLRenderTarget;

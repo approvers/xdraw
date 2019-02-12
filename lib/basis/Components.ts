@@ -2,6 +2,8 @@
 	* @author RkEclair / https://github.com/RkEclair
 	*/
 
+import Transform from "./Transform";
+
 export class XStore {
   constructor(private props: { [key: string]: any } = {}) { }
 
@@ -18,7 +20,7 @@ export class XStore {
   }
 }
 
-export type XComponent = (store: XStore) => XStore;
+export type XComponent = (store: XStore, transform: Transform) => XStore;
 
 let componentId = 0;
 
@@ -32,6 +34,12 @@ class Component {
 
 export default class Components {
   private componentList: Component[] = [];
+
+  clone() {
+    const newC = new Components();
+    this.componentList.forEach(e => newC.addComponent(e.func));
+    return newC;
+  }
 
   addComponent(component: XComponent) {
     const newC = new Component(component);
@@ -54,7 +62,7 @@ export default class Components {
     this.componentList = this.componentList.filter(e => e.id !== id);
   }
 
-  process(initState?: { [key: string]: any }) {
-    return this.componentList.reduce((prev, current) => current.func(prev), new XStore(initState));
+  process(transform: Transform, initState?: { [key: string]: any }) {
+    return this.componentList.reduce((prev, current) => current.func(prev, transform), new XStore(initState));
   }
 }

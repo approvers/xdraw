@@ -11,7 +11,7 @@ import Triangle from '../basis/Triangle';
 import Billboard from '../materials/Billboard';
 
 export class Sprite  {
-  transform: Transform;
+  
   center = new Vector2(0.5, 0.5);
 
   constructor(public readonly material = new Billboard()) { }

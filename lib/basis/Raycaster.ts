@@ -1,7 +1,7 @@
 import BufferAttribute from './BufferAttribute';
 import Face3 from './Face3';
 import Ray from './Ray';
-import Transform, { XObject } from './Transform';
+import Transform from './Transform';
 import Triangle from './Triangle';
 import Vector2 from './Vector2';
 import Vector3 from './Vector3';

@@ -1,0 +1,333 @@
+yarn run v1.13.0
+$ tsc
+lib/basis/Raycaster.test.ts(32,11): error TS2339: Property 'transform' does not exist on type 'Model'.
+lib/basis/Raycaster.test.ts(33,11): error TS2339: Property 'transform' does not exist on type 'Model'.
+lib/basis/Raycaster.test.ts(37,12): error TS2339: Property 'transform' does not exist on type 'Model'.
+lib/basis/Raycaster.test.ts(38,12): error TS2339: Property 'transform' does not exist on type 'Model'.
+lib/basis/Raycaster.test.ts(39,11): error TS2339: Property 'transform' does not exist on type 'Model'.
+lib/basis/Raycaster.test.ts(39,34): error TS2339: Property 'transform' does not exist on type 'Model'.
+lib/basis/Raycaster.test.ts(42,12): error TS2339: Property 'transform' does not exist on type 'Model'.
+lib/basis/Raycaster.test.ts(43,12): error TS2339: Property 'transform' does not exist on type 'Model'.
+lib/basis/Raycaster.test.ts(44,11): error TS2339: Property 'transform' does not exist on type 'Model'.
+lib/basis/Raycaster.test.ts(44,34): error TS2339: Property 'transform' does not exist on type 'Model'.
+lib/basis/Raycaster.test.ts(47,11): error TS2339: Property 'transform' does not exist on type 'Model'.
+lib/basis/Raycaster.test.ts(48,11): error TS2339: Property 'transform' does not exist on type 'Model'.
+lib/basis/Raycaster.test.ts(51,26): error TS2339: Property 'transform' does not exist on type 'Model'.
+lib/basis/Raycaster.ts(4,21): error TS2305: Module '"../../../../../../../Users/mkanda/Downloads/mx/xdraw/lib/basis/Transform"' has no exported member 'XObject'.
+lib/basis/Raycaster.ts(60,43): error TS2339: Property 'object' does not exist on type 'Transform'.
+lib/basis/Raycaster.ts(61,48): error TS2339: Property 'object' does not exist on type 'Transform'.
+lib/cameras/Camera.ts(9,21): error TS2305: Module '"../../../../../../../Users/mkanda/Downloads/mx/xdraw/lib/basis/Transform"' has no exported member 'XObject'.
+lib/cameras/Camera.ts(16,40): error TS2345: Argument of type 'this' is not assignable to parameter of type 'Components | undefined'.
+  Type 'Camera' is not assignable to type 'Components'.
+    Type 'this' is not assignable to type 'Components'.
+      Type 'Camera' is missing the following properties from type 'Components': componentList, clone, addComponent, swapComponent, and 2 more.
+lib/cameras/Renderer.ts(141,26): error TS2304: Cannot find name 'WebGLClipping'.
+lib/cameras/Renderer.ts(149,15): error TS2304: Cannot find name 'VRHandler'.
+lib/cameras/Renderer.ts(152,22): error TS2304: Cannot find name 'WebGLShadowMap'.
+lib/cameras/Renderer.ts(214,35): error TS2304: Cannot find name 'WebXRManager'.
+lib/cameras/Renderer.ts(214,60): error TS2304: Cannot find name 'WebVRManager'.
+lib/cameras/Renderer.ts(218,26): error TS2304: Cannot find name 'WebGLShadowMap'.
+lib/cameras/Renderer.ts(509,51): error TS2339: Property 'object' does not exist on type 'Transform'.
+lib/cameras/Renderer.ts(530,18): error TS2339: Property 'object' does not exist on type 'Transform'.
+lib/cameras/Renderer.ts(538,46): error TS2531: Object is possibly 'null'.
+lib/cameras/Renderer.ts(538,51): error TS2339: Property 'id' does not exist on type 'Mesh'.
+lib/cameras/Renderer.ts(542,42): error TS2531: Object is possibly 'null'.
+lib/cameras/Renderer.ts(542,47): error TS2339: Property 'id' does not exist on type 'Mesh'.
+lib/cameras/Renderer.ts(549,42): error TS2339: Property 'object' does not exist on type 'Transform'.
+lib/cameras/Renderer.ts(556,17): error TS2531: Object is possibly 'null'.
+lib/cameras/Renderer.ts(556,22): error TS2339: Property 'index' does not exist on type 'Mesh'.
+lib/cameras/Renderer.ts(557,22): error TS2531: Object is possibly 'null'.
+lib/cameras/Renderer.ts(557,27): error TS2339: Property 'attributes' does not exist on type 'Mesh'.
+lib/cameras/Renderer.ts(569,16): error TS2339: Property 'setIndex' does not exist on type 'WebGLBufferRenderer'.
+lib/cameras/Renderer.ts(569,30): error TS2339: Property 'attributes' does not exist on type 'Renderer'.
+lib/cameras/Renderer.ts(573,53): error TS2345: Argument of type 'Mesh | null' is not assignable to parameter of type 'Mesh'.
+  Type 'null' is not assignable to type 'Mesh'.
+lib/cameras/Renderer.ts(576,32): error TS2339: Property 'attributes' does not exist on type 'Renderer'.
+lib/cameras/Renderer.ts(594,24): error TS2531: Object is possibly 'null'.
+lib/cameras/Renderer.ts(594,29): error TS2339: Property 'drawRange' does not exist on type 'Mesh'.
+lib/cameras/Renderer.ts(595,24): error TS2531: Object is possibly 'null'.
+lib/cameras/Renderer.ts(595,29): error TS2339: Property 'drawRange' does not exist on type 'Mesh'.
+lib/cameras/Renderer.ts(597,24): error TS2304: Cannot find name 'group'.
+lib/cameras/Renderer.ts(597,41): error TS2304: Cannot find name 'group'.
+lib/cameras/Renderer.ts(598,24): error TS2304: Cannot find name 'group'.
+lib/cameras/Renderer.ts(598,41): error TS2304: Cannot find name 'group'.
+lib/cameras/Renderer.ts(611,30): error TS2339: Property 'object' does not exist on type 'Transform'.
+lib/cameras/Renderer.ts(632,32): error TS2339: Property 'props' does not exist on type 'Lines'.
+lib/cameras/Renderer.ts(655,25): error TS2304: Cannot find name 'InstancedBufferMesh'.
+lib/cameras/Renderer.ts(656,11): error TS2531: Object is possibly 'null'.
+lib/cameras/Renderer.ts(656,16): error TS2339: Property 'maxInstancedCount' does not exist on type 'Mesh'.
+lib/cameras/Renderer.ts(657,34): error TS2345: Argument of type 'Mesh | null' is not assignable to parameter of type 'Mesh'.
+  Type 'null' is not assignable to type 'Mesh'.
+lib/cameras/Renderer.ts(666,25): error TS2304: Cannot find name 'InstancedBufferMesh'.
+lib/cameras/Renderer.ts(676,33): error TS2339: Property 'attributes' does not exist on type 'Mesh'.
+lib/cameras/Renderer.ts(680,59): error TS2576: Property 'defaultAttributeValues' is a static member of type 'MaterialProperties'
+lib/cameras/Renderer.ts(692,34): error TS2339: Property 'attributes' does not exist on type 'Renderer'.
+lib/cameras/Renderer.ts(707,41): error TS2304: Cannot find name 'InstancedInterleavedBuffer'.
+lib/cameras/Renderer.ts(711,24): error TS2339: Property 'maxInstancedCount' does not exist on type 'Mesh'.
+lib/cameras/Renderer.ts(712,22): error TS2339: Property 'maxInstancedCount' does not exist on type 'Mesh'.
+lib/cameras/Renderer.ts(725,42): error TS2304: Cannot find name 'InstancedBufferAttribute'.
+lib/cameras/Renderer.ts(729,24): error TS2339: Property 'maxInstancedCount' does not exist on type 'Mesh'.
+lib/cameras/Renderer.ts(730,22): error TS2339: Property 'maxInstancedCount' does not exist on type 'Mesh'.
+lib/cameras/Renderer.ts(777,11): error TS2339: Property 'transform' does not exist on type 'Scene'.
+lib/cameras/Renderer.ts(790,11): error TS2339: Property 'transform' does not exist on type 'Scene'.
+lib/cameras/Renderer.ts(793,43): error TS2339: Property 'fog' does not exist on type 'Scene'.
+lib/cameras/Renderer.ts(796,76): error TS2339: Property 'fog' does not exist on type 'Scene'.
+lib/cameras/Renderer.ts(808,22): error TS2304: Cannot find name 'WebGLAnimation'.
+lib/cameras/Renderer.ts(831,15): error TS2339: Property 'transform' does not exist on type 'Scene'.
+lib/cameras/Renderer.ts(831,52): error TS2339: Property 'transform' does not exist on type 'Scene'.
+lib/cameras/Renderer.ts(854,14): error TS2339: Property 'projectionMatrix' does not exist on type 'Camera'.
+lib/cameras/Renderer.ts(854,47): error TS2339: Property 'matrixWorldInverse' does not exist on type 'Camera'.
+lib/cameras/Renderer.ts(865,11): error TS2339: Property 'transform' does not exist on type 'Scene'.
+lib/cameras/Renderer.ts(887,14): error TS2339: Property 'info' does not exist on type 'Renderer'.
+lib/cameras/Renderer.ts(887,35): error TS2339: Property 'info' does not exist on type 'Renderer'.
+lib/cameras/Renderer.ts(890,7): error TS2322: Type 'null' is not assignable to type 'WebGLRenderTarget'.
+lib/cameras/Renderer.ts(897,62): error TS2345: Argument of type 'boolean' is not assignable to parameter of type 'number'.
+lib/cameras/Renderer.ts(927,21): error TS2339: Property 'updateRenderTargetMipmap' does not exist on type 'WebGLTextures'.
+lib/cameras/Renderer.ts(956,31): error TS2339: Property 'layers' does not exist on type 'Transform'.
+lib/cameras/Renderer.ts(956,50): error TS2339: Property 'layers' does not exist on type 'Camera'.
+lib/cameras/Renderer.ts(957,30): error TS2339: Property 'object' does not exist on type 'Transform'.
+lib/cameras/Renderer.ts(968,33): error TS2304: Cannot find name 'CulledFrustum'.
+lib/cameras/Renderer.ts(968,81): error TS2345: Argument of type 'Transform' is not assignable to parameter of type 'Sprite'.
+  Type 'Transform' is missing the following properties from type 'Sprite': center, material, raycast
+lib/cameras/Renderer.ts(974,24): error TS2554: Expected 2 arguments, but got 1.
+lib/cameras/Renderer.ts(975,38): error TS2339: Property 'object' does not exist on type 'Transform'.
+lib/cameras/Renderer.ts(991,31): error TS2304: Cannot find name 'Outfit'.
+lib/cameras/Renderer.ts(992,21): error TS2339: Property 'skeleton' does not exist on type 'Transform'.
+lib/cameras/Renderer.ts(995,31): error TS2304: Cannot find name 'CulledFrustum'.
+lib/cameras/Renderer.ts(995,78): error TS2345: Argument of type 'Transform' is not assignable to parameter of type 'Model'.
+  Type 'Transform' is missing the following properties from type 'Model': drawMode, morphTargetInfluences, morphTargetDictionary, material, and 5 more.
+lib/cameras/Renderer.ts(1001,24): error TS2554: Expected 2 arguments, but got 1.
+lib/cameras/Renderer.ts(1002,39): error TS2339: Property 'object' does not exist on type 'Transform'.
+lib/cameras/Renderer.ts(1026,32): error TS2339: Property 'group' does not exist on type 'RenderItem'.
+lib/cameras/Renderer.ts(1028,29): error TS2304: Cannot find name 'ArrayCamera'.
+lib/cameras/Renderer.ts(1029,9): error TS2740: Type 'Camera' is missing the following properties from type 'Camera[]': length, pop, push, concat, and 26 more.
+lib/cameras/Renderer.ts(1031,40): error TS2339: Property 'cameras' does not exist on type 'Camera'.
+lib/cameras/Renderer.ts(1032,25): error TS2339: Property 'layers' does not exist on type 'Transform'.
+lib/cameras/Renderer.ts(1068,7): error TS2304: Cannot find name 'group'.
+lib/cameras/Renderer.ts(1071,41): error TS2345: Argument of type 'Camera | Camera[]' is not assignable to parameter of type 'Camera'.
+  Type 'Camera[]' is missing the following properties from type 'Camera': transform, worldDirection, canvas, updateMatrixWorld
+lib/cameras/Renderer.ts(1074,14): error TS2339: Property 'matrixWorldInverse' does not exist on type 'Camera'.
+lib/cameras/Renderer.ts(1077,19): error TS2339: Property 'object' does not exist on type 'Transform'.
+lib/cameras/Renderer.ts(1080,53): error TS2339: Property 'fog' does not exist on type 'Scene'.
+lib/cameras/Renderer.ts(1090,23): error TS2339: Property 'fog' does not exist on type 'Scene'.
+lib/cameras/Renderer.ts(1090,55): error TS2304: Cannot find name 'group'.
+lib/cameras/Renderer.ts(1095,54): error TS2304: Cannot find name 'group'.
+lib/cameras/Renderer.ts(1098,41): error TS2345: Argument of type 'Camera | Camera[]' is not assignable to parameter of type 'Camera'.
+  Type 'Camera[]' is not assignable to type 'Camera'.
+lib/cameras/Renderer.ts(1110,63): error TS2345: Argument of type 'Transform' is not assignable to parameter of type 'LightShadow[]'.
+  Type 'Transform' is missing the following properties from type 'LightShadow[]': length, pop, push, concat, and 26 more.
+lib/cameras/Renderer.ts(1112,34): error TS2339: Property 'getProgramCode' does not exist on type 'WebGLPrograms'.
+lib/cameras/Renderer.ts(1143,27): error TS2339: Property 'shaderID' does not exist on type '{ precision: "highp" | "mediump" | "lowp"; supportsVertexTextures: any; outputEncoding: TextureEncoding; mapKeys: string[]; encodings: TextureEncoding[]; envMapMode: any; envMapCubeUV: boolean; ... 32 more ...; depthPacking: boolean; }'.
+lib/cameras/Renderer.ts(1154,30): error TS2339: Property 'type' does not exist on type 'MaterialProperties'.
+lib/cameras/Renderer.ts(1159,22): error TS2339: Property 'onBeforeCompile' does not exist on type 'MaterialProperties'.
+lib/cameras/Renderer.ts(1162,32): error TS2339: Property 'getProgramCode' does not exist on type 'WebGLPrograms'.
+lib/cameras/Renderer.ts(1164,35): error TS2339: Property 'acquireProgram' does not exist on type 'WebGLPrograms'.
+lib/cameras/Renderer.ts(1168,22): error TS2339: Property 'program' does not exist on type 'MaterialProperties'.
+lib/cameras/Renderer.ts(1174,22): error TS2339: Property 'numSupportedMorphTargets' does not exist on type 'MaterialProperties'.
+lib/cameras/Renderer.ts(1178,26): error TS2339: Property 'numSupportedMorphTargets' does not exist on type 'MaterialProperties'.
+lib/cameras/Renderer.ts(1184,22): error TS2339: Property 'numSupportedMorphNormals' does not exist on type 'MaterialProperties'.
+lib/cameras/Renderer.ts(1188,26): error TS2339: Property 'numSupportedMorphNormals' does not exist on type 'MaterialProperties'.
+lib/cameras/Renderer.ts(1195,25): error TS2339: Property 'isShaderMaterial' does not exist on type 'MaterialProperties'.
+lib/cameras/Renderer.ts(1195,61): error TS2339: Property 'isRawShaderMaterial' does not exist on type 'MaterialProperties'.
+lib/cameras/Renderer.ts(1220,49): error TS2339: Property 'state' does not exist on type 'WebGLLights'.
+lib/cameras/Renderer.ts(1221,49): error TS2339: Property 'state' does not exist on type 'WebGLLights'.
+lib/cameras/Renderer.ts(1222,42): error TS2339: Property 'state' does not exist on type 'WebGLLights'.
+lib/cameras/Renderer.ts(1223,46): error TS2339: Property 'state' does not exist on type 'WebGLLights'.
+lib/cameras/Renderer.ts(1224,43): error TS2339: Property 'state' does not exist on type 'WebGLLights'.
+lib/cameras/Renderer.ts(1225,48): error TS2339: Property 'state' does not exist on type 'WebGLLights'.
+lib/cameras/Renderer.ts(1227,52): error TS2339: Property 'state' does not exist on type 'WebGLLights'.
+lib/cameras/Renderer.ts(1229,16): error TS2339: Property 'state' does not exist on type 'WebGLLights'.
+lib/cameras/Renderer.ts(1230,45): error TS2339: Property 'state' does not exist on type 'WebGLLights'.
+lib/cameras/Renderer.ts(1231,48): error TS2339: Property 'state' does not exist on type 'WebGLLights'.
+lib/cameras/Renderer.ts(1232,46): error TS2339: Property 'state' does not exist on type 'WebGLLights'.
+lib/cameras/Renderer.ts(1233,49): error TS2339: Property 'state' does not exist on type 'WebGLLights'.
+lib/cameras/Renderer.ts(1238,36): error TS2339: Property 'seqWithValue' does not exist on type 'typeof WebGLUniforms'.
+lib/cameras/Renderer.ts(1319,63): error TS2339: Property 'projectionMatrix' does not exist on type 'Camera'.
+lib/cameras/Renderer.ts(1342,26): error TS2339: Property 'isShaderMaterial' does not exist on type 'MaterialProperties'.
+lib/cameras/Renderer.ts(1342,61): error TS2339: Property 'isMeshPhongMaterial' does not exist on type 'MaterialProperties'.
+lib/cameras/Renderer.ts(1343,24): error TS2339: Property 'isMeshStandardMaterial' does not exist on type 'MaterialProperties'.
+lib/cameras/Renderer.ts(1343,65): error TS2339: Property 'envMap' does not exist on type 'MaterialProperties'.
+lib/cameras/Renderer.ts(1347,44): error TS2339: Property 'matrixWorld' does not exist on type 'Camera'.
+lib/cameras/Renderer.ts(1351,26): error TS2339: Property 'isMeshPhongMaterial' does not exist on type 'MaterialProperties'.
+lib/cameras/Renderer.ts(1351,64): error TS2339: Property 'isMeshLambertMaterial' does not exist on type 'MaterialProperties'.
+lib/cameras/Renderer.ts(1352,24): error TS2339: Property 'isMeshBasicMaterial' does not exist on type 'MaterialProperties'.
+lib/cameras/Renderer.ts(1352,62): error TS2339: Property 'isMeshStandardMaterial' does not exist on type 'MaterialProperties'.
+lib/cameras/Renderer.ts(1353,24): error TS2339: Property 'isShaderMaterial' does not exist on type 'MaterialProperties'.
+lib/cameras/Renderer.ts(1354,59): error TS2339: Property 'matrixWorldInverse' does not exist on type 'Camera'.
+lib/cameras/Renderer.ts(1366,34): error TS2339: Property 'skeleton' does not exist on type 'Transform'.
+lib/cameras/Renderer.ts(1392,19): error TS2304: Cannot find name 'DataTexture'.
+lib/cameras/Renderer.ts(1432,14): error TS2339: Property 'refreshUniformsFog' does not exist on type 'Renderer'.
+lib/cameras/Renderer.ts(1435,26): error TS2339: Property 'isMeshBasicMaterial' does not exist on type 'MaterialProperties'.
+lib/cameras/Renderer.ts(1438,33): error TS2339: Property 'isMeshLambertMaterial' does not exist on type 'MaterialProperties'.
+lib/cameras/Renderer.ts(1440,14): error TS2339: Property 'refreshUniformsLambert' does not exist on type 'Renderer'.
+lib/cameras/Renderer.ts(1442,33): error TS2339: Property 'isMeshPhongMaterial' does not exist on type 'MaterialProperties'.
+lib/cameras/Renderer.ts(1445,28): error TS2339: Property 'isMeshToonMaterial' does not exist on type 'MaterialProperties'.
+lib/cameras/Renderer.ts(1446,16): error TS2551: Property 'refreshUniformsToon' does not exist on type 'Renderer'. Did you mean 'refreshUniformsCommon'?
+lib/cameras/Renderer.ts(1449,16): error TS2551: Property 'refreshUniformsPhong' does not exist on type 'Renderer'. Did you mean 'refreshUniformsCommon'?
+lib/cameras/Renderer.ts(1452,33): error TS2339: Property 'isMeshStandardMaterial' does not exist on type 'MaterialProperties'.
+lib/cameras/Renderer.ts(1455,28): error TS2339: Property 'isMeshPhysicalMaterial' does not exist on type 'MaterialProperties'.
+lib/cameras/Renderer.ts(1456,16): error TS2339: Property 'refreshUniformsPhysical' does not exist on type 'Renderer'.
+lib/cameras/Renderer.ts(1459,16): error TS2339: Property 'refreshUniformsStandard' does not exist on type 'Renderer'.
+lib/cameras/Renderer.ts(1462,33): error TS2339: Property 'isMeshMatcapMaterial' does not exist on type 'MaterialProperties'.
+lib/cameras/Renderer.ts(1465,14): error TS2339: Property 'refreshUniformsMatcap' does not exist on type 'Renderer'.
+lib/cameras/Renderer.ts(1467,33): error TS2339: Property 'isMeshDepthMaterial' does not exist on type 'MaterialProperties'.
+lib/cameras/Renderer.ts(1469,14): error TS2339: Property 'refreshUniformsDepth' does not exist on type 'Renderer'.
+lib/cameras/Renderer.ts(1471,33): error TS2339: Property 'isMeshDistanceMaterial' does not exist on type 'MaterialProperties'.
+lib/cameras/Renderer.ts(1473,14): error TS2339: Property 'refreshUniformsDistance' does not exist on type 'Renderer'.
+lib/cameras/Renderer.ts(1475,33): error TS2339: Property 'isMeshNormalMaterial' does not exist on type 'MaterialProperties'.
+lib/cameras/Renderer.ts(1477,14): error TS2551: Property 'refreshUniformsNormal' does not exist on type 'Renderer'. Did you mean 'refreshUniformsCommon'?
+lib/cameras/Renderer.ts(1479,33): error TS2339: Property 'isLineBasicMaterial' does not exist on type 'MaterialProperties'.
+lib/cameras/Renderer.ts(1480,14): error TS2339: Property 'refreshUniformsLine' does not exist on type 'Renderer'.
+lib/cameras/Renderer.ts(1482,28): error TS2339: Property 'isLineDashedMaterial' does not exist on type 'MaterialProperties'.
+lib/cameras/Renderer.ts(1483,16): error TS2339: Property 'refreshUniformsDash' does not exist on type 'Renderer'.
+lib/cameras/Renderer.ts(1486,33): error TS2339: Property 'isPointsMaterial' does not exist on type 'MaterialProperties'.
+lib/cameras/Renderer.ts(1487,14): error TS2551: Property 'refreshUniformsPoints' does not exist on type 'Renderer'. Did you mean 'refreshUniformsCommon'?
+lib/cameras/Renderer.ts(1489,33): error TS2339: Property 'isSpriteMaterial' does not exist on type 'MaterialProperties'.
+lib/cameras/Renderer.ts(1490,14): error TS2339: Property 'refreshUniformsSprites' does not exist on type 'Renderer'.
+lib/cameras/Renderer.ts(1492,33): error TS2339: Property 'isShadowMaterial' does not exist on type 'MaterialProperties'.
+lib/cameras/Renderer.ts(1493,49): error TS2339: Property 'color' does not exist on type 'MaterialProperties'.
+lib/cameras/Renderer.ts(1497,21): error TS2339: Property 'upload' does not exist on type 'typeof WebGLUniforms'.
+lib/cameras/Renderer.ts(1501,29): error TS2304: Cannot find name 'GLSLShader'.
+lib/cameras/Renderer.ts(1502,21): error TS2339: Property 'upload' does not exist on type 'typeof WebGLUniforms'.
+lib/cameras/Renderer.ts(1507,24): error TS2339: Property 'isSpriteMaterial' does not exist on type 'MaterialProperties'.
+lib/cameras/Renderer.ts(1508,56): error TS2339: Property 'center' does not exist on type 'Transform'.
+lib/cameras/Renderer.ts(1523,14): error TS2339: Property 'opacity' does not exist on type 'WebGLUniforms'.
+lib/cameras/Renderer.ts(1526,16): error TS2339: Property 'diffuse' does not exist on type 'WebGLUniforms'.
+lib/cameras/Renderer.ts(1530,16): error TS2339: Property 'emissive' does not exist on type 'WebGLUniforms'.
+lib/cameras/Renderer.ts(1535,16): error TS2339: Property 'map' does not exist on type 'WebGLUniforms'.
+lib/cameras/Renderer.ts(1539,16): error TS2339: Property 'alphaMap' does not exist on type 'WebGLUniforms'.
+lib/cameras/Renderer.ts(1543,16): error TS2339: Property 'specularMap' does not exist on type 'WebGLUniforms'.
+lib/cameras/Renderer.ts(1547,16): error TS2339: Property 'envMap' does not exist on type 'WebGLUniforms'.
+lib/cameras/Renderer.ts(1555,16): error TS2339: Property 'flipEnvMap' does not exist on type 'WebGLUniforms'.
+lib/cameras/Renderer.ts(1557,16): error TS2339: Property 'reflectivity' does not exist on type 'WebGLUniforms'.
+lib/cameras/Renderer.ts(1558,16): error TS2339: Property 'refractionRatio' does not exist on type 'WebGLUniforms'.
+lib/cameras/Renderer.ts(1560,16): error TS2339: Property 'maxMipLevel' does not exist on type 'WebGLUniforms'.
+lib/cameras/Renderer.ts(1565,16): error TS2339: Property 'lightMap' does not exist on type 'WebGLUniforms'.
+lib/cameras/Renderer.ts(1566,16): error TS2339: Property 'lightMapIntensity' does not exist on type 'WebGLUniforms'.
+lib/cameras/Renderer.ts(1570,16): error TS2339: Property 'aoMap' does not exist on type 'WebGLUniforms'.
+lib/cameras/Renderer.ts(1571,16): error TS2339: Property 'aoMapIntensity' does not exist on type 'WebGLUniforms'.
+lib/cameras/Renderer.ts(1622,16): error TS2339: Property 'uvTransform' does not exist on type 'WebGLUniforms'.
+lib/cameras/Renderer.ts(1656,19): error TS2339: Property 'setTexture2D' does not exist on type 'WebGLTextures'.
+lib/cameras/Renderer.ts(1660,19): error TS2339: Property 'setTexture3D' does not exist on type 'WebGLTextures'.
+lib/cameras/Renderer.ts(1664,19): error TS2339: Property 'setTexture2D' does not exist on type 'WebGLTextures'.
+lib/cameras/Renderer.ts(1676,21): error TS2339: Property 'setTextureCube' does not exist on type 'WebGLTextures'.
+lib/cameras/Renderer.ts(1681,21): error TS2339: Property 'setTextureCubeDynamic' does not exist on type 'WebGLTextures'.
+lib/cameras/Renderer.ts(1700,21): error TS2339: Property 'setupRenderTarget' does not exist on type 'WebGLTextures'.
+lib/cameras/Renderer.ts(1710,24): error TS2339: Property 'isWebGLRenderTargetCube' does not exist on type 'WebGLRenderTarget'.
+lib/cameras/Renderer.ts(1711,55): error TS2339: Property 'activeCubeFace' does not exist on type 'WebGLRenderTarget'.
+lib/cameras/Renderer.ts(1743,60): error TS2339: Property 'activeCubeFace' does not exist on type 'WebGLRenderTarget'.
+lib/cameras/Renderer.ts(1744,56): error TS2339: Property 'activeMipMapLevel' does not exist on type 'WebGLRenderTarget'.
+lib/cameras/Renderer.ts(1771,16): error TS2339: Property 'utils' does not exist on type 'Renderer'.
+lib/cameras/Renderer.ts(1780,16): error TS2339: Property 'utils' does not exist on type 'Renderer'.
+lib/cameras/Renderer.ts(1809,41): error TS2339: Property 'utils' does not exist on type 'Renderer'.
+lib/cameras/Renderer.ts(1810,20): error TS2339: Property 'utils' does not exist on type 'Renderer'.
+lib/cameras/Renderer.ts(1829,27): error TS2339: Property 'utils' does not exist on type 'Renderer'.
+lib/cameras/Renderer.ts(1841,27): error TS2339: Property 'utils' does not exist on type 'Renderer'.
+lib/cameras/Renderer.ts(1842,25): error TS2339: Property 'utils' does not exist on type 'Renderer'.
+lib/cameras/webgl/WebGLBackground.ts(65,30): error TS2304: Cannot find name 'CubeTexture'.
+lib/cameras/webgl/WebGLBackground.ts(65,67): error TS2304: Cannot find name 'WebGLRenderTargetCube'.
+lib/cameras/webgl/WebGLBackground.ts(76,31): error TS2339: Property 'transform' does not exist on type 'Model'.
+lib/cameras/webgl/WebGLBackground.ts(76,62): error TS2339: Property 'matrixWorld' does not exist on type 'Camera'.
+lib/cameras/webgl/WebGLBackground.ts(90,31): error TS2304: Cannot find name 'WebGLRenderTargetCube'.
+lib/cameras/webgl/WebGLBackground.ts(90,66): error TS2339: Property 'texture' does not exist on type 'Color | Texture | WebGLRenderTarget'.
+  Property 'texture' does not exist on type 'Color'.
+lib/cameras/webgl/WebGLBackground.ts(93,31): error TS2304: Cannot find name 'WebGLRenderTargetCube'.
+lib/cameras/webgl/WebGLBackground.ts(104,35): error TS2339: Property 'transform' does not exist on type 'Model'.
+lib/cameras/webgl/WebGLBackground.ts(145,20): error TS2339: Property 'transform' does not exist on type 'Model'.
+lib/cameras/webgl/WebGLBufferRenderer.ts(49,126): error TS2339: Property 'maxInstancedCount' does not exist on type 'Mesh'.
+lib/cameras/webgl/WebGLIndexedBufferRenderer.ts(54,164): error TS2339: Property 'maxInstancedCount' does not exist on type 'Mesh'.
+lib/cameras/webgl/WebGLLights.ts(62,29): error TS2339: Property 'matrixWorldInverse' does not exist on type 'Camera'.
+lib/cameras/webgl/WebGLMorphtargets.ts(6,10): error TS2305: Module '"../../../../../../../../Users/mkanda/Downloads/mx/xdraw/lib/basis/Transform"' has no exported member 'XObject'.
+lib/cameras/webgl/WebGLPrograms.ts(13,10): error TS2305: Module '"../../../../../../../../Users/mkanda/Downloads/mx/xdraw/lib/basis/Transform.js"' has no exported member 'XObject'.
+lib/cameras/webgl/WebGLPrograms.ts(200,31): error TS2339: Property 'combine' does not exist on type 'MaterialProperties'.
+lib/cameras/webgl/WebGLPrograms.ts(223,39): error TS2341: Property 'shadowMap' is private and only accessible within class 'Renderer'.
+lib/cameras/webgl/WebGLPrograms.ts(224,36): error TS2341: Property 'shadowMap' is private and only accessible within class 'Renderer'.
+lib/cameras/webgl/WebGLRenderLists.ts(2,18): error TS2307: Cannot find module '../../objects/Mesh'.
+lib/cameras/webgl/WebGLRenderLists.ts(142,38): error TS2339: Property 'transform' does not exist on type 'Scene'.
+lib/cameras/webgl/WebGLRenderLists.ts(146,24): error TS2339: Property 'transform' does not exist on type 'Scene'.
+lib/cameras/webgl/WebGLRenderLists.ts(147,24): error TS2339: Property 'transform' does not exist on type 'Scene'.
+lib/cameras/webgl/WebGLRenderStates.ts(59,28): error TS2339: Property 'transform' does not exist on type 'Scene'.
+lib/cameras/webgl/WebGLRenderStates.ts(62,24): error TS2339: Property 'transform' does not exist on type 'Scene'.
+lib/cameras/webgl/WebGLRenderStates.ts(63,24): error TS2339: Property 'transform' does not exist on type 'Scene'.
+lib/cameras/webgl/WebGLRenderStates.ts(69,29): error TS2339: Property 'transform' does not exist on type 'Scene'.
+lib/cameras/webgl/WebGLRenderStates.ts(72,25): error TS2339: Property 'transform' does not exist on type 'Scene'.
+lib/cameras/webgl/WebGLRenderStates.ts(76,40): error TS2339: Property 'transform' does not exist on type 'Scene'.
+lib/cameras/webgl/WebGLState.ts(386,32): error TS2693: 'BlendFunc' only refers to a type, but is being used as a value here.
+lib/cameras/webgl/WebGLState.ts(387,29): error TS2693: 'BlendFactor' only refers to a type, but is being used as a value here.
+lib/cameras/webgl/WebGLState.ts(388,29): error TS2693: 'BlendFactor' only refers to a type, but is being used as a value here.
+lib/cameras/webgl/WebGLState.ts(389,37): error TS2693: 'BlendFunc' only refers to a type, but is being used as a value here.
+lib/cameras/webgl/WebGLState.ts(390,34): error TS2693: 'BlendFactor' only refers to a type, but is being used as a value here.
+lib/cameras/webgl/WebGLState.ts(391,34): error TS2693: 'BlendFactor' only refers to a type, but is being used as a value here.
+lib/cameras/webgl/WebGLState.ts(410,43): error TS2693: 'BlendFunc' only refers to a type, but is being used as a value here.
+lib/cameras/webgl/WebGLState.ts(411,46): error TS2693: 'BlendFunc' only refers to a type, but is being used as a value here.
+lib/cameras/webgl/WebGLState.ts(414,39): error TS2693: 'BlendFunc' only refers to a type, but is being used as a value here.
+lib/cameras/webgl/WebGLState.ts(415,44): error TS2693: 'BlendFunc' only refers to a type, but is being used as a value here.
+lib/cameras/webgl/WebGLState.ts(491,37): error TS2345: Argument of type 'BlendFunc' is not assignable to parameter of type 'number'.
+  Type '"Add"' is not assignable to type 'number'.
+lib/cameras/webgl/WebGLState.ts(502,9): error TS2345: Argument of type 'BlendFactor' is not assignable to parameter of type 'number'.
+  Type '"0"' is not assignable to type 'number'.
+lib/cameras/webgl/WebGLState.ts(528,34): error TS2345: Argument of type 'string' is not assignable to parameter of type '"Add" | "Sub" | "ReverseSub" | "Min" | "Max" | undefined'.
+lib/materials/Lines.ts(16,36): error TS2689: Cannot extend an interface 'Material'. Did you mean 'implements'?
+lib/materials/Points.ts(18,37): error TS2689: Cannot extend an interface 'Material'. Did you mean 'implements'?
+lib/objects/Light.ts(5,21): error TS2305: Module '"../../../../../../../Users/mkanda/Downloads/mx/xdraw/lib/basis/Transform"' has no exported member 'XObject'.
+lib/objects/Light.ts(31,40): error TS2345: Argument of type 'this' is not assignable to parameter of type 'Components | undefined'.
+  Type 'Light' is not assignable to type 'Components'.
+    Type 'this' is not assignable to type 'Components'.
+      Type 'Light' is missing the following properties from type 'Components': componentList, addComponent, swapComponent, removeComponent, process
+lib/objects/lights/AmbientLight.ts(20,31): error TS2349: Cannot invoke an expression whose type lacks a call signature. Type 'Vector3' has no compatible call signatures.
+lib/objects/lights/DirectionalLight.ts(30,31): error TS2349: Cannot invoke an expression whose type lacks a call signature. Type 'Vector3' has no compatible call signatures.
+lib/objects/lights/DirectionalLight.ts(37,31): error TS2339: Property 'object' does not exist on type 'Transform'.
+lib/objects/lights/HemisphereLight.ts(17,31): error TS2349: Cannot invoke an expression whose type lacks a call signature. Type 'Vector3' has no compatible call signatures.
+lib/objects/lights/SpotLight.ts(33,31): error TS2349: Cannot invoke an expression whose type lacks a call signature. Type 'Vector3' has no compatible call signatures.
+lib/objects/Model.ts(70,17): error TS2339: Property 'transform' does not exist on type 'Model'.
+lib/objects/Model.ts(106,30): error TS2339: Property 'transform' does not exist on type 'Model'.
+lib/objects/Model.ts(155,22): error TS2339: Property 'transform' does not exist on type 'Model'.
+lib/objects/Model.ts(175,20): error TS2339: Property 'transform' does not exist on type 'Model'.
+lib/objects/Model.ts(202,22): error TS2339: Property 'transform' does not exist on type 'Model'.
+lib/objects/Model.ts(224,20): error TS2339: Property 'transform' does not exist on type 'Model'.
+lib/objects/Outfit.ts(7,21): error TS2305: Module '"../../../../../../../Users/mkanda/Downloads/mx/xdraw/lib/basis/Transform"' has no exported member 'XObject'.
+lib/objects/Outfit.ts(44,32): error TS2339: Property 'transform' does not exist on type 'Bone'.
+lib/objects/Outfit.ts(51,9): error TS2339: Property 'transform' does not exist on type 'Bone'.
+lib/objects/Outfit.ts(57,16): error TS2339: Property 'transform' does not exist on type 'Bone'.
+lib/objects/Outfit.ts(57,41): error TS2339: Property 'transform' does not exist on type 'Bone'.
+lib/objects/Outfit.ts(59,14): error TS2339: Property 'transform' does not exist on type 'Bone'.
+lib/objects/Outfit.ts(59,38): error TS2339: Property 'transform' does not exist on type 'Bone'.
+lib/objects/Outfit.ts(59,91): error TS2339: Property 'transform' does not exist on type 'Bone'.
+lib/objects/Outfit.ts(63,14): error TS2339: Property 'transform' does not exist on type 'Bone'.
+lib/objects/Outfit.ts(63,38): error TS2339: Property 'transform' does not exist on type 'Bone'.
+lib/objects/Outfit.ts(67,52): error TS2339: Property 'transform' does not exist on type 'Bone'.
+lib/objects/Outfit.ts(68,12): error TS2339: Property 'transform' does not exist on type 'Bone'.
+lib/objects/Outfit.ts(69,12): error TS2339: Property 'transform' does not exist on type 'Bone'.
+lib/objects/Outfit.ts(70,12): error TS2339: Property 'transform' does not exist on type 'Bone'.
+lib/objects/Outfit.ts(82,42): error TS2339: Property 'transform' does not exist on type 'Bone'.
+lib/objects/Outfit.ts(98,33): error TS2339: Property 'transform' does not exist on type 'Bone'.
+lib/objects/Outfit.ts(116,12): error TS2339: Property 'transform' does not exist on type 'Outfit'.
+lib/objects/Outfit.ts(118,25): error TS2339: Property 'transform' does not exist on type 'Outfit'.
+lib/objects/Outfit.ts(120,23): error TS2532: Object is possibly 'undefined'.
+lib/objects/Outfit.ts(121,30): error TS2532: Object is possibly 'undefined'.
+lib/objects/Outfit.ts(148,10): error TS2339: Property 'transform' does not exist on type 'Outfit'.
+lib/objects/Outfit.ts(151,37): error TS2339: Property 'transform' does not exist on type 'Outfit'.
+lib/objects/Path.ts(6,24): error TS2307: Cannot find module './BufferMesh'.
+lib/objects/Path.ts(11,18): error TS2307: Cannot find module './Mesh'.
+lib/objects/Path.ts(71,30): error TS2339: Property 'transform' does not exist on type 'Path'.
+lib/objects/Path.ts(88,47): error TS2339: Property 'transform' does not exist on type 'Path'.
+lib/objects/Path.ts(88,72): error TS2339: Property 'transform' does not exist on type 'Path'.
+lib/objects/Path.ts(88,97): error TS2339: Property 'transform' does not exist on type 'Path'.
+lib/objects/Path.ts(119,38): error TS2339: Property 'transform' does not exist on type 'Path'.
+lib/objects/Path.ts(130,59): error TS2339: Property 'transform' does not exist on type 'Path'.
+lib/objects/Path.ts(133,26): error TS2339: Property 'transform' does not exist on type 'Path'.
+lib/objects/Path.ts(150,38): error TS2339: Property 'transform' does not exist on type 'Path'.
+lib/objects/Path.ts(161,59): error TS2339: Property 'transform' does not exist on type 'Path'.
+lib/objects/Path.ts(164,26): error TS2339: Property 'transform' does not exist on type 'Path'.
+lib/objects/Path.ts(183,36): error TS2339: Property 'transform' does not exist on type 'Path'.
+lib/objects/Path.ts(194,57): error TS2339: Property 'transform' does not exist on type 'Path'.
+lib/objects/Path.ts(197,24): error TS2339: Property 'transform' does not exist on type 'Path'.
+lib/objects/Sprite.ts(5,21): error TS2305: Module '"../../../../../../../Users/mkanda/Downloads/mx/xdraw/lib/basis/Transform"' has no exported member 'XObject'.
+lib/objects/Sprite.ts(41,53): error TS2339: Property 'transform' does not exist on type 'Sprite'.
+lib/objects/Sprite.ts(42,34): error TS2339: Property 'transform' does not exist on type 'Sprite'.
+lib/objects/Sprite.ts(42,70): error TS2339: Property 'transform' does not exist on type 'Sprite'.
+lib/objects/Sprite.ts(43,56): error TS2339: Property 'transform' does not exist on type 'Sprite'.
+lib/objects/Sprite.ts(45,42): error TS2339: Property 'rotation' does not exist on type 'MaterialProperties'.
+lib/objects/Sprite.ts(85,20): error TS2339: Property 'transform' does not exist on type 'Sprite'.
+lib/textures/Texture.ts(65,10): error TS2540: Cannot assign to 'mapping' because it is a read-only property.
+info Visit https://yarnpkg.com/en/docs/cli/run for documentation about this command.

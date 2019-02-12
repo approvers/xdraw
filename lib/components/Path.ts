@@ -15,7 +15,7 @@ import Sphere from '../basis/Sphere';
 import Raycaster, { RaycastIntersection } from '../basis/Raycaster';
 
 export default class Path {
-  transform: Transform;
+  
   constructor(public mesh: Mesh = new BufferMesh(), public material = new Lines({}), private lineSegments = 1) { }
 
   private start = new Vector3();

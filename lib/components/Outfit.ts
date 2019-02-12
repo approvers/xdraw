@@ -12,7 +12,7 @@ import Vector4 from "../basis/Vector4";
 import { DataTexture } from "../textures/Texture";
 
 export class Bone  {
-  transform: Transform;
+  
 }
 
 export class Skeleton {
@@ -100,7 +100,7 @@ export class Skeleton {
 }
 
 export default class Outfit  {
-  transform: Transform;
+  
   bindMode: 'detached' | 'attached';
   bindMatrix = new Matrix4();
   bindMatrixInverse = new Matrix4();

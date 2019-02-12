@@ -44,7 +44,7 @@ export default class Model extends EventSource {
     })]);
   }
 
-  transform: Transform;
+  
   drawMode: TraiangleDrawMode;
   morphTargetInfluences: number[] = [];
   morphTargetDictionary = {};

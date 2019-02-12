@@ -15,16 +15,11 @@ import Components from './Components';
 
 let globalId = 0;
 
-export interface XObject {
-  [key: string]: any;
-  transform: Transform;
-}
-
 export default class Transform extends EventSource {
   id: number;
   name: string;
-  parent: Transform | null;
-  children: Transform[];
+  parent: Transform | null = null;
+  children: Transform[] = [];
 
   position = new Vector3();
   rotation = new Euler();
@@ -51,20 +46,16 @@ export default class Transform extends EventSource {
   // lazy boundings
   boundingSphere: Sphere | null;
 
-  constructor(public object: XObject) {
+  constructor(public readonly components = new Components()) {
     super();
     this.id = globalId++;
     this.name = `${this.id}`;
-    this.parent = null;
-    this.children = [];
   }
 
   add(newChild: Transform) {
     this.children.push(newChild);
     newChild.parent = this;
   }
-
-  private readonly components: Components;
 
   static get up() { return new Vector3(0, 1, 0); }
   static get down() { return new Vector3(0, -1, 0); }
@@ -74,7 +65,7 @@ export default class Transform extends EventSource {
   static get right() { return new Vector3(1, 0, 0); }
 
   clone() {
-    const newT = new Transform(this.object);
+    const newT = new Transform(this.components.clone());
     newT.id = this.id;
     newT.name = this.name;
     newT.parent = this.parent;
@@ -155,11 +146,7 @@ export default class Transform extends EventSource {
 
     const position = Vector3.fromMatrixPosition(this.matrixWorld);
 
-    if (this.object instanceof Camera || this.object instanceof Light) {
-      this.quaternion = Quaternion.fromRotationMatrix(Matrix4.lookAt(position, target, Transform.up));
-    } else {
-      this.quaternion = Quaternion.fromRotationMatrix(Matrix4.lookAt(target, position, Transform.up));
-    }
+    this.quaternion = Quaternion.fromRotationMatrix(Matrix4.lookAt(target, position, Transform.up));
 
     if (this.parent) {
       const m1 = Matrix4.extractRotation(this.parent.matrixWorld);
@@ -168,22 +155,20 @@ export default class Transform extends EventSource {
     }
   }
 
-  private traversed: Transform[];
-
-  private traverseRecursive(func: (transform: Transform) => void) {
-    if (this.traversed.some(e => e === this)) return;
-    this.traversed.push(this);
+  private traverseRecursive(func: (transform: Transform) => void, traversed: Transform[]) {
+    if (traversed.some(e => e === this)) return;
+    traversed.push(this);
     this.children.forEach(e => {
       func(e);
-      e.traverseRecursive(func);
+      e.traverseRecursive(func, traversed);
     });
   }
 
   traverse(func: (transform: Transform) => void) {
-    this.traversed = [];
+    const traversed: Transform[] = [];
     this.children.forEach(e => {
       func(e);
-      e.traverseRecursive(func);
+      e.traverseRecursive(func, traversed);
     });
   }
 }
