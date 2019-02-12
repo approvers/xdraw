@@ -2,41 +2,32 @@
  * @author RkEclair / https://github.com/RkEclair
  */
 
-import Light from "../Light";
 import Transform from "../../basis/Transform";
 import Color from "../../basis/Color";
-import Vector3 from "../../basis/Vector3";
-import Vector2 from "../../basis/Vector2";
 import Matrix4 from "../../basis/Matrix4";
-import WebGLLights, { LightUniformsCache } from "../../cameras/webgl/WebGLLights";
+import { XStore, rangeClamper } from "../../basis/Components";
+import Texture from "../../basis/textures/Texture";
+import WebGLLights, { LightUniformsCache } from "../cameras/webgl/WebGLLights";
 
-
-export default class AmbientLight extends Light {
-  target: Transform;
-
-  constructor(color: Color, intensity: number) {
-    super(color, intensity);
-
-    this.transform.position = Transform.up();
-    this.transform.updateMatrix();
+const AmbientLight = (color = new Color(0xffffff), intensity = 1.0) => (store: XStore, _transform: Transform) => {
+  if (!store.hasBind('ambientlight.color')) {
+    store.addBind('ambientlight.color', color)
+    .addBind('ambientlight.intensity', intensity, rangeClamper(0, 1))
+    .addBind('ambientlight.shadow', false)
+    .addBind('ambientlight.shadow.bias', 0, rangeClamper(0, 1))
+    .addBind('ambientlight.shadow.radius', 1)
+    .addBind('ambientlight.shadow.map', new Texture);
   }
-
-  generateUniform() {
-    return {
-      direction: new Vector3(),
-      color: new Color(),
-
-      shadow: false,
-      shadowBias: 0,
-      shadowRadius: 1,
-      shadowMapSize: new Vector2()
-    };
-  }
-
-	shine(state: WebGLLights, _cache: LightUniformsCache, _viewMatrix: Matrix4) {
-		const ambient = state.ambient;
-		ambient[0] += this.color.r * this.intensity;
-		ambient[1] += this.color.g * this.intensity;
-		ambient[2] += this.color.b * this.intensity;
-	}
+  const self = store.getBindValues('ambientlight.');
+  store.set('lights', {
+    shine(state: WebGLLights, _cache: LightUniformsCache, _viewMatrix: Matrix4) {
+  		const ambient = state.ambient;
+  		ambient[0] += self.color.r * self.intensity;
+  		ambient[1] += self.color.g * self.intensity;
+  		ambient[2] += self.color.b * self.intensity;
+  	}
+  });
+  return store;
 }
+
+export default AmbientLight;

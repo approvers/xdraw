@@ -7,7 +7,6 @@
 import { XStore } from '../../basis/Components';
 import Transform from '../../basis/Transform';
 import Vector3 from '../../basis/Vector3';
-import BufferAttribute from '../../basis/BufferAttribute';
 import { packMesh } from './MeshUtils';
 
 function buildPlane(

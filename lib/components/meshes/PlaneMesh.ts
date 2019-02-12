@@ -4,7 +4,6 @@
  * @author RkEclair / https://github.com/RkEclair
  */
 
-import BufferAttribute from '../../basis/BufferAttribute';
 import { XStore } from '../../basis/Components';
 import Transform from '../../basis/Transform';
 import { packMesh } from './MeshUtils';

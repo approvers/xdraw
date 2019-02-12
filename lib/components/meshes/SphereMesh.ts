@@ -7,7 +7,6 @@
 
 import { XStore } from '../../basis/Components';
 import Transform from '../../basis/Transform';
-import BufferAttribute from '../../basis/BufferAttribute';
 import Vector3 from '../../basis/Vector3';
 import { packMesh } from './MeshUtils';
 
