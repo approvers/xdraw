@@ -1,21 +1,22 @@
+/**
+ * @author RkEclair / https://github.com/RkEclair
+ */
+
 import Box3 from "./Box3";
 import Matrix4 from "./Matrix4";
 import Sphere from "./Sphere";
 import Triangle from "./Triangle";
 import Vector3 from "./Vector3";
 
-/**
- * @author RkEclair / https://github.com/RkEclair
- */
-
 export default class Ray {
   constructor(
     public origin = new Vector3(),
-    public direction = new Vector3()
+    public direction = new Vector3(),
+    public maxDistance = Infinity
   ) { }
 
   clone() {
-    return new Ray(this.origin.clone(), this.direction.clone());
+    return new Ray(this.origin.clone(), this.direction.clone(), this.maxDistance);
   }
 
   applyMatrix4(m: Matrix4) {

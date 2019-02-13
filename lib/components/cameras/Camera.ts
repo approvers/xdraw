@@ -10,18 +10,18 @@ import { XStore, selectClamper } from '../../basis/Components';
 import Transform from '../../basis/Transform';
 
 const Camera = (mode: 'Perspective' | 'Orthographic' = 'Perspective', fov = 50, zoom = 1, near = 0.01, far = 2000, focus = 10, aspect = 1, filmGauge = 35, filmOffset = 0) => (store: XStore, transform: Transform) => {
-  if (!store.hasBind('props.camera.mode')) {
-    store.addBind('props.camera.mode', mode, selectClamper(['Perspective', 'Orthographic']))
-      .addBind('props.camera.fov', fov)
-      .addBind('props.camera.zoom', zoom)
-      .addBind('props.camera.near', near)
-      .addBind('props.camera.far', far)
-      .addBind('props.camera.focus', focus)
-      .addBind('props.camera.aspect', aspect)
-      .addBind('props.camera.filmGauge', filmGauge) // in millimeters
-      .addBind('props.camera.filmOffset', filmOffset);
+  if (!store.hasBind('camera.mode')) {
+    store.addBind('camera.mode', mode, selectClamper(['Perspective', 'Orthographic']))
+      .addBind('camera.fov', fov)
+      .addBind('camera.zoom', zoom)
+      .addBind('camera.near', near)
+      .addBind('camera.far', far)
+      .addBind('camera.focus', focus)
+      .addBind('camera.aspect', aspect)
+      .addBind('camera.filmGauge', filmGauge) // in millimeters
+      .addBind('camera.filmOffset', filmOffset);
   }
-  const self = store.getBindValues('props.camera.');
+  const self = store.getBindValues('camera.');
   store.set('camera', {
     filmWidth() {
       // film not completely covered in portrait format (aspect < 1)

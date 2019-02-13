@@ -76,15 +76,15 @@ const BoxMesh = (width = 1, height = 1, depth = 1,
   depthSegments: number = 1
 ) => (store: XStore, _transform: Transform) => {
 
-  if (!store.hasBind('props.boxmesh.mode')) {
-    store.addBind('props.boxmesh.width', width)
-      .addBind('props.boxmesh.height', height)
-      .addBind('props.boxmesh.depth', depth)
-      .addBind('props.boxmesh.widthSegments', widthSegments, (v: number) => Math.floor(v))
-      .addBind('props.boxmesh.heightSegments', heightSegments, (v: number) => Math.floor(v))
-      .addBind('props.boxmesh.depthSegments', depthSegments, (v: number) => Math.floor(v))
+  if (!store.hasBind('boxmesh.mode')) {
+    store.addBind('boxmesh.width', width)
+      .addBind('boxmesh.height', height)
+      .addBind('boxmesh.depth', depth)
+      .addBind('boxmesh.widthSegments', widthSegments, (v: number) => Math.floor(v))
+      .addBind('boxmesh.heightSegments', heightSegments, (v: number) => Math.floor(v))
+      .addBind('boxmesh.depthSegments', depthSegments, (v: number) => Math.floor(v))
   }
-  const self = store.getBindValues('props.boxmesh.');
+  const self = store.getBindValues('boxmesh.');
 
   const indices: number[] = [], vertices: number[] = [], normals: number[] = [], uvs: number[] = [];
 

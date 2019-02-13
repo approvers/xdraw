@@ -12,16 +12,16 @@ import { packMesh } from './MeshUtils';
 
 const SphereMesh = (radius = 1, widthSegments = 8, heightSegments = 6, phiStart = 0, phiLength = Math.PI * 2, thetaStart = 0, thetaLength = Math.PI) => (store: XStore, _transform: Transform) => {
 
-  if (!store.hasBind('props.spheremesh.mode')) {
-    store.addBind('props.spheremesh.radius', radius)
-      .addBind('props.spheremesh.widthSegments', widthSegments, (v: number) => Math.max(3, Math.floor(v) || 8))
-      .addBind('props.spheremesh.heightSegments', heightSegments, (v: number) => Math.max(2, Math.floor(v) || 6))
-      .addBind('props.spheremesh.phiStart', phiStart)
-      .addBind('props.spheremesh.phiLength', phiLength)
-      .addBind('props.spheremesh.thetaStart', thetaStart)
-      .addBind('props.spheremesh.thetaLength', thetaLength)
+  if (!store.hasBind('spheremesh.mode')) {
+    store.addBind('spheremesh.radius', radius)
+      .addBind('spheremesh.widthSegments', widthSegments, (v: number) => Math.max(3, Math.floor(v) || 8))
+      .addBind('spheremesh.heightSegments', heightSegments, (v: number) => Math.max(2, Math.floor(v) || 6))
+      .addBind('spheremesh.phiStart', phiStart)
+      .addBind('spheremesh.phiLength', phiLength)
+      .addBind('spheremesh.thetaStart', thetaStart)
+      .addBind('spheremesh.thetaLength', thetaLength)
   }
-  const self = store.getBindValues('props.spheremesh.');
+  const self = store.getBindValues('spheremesh.');
 
   let index = 0;
   const grid: number[][] = [];

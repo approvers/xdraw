@@ -6,24 +6,33 @@ export default class Color {
   r: number;
   g: number;
   b: number;
+  a: number;
 
-  static rgb(r: number, g: number, b: number) {
+  static rgb(r: number, g: number, b: number, a: number = 0) {
     const newC = new Color();
-    newC.r = r;
-    newC.g = g;
-    newC.b = b;
+    newC.r = Math.max(Math.min(r, 0xff), 0);
+    newC.g = Math.max(Math.min(g, 0xff), 0);
+    newC.b = Math.max(Math.min(b, 0xff), 0);
+    newC.a = Math.max(Math.min(a, 0xff), 0);
     return newC;
   }
 
   constructor(hex: number = 0) {
     hex = Math.floor(hex);
-    this.r = ((hex >> 16) & 255) / 255;
-    this.g = ((hex >> 8) & 255) / 255;
-    this.b = (hex & 255) / 255;
+    if (hex >= 0x1000000) {
+      this.r = ((hex >> 24) & 0xff) / 0xff;
+      this.g = ((hex >> 16) & 0xff) / 0xff;
+      this.b = ((hex >> 8) & 0xff) / 0xff;
+      this.a = (hex & 0xff) / 0xff;
+    } else {
+      this.r = ((hex >> 16) & 0xff) / 0xff;
+      this.g = ((hex >> 8) & 0xff) / 0xff;
+      this.b = (hex & 0xff) / 0xff;
+    }
   }
 
   clone() {
-    const newC = new Color(0);
+    const newC = new Color();
     newC.r = this.r;
     newC.g = this.g;
     newC.b = this.b;

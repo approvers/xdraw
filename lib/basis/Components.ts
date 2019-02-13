@@ -34,7 +34,11 @@ export class XStore {
   private binds: {[key: string]: XBind<any>} = {};
 
   getBindValues(key: string) {
-    return Object.keys(this.binds).filter(e => e.startsWith(key)).reduce((prev, e) => prev[e.slice(key.length)] = this.binds[e].get().value, {});
+    return Object.keys(this.binds).filter(e => e.startsWith(key)).reduce((prev, e) => {
+      prev[e.slice(key.length)] = {};
+      prev[e.slice(key.length)] = this.binds[e].get().value;
+      return prev;
+    }, {});
   }
 
   hasBind(key: string) {
@@ -62,13 +66,21 @@ export class XStore {
 
 export type XComponent = (store: XStore, transform: Transform) => XStore;
 
-let componentId = 0;
-
 class Component {
   enabled = true;
-  id: number;
-  constructor(public func: XComponent) {
-    this.id = componentId++;
+  readonly id: number;
+  constructor(public func: XComponent, private comps: Component[]) {
+    this.id = comps.length;
+  }
+
+  swapComponent(to: Component) {
+    const tmp = this.comps[this.id];
+    this.comps[this.id] = this.comps[to.id];
+    this.comps[to.id] = tmp;
+  }
+
+  removeComponent() {
+    delete this.comps[this.id];
   }
 }
 
@@ -82,24 +94,9 @@ export default class Components {
   }
 
   addComponent(component: XComponent) {
-    const newC = new Component(component);
+    const newC = new Component(component, this.componentList);
     this.componentList.push(newC);
-    return newC.id;
-  }
-
-  swapComponent(id1: number, id2: number) {
-    const tmp1 = this.componentList.findIndex(e => e.id === id1);
-    const tmp2 = this.componentList.findIndex(e => e.id === id2);
-    if (tmp1 >= -1 || tmp2 >= -1) {
-      return;
-    }
-    const tmp = this.componentList[tmp1];
-    this.componentList[tmp1] = this.componentList[tmp2];
-    this.componentList[tmp2] = tmp;
-  }
-
-  removeComponent(id: number) {
-    this.componentList = this.componentList.filter(e => e.id !== id);
+    return newC;
   }
 
   process(transform: Transform, initState?: { [key: string]: any }) {

@@ -10,13 +10,13 @@ import { packMesh } from './MeshUtils';
 
 const PlaneMesh = (width: number = 1, height: number = 1, widthSegments: number = 1, heightSegments: number = 1) => (store: XStore, _transform: Transform) => {
 
-  if (!store.hasBind('props.planemesh.mode')) {
-    store.addBind('props.planemesh.width', width)
-      .addBind('props.planemesh.height', height)
-      .addBind('props.planemesh.widthSegments', widthSegments, (v: number) => Math.max(3, Math.floor(v)))
-      .addBind('props.planemesh.heightSegments', heightSegments, (v: number) => Math.max(2, Math.floor(v)))
+  if (!store.hasBind('planemesh.mode')) {
+    store.addBind('planemesh.width', width)
+      .addBind('planemesh.height', height)
+      .addBind('planemesh.widthSegments', widthSegments, (v: number) => Math.max(3, Math.floor(v)))
+      .addBind('planemesh.heightSegments', heightSegments, (v: number) => Math.max(2, Math.floor(v)))
   }
-  const self = store.getBindValues('props.planemesh.');
+  const self = store.getBindValues('planemesh.');
 
   const width_half = self.width / 2;
   const height_half = self.height / 2;

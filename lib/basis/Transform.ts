@@ -63,7 +63,7 @@ export default class Transform extends EventSource {
   static get right() { return new Vector3(1, 0, 0); }
 
   clone() {
-    const newT = new Transform(this.components.clone());
+    const newT = new Transform(this.comps.clone());
     newT.id = this.id;
     newT.name = this.name;
     newT.parent = this.parent;

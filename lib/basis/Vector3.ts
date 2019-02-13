@@ -2,7 +2,6 @@
  * @author RkEclair / https://github.com/RkEclair
  */
 
-import Camera from '../cameras/Camera';
 import BufferAttribute from './BufferAttribute';
 import Euler from './Euler';
 import Matrix3 from './Matrix3';

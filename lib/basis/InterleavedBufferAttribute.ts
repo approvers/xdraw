@@ -20,13 +20,6 @@ export default class InterleavedBufferAttribute {
     if (value === true) this.version++;
   }
 
-  private onUploadCallback = function() { }
-
-  onUpload(callback: () => {}) {
-    this.onUploadCallback = callback;
-    return this;
-  }
-
   copyAt(srcOffset: number, attribute: InterleavedBufferAttribute, dstOffset: number) {
     srcOffset *= this.stride;
     dstOffset *= attribute.stride;

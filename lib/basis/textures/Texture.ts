@@ -5,11 +5,11 @@
 	* @author RkEclair / https://github.com/RkEclair
 	*/
 
-import EventSource from '../basis/EventSource';
-import { TextureDataType, TextureEncoding, TextureFilter, TextureFormat, TextureMapping, TextureWrapping } from '../cameras/DrawTypes';
-import Matrix3 from '../basis/Matrix3';
-import Vector2 from '../basis/Vector2';
-import { TypedArray } from '../basis/BufferAttribute';
+import Vector2 from '../Vector2';
+import Matrix3 from '../Matrix3';
+import { TextureMapping, TextureWrapping, TextureFilter, TextureFormat, TextureDataType, TextureEncoding } from '../../components/renderer/DrawTypes';
+import EventSource from '../EventSource';
+import { TypedArray } from '../BufferAttribute';
 
 export default class Texture extends EventSource {
   name = '';
@@ -56,24 +56,21 @@ export default class Texture extends EventSource {
   }
 
   clone() {
-    const newT = new Texture();
-    newT.name = this.name;
+    const newT = new Texture(
+      this.image,
+      this.mapping,
+      this.wrapS,
+      this.wrapT,
+      this.magFilter,
+      this.minFilter,
+      this.format,
+      this.type,
+      this.anisotropy,
+      this.encoding
+    );
 
-    newT.image = this.image;
     newT.mipmaps = this.mipmaps.slice(0);
-
-    newT.mapping = this.mapping;
-
-    newT.wrapS = this.wrapS;
-    newT.wrapT = this.wrapT;
-
-    newT.magFilter = this.magFilter;
-    newT.minFilter = this.minFilter;
-
-    newT.anisotropy = this.anisotropy;
-
-    newT.format = this.format;
-    newT.type = this.type;
+    newT.name = this.name;
 
     newT.offset = this.offset.clone();
     newT.repeat = this.repeat.clone();
@@ -87,7 +84,6 @@ export default class Texture extends EventSource {
     newT.premultiplyAlpha = this.premultiplyAlpha;
     newT.flipY = this.flipY;
     newT.unpackAlignment = this.unpackAlignment;
-    newT.encoding = this.encoding;
 
     return newT;
   }
@@ -243,14 +239,14 @@ export class DataTexture {
     public height: number,
     public format?: TextureFormat,
     public type?: TextureDataType,
-    private mapping?: TextureMapping,
-    private wrapS?: TextureWrapping,
-    private wrapT?: TextureWrapping,
+    public mapping?: TextureMapping,
+    public wrapS?: TextureWrapping,
+    public wrapT?: TextureWrapping,
     public magFilter?: TextureFilter,
     public minFilter?: TextureFilter,
     public anisotropy?: number,
     public encoding?: TextureEncoding
-  ) {}
+  ) { }
 
   texture: Texture;
 }

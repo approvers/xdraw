@@ -1,6 +1,3 @@
-import Quaternion from "./Quaternion";
-import Vector3 from "./Vector3";
-
 /**
  * @author mrdoob / http://mrdoob.com/
  * @author supereggbert / http://www.paulbrunt.co.uk/
@@ -14,6 +11,9 @@ import Vector3 from "./Vector3";
  * @author WestLangley / http://github.com/WestLangley
  * @author RkEclair / https://github.com/RkEclair
  */
+
+import Quaternion from "./Quaternion";
+import Vector3 from "./Vector3";
 
 export default class Matrix4 {
   constructor(
