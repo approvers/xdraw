@@ -55,6 +55,11 @@ export default class Transform extends EventSource {
     newChild.parent = this;
   }
 
+  update() {
+    this.comps.process(this);
+    this.updateMatrix();
+  }
+
   static get up() { return new Vector3(0, 1, 0); }
   static get down() { return new Vector3(0, -1, 0); }
   static get back() { return new Vector3(0, 0, -1); }

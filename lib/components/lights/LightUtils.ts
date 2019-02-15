@@ -10,7 +10,7 @@ import Color from "../../basis/Color";
 export function packLight(store: XStore, params: {[key: string]: any} = {}) {
   store.set('lightShadow', {
     color: new Color,
-    intensity: 1.0
+    intensity: 1.0,
     ...params
   });
 }

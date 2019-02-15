@@ -10,7 +10,7 @@ export default class WebGLClears {
   clearMask = 0;
 
   set color(v: Color) {
-		this.gl.clearColor(v.r, v.g, v.b, v.a);
+		this.gl.clearColor(v.r / 0xff, v.g / 0xff, v.b / 0xff, v.a / 0xff);
 		this.clearMask |= this.gl.COLOR_BUFFER_BIT;
 	}
 

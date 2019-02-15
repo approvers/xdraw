@@ -15,7 +15,7 @@ const MeshRenderer = (canvas: HTMLCanvasElement, backgroundSetter: (clears: WebG
 	const gl = ConceptualizatedWebGL(ctx);
 	backgroundSetter(gl.clear);
   return (store: XStore, transform: Transform) => {
-
+		gl.clear.do();
     return store;
   }
 }

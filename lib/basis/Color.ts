@@ -8,7 +8,7 @@ export default class Color {
   b: number;
   a: number;
 
-  static rgb(r: number, g: number, b: number, a: number = 0) {
+  static rgb(r: number, g: number, b: number, a: number = 1) {
     const newC = new Color();
     newC.r = Math.max(Math.min(r, 0xff), 0);
     newC.g = Math.max(Math.min(g, 0xff), 0);
