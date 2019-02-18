@@ -2,7 +2,7 @@
  * @author RkEclair / https://RkEclair
  */
 
-import Vector3 from "./Vector3";
+import Vector3 from './Vector3';
 
 export default class Plane {
   constructor(private _normal = new Vector3(1, 0, 0), public constant = 0) {}

@@ -9,11 +9,13 @@ type RotationOrder = 'XYZ'|'YZX'|'ZXY'|'XZY'|'YXZ'|'ZYX';
 
 export default class Euler {
   constructor(
-      public readonly x: number = 0, public readonly y: number = 0, public readonly z: number = 0,
+      public readonly x: number = 0, public readonly y: number = 0,
+      public readonly z: number = 0,
       public readonly order: RotationOrder = 'XYZ') {}
 
   static fromRotationMatrix(m: Matrix4, order: RotationOrder) {
-    const clamp = (src: number, min: number, max: number) => Math.max(Math.min(src, max), min);
+    const clamp = (src: number, min: number, max: number) =>
+        Math.max(Math.min(src, max), min);
 
     const te = m.elements;
     const m11 = te[0], m12 = te[4], m13 = te[8];

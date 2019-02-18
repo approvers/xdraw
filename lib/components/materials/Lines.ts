@@ -1,9 +1,9 @@
 /**
-	* @author RkEclair / https://github.com/RkEclair
-	*/
+ * @author RkEclair / https://github.com/RkEclair
+ */
 
-import Color from '../basis/Color';
 import Material from './Material';
+import Color from '../../basis/Color';
 
 interface LinesOptions {
   color?: Color;
@@ -11,15 +11,14 @@ interface LinesOptions {
   linecap?: string;
   linejoin?: string;
   lights?: boolean;
-};
+}
 
 export default class Lines extends Material {
-
   color = new Color(0xffffff);
 
-	linewidth = 1;
-	linecap = 'round';
-	linejoin = 'round';
+  linewidth = 1;
+  linecap = 'round';
+  linejoin = 'round';
 
   lights = false;
 
@@ -29,7 +28,7 @@ export default class Lines extends Material {
   }
 
   clone() {
-    return new Lines({ ...this });
+    return new Lines({...this});
   }
 
   toJSON() {
@@ -37,10 +36,6 @@ export default class Lines extends Material {
   }
 }
 
-export class LineSegments extends Lines {
+export class LineSegments extends Lines {}
 
-}
-
-export class LineLoop extends Lines {
-  
-}
+export class LineLoop extends Lines {}

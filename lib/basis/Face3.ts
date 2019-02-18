@@ -15,6 +15,8 @@ export default class Face3 {
       public materialIndex = 0) {}
 
   clone() {
-    return new Face3(this.a, this.b, this.c, this.normal.clone(), this.color.clone(), this.materialIndex);
+    return new Face3(
+        this.a, this.b, this.c, this.normal.clone(), this.color.clone(),
+        this.materialIndex);
   }
 }

@@ -2,14 +2,14 @@
  * @author RkEclair / https://github.com/RkEclair
  */
 
+import BufferAttribute from './BufferAttribute';
 import Matrix4 from './Matrix4';
 import Quaternion from './Quaternion';
-import BufferAttribute from './BufferAttribute';
 
 export default class Vector4 {
   constructor(
-    public x: number = 0, public y: number = 0, public z: number = 0,
-    public w: number = 1) { }
+      public x: number = 0, public y: number = 0, public z: number = 0,
+      public w: number = 1) {}
 
   /**
    * @static
@@ -47,19 +47,19 @@ export default class Vector4 {
 
     let angle: number, x: number, y: number, z: number;
     const epsilon = 0.01,  // margin to allow for rounding errors
-      epsilon2 = 0.1,    // margin to distinguish between 0 and 180 degrees
-      te = m.elements, m11 = te[0], m12 = te[4], m13 = te[8], m21 = te[1],
-      m22 = te[5], m23 = te[9], m31 = te[2], m32 = te[6], m33 = te[10];
+        epsilon2 = 0.1,    // margin to distinguish between 0 and 180 degrees
+        te = m.elements, m11 = te[0], m12 = te[4], m13 = te[8], m21 = te[1],
+          m22 = te[5], m23 = te[9], m31 = te[2], m32 = te[6], m33 = te[10];
 
     if (Math.abs(m12 - m21) < epsilon && Math.abs(m13 - m31) < epsilon &&
-      Math.abs(m23 - m32) < epsilon) {
+        Math.abs(m23 - m32) < epsilon) {
       // singularity found
       // first check for identity matrix which must have +1 for all
       // terms in leading diagonal and zero in other terms
 
       if (Math.abs(m12 + m21) < epsilon2 && Math.abs(m13 + m31) < epsilon2 &&
-        Math.abs(m23 + m32) < epsilon2 &&
-        Math.abs(m11 + m22 + m33 - 3) < epsilon2) {
+          Math.abs(m23 + m32) < epsilon2 &&
+          Math.abs(m11 + m22 + m33 - 3) < epsilon2) {
         // this singularity is identity matrix so angle = 0
 
         return new Vector4(1, 0, 0, 0);  // zero angle, arbitrary axis
@@ -120,8 +120,8 @@ export default class Vector4 {
     // handle normally
 
     let s = Math.sqrt(
-      (m32 - m23) * (m32 - m23) + (m13 - m31) * (m13 - m31) +
-      (m21 - m12) * (m21 - m12));  // used to normalize
+        (m32 - m23) * (m32 - m23) + (m13 - m31) * (m13 - m31) +
+        (m21 - m12) * (m21 - m12));  // used to normalize
 
     if (Math.abs(s) < 0.001) s = 1;
 
@@ -246,7 +246,7 @@ export default class Vector4 {
   }
 
   applyMatrix4(m: Matrix4) {
-    const { x, y, z, w } = this;
+    const {x, y, z, w} = this;
     const e = m.elements;
 
     this.x = e[0] * x + e[4] * y + e[8] * z + e[12] * w;
@@ -289,15 +289,15 @@ export default class Vector4 {
 
   clampScalar(minVal: number, maxVal: number) {
     return this.clamp(
-      new Vector4(minVal, minVal, minVal, minVal),
-      new Vector4(maxVal, maxVal, maxVal, maxVal));
+        new Vector4(minVal, minVal, minVal, minVal),
+        new Vector4(maxVal, maxVal, maxVal, maxVal));
   }
 
   clampLength(min: number, max: number) {
     const length = this.length();
 
     return this.divideScalar(length || 1)
-      .multiplyScalar(Math.max(min, Math.min(max, length)));
+        .multiplyScalar(Math.max(min, Math.min(max, length)));
   }
 
   floor() {
@@ -346,18 +346,18 @@ export default class Vector4 {
 
   lengthSq() {
     return (
-      this.x * this.x + this.y * this.y + this.z * this.z + this.w * this.w);
+        this.x * this.x + this.y * this.y + this.z * this.z + this.w * this.w);
   }
 
   length() {
     return Math.sqrt(
-      this.x * this.x + this.y * this.y + this.z * this.z + this.w * this.w);
+        this.x * this.x + this.y * this.y + this.z * this.z + this.w * this.w);
   }
 
   manhattanLength() {
     return (
-      Math.abs(this.x) + Math.abs(this.y) + Math.abs(this.z) +
-      Math.abs(this.w));
+        Math.abs(this.x) + Math.abs(this.y) + Math.abs(this.z) +
+        Math.abs(this.w));
   }
 
   normalize() {

@@ -12,21 +12,15 @@ export default class Index extends Component {
 	canvas = null;
 
 	componentDidMount() {
-		this.canvas.width = 100;
-		this.canvas.height = 100;
+		this.canvas.width = 500;
+		this.canvas.height = 500;
 		console.log("Ready to render.");
-		{
-			const gl = this.canvas.getContext('webgl');
-			gl.clearColor(0, 0, 0, 1);
-			gl.clear(gl.COLOR_BUFFER_BIT);
-		}
 		this.scene = new Transform;
 	  this.scene.comps.addComponent(MeshRenderer(this.canvas, (clears) => {
-			clears.color = Color.rgb(127, 127, 127);
+			clears.color = new Color(0x666666);
 		}));
 		this.scene.update();
 		console.log("Rendered");
-		this.setState({});
 	}
 
 	render() {

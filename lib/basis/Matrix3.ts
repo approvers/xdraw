@@ -1,10 +1,10 @@
 /**
-  * @author RkEclair / https://github.com/RkEclair
-  */
+ * @author RkEclair / https://github.com/RkEclair
+ */
 
+import BufferAttribute from './BufferAttribute';
 import Matrix4 from './Matrix4';
 import Vector3 from './Vector3';
-import BufferAttribute from './BufferAttribute';
 
 export default class Matrix3 {
   constructor(public elements = [1, 0, 0, 0, 1, 0, 0, 0, 1]) {}
@@ -13,7 +13,9 @@ export default class Matrix3 {
     return new Matrix3([1, 0, 0, 0, 1, 0, 0, 0, 1]);
   }
 
-  static fromUvTransform(tx: number, ty: number, sx: number, sy: number, rotation: number, cx: number, cy: number) {
+  static fromUvTransform(
+      tx: number, ty: number, sx: number, sy: number, rotation: number,
+      cx: number, cy: number) {
     const c = Math.cos(rotation);
     const s = Math.sin(rotation);
 

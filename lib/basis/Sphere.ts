@@ -2,9 +2,9 @@
  * @author RkEclair / https://RkEclair
  */
 
-import Matrix4 from "./Matrix4";
-import Vector3 from "./Vector3";
-import Box3 from "./Box3";
+import Box3 from './Box3';
+import Matrix4 from './Matrix4';
+import Vector3 from './Vector3';
 
 export default class Sphere {
   constructor(private _center = new Vector3(), public radius = 0) {}
@@ -15,9 +15,8 @@ export default class Sphere {
       center = box.getCenter();
     }
     const radius = points.reduce(
-      (acc, cur) => Math.max(acc, (center as Vector3).distanceToSquared(cur)),
-      0
-    );
+        (acc, cur) => Math.max(acc, (center as Vector3).distanceToSquared(cur)),
+        0);
     return new Sphere(center, radius);
   }
 

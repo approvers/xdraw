@@ -1,47 +1,38 @@
-import Vector4 from "./Vector4";
-import Vector3 from "./Vector3";
-import Vector2 from "./Vector2";
-import Color from "./Color";
+import Color from './Color';
+import Vector2 from './Vector2';
+import Vector3 from './Vector3';
+import Vector4 from './Vector4';
 
 /**
  * @author RkEclair / https://github.com/RkEclair
  */
 
-export type TypedArray =
-  | Int8Array
-  | Uint8Array
-  | Int16Array
-  | Uint16Array
-  | Int32Array
-  | Uint32Array
-  | Float32Array;
+export type TypedArray =|Int8Array|Uint8Array|Int16Array|Uint16Array|Int32Array|
+    Uint32Array|Float32Array;
 
 export default class BufferAttribute {
   public readonly count: number;
   needsUpdate: boolean;
 
   static fromArray<T extends TypedArray>(
-    buffer: new (any: any) => T,
-    array: number[],
-    itemSize: number,
-    normalized = false
-  ) {
+      buffer: new(any: any) => T, array: number[], itemSize: number,
+      normalized = false) {
     return new BufferAttribute(new buffer(array), itemSize, normalized);
   }
 
   constructor(
-    public array: TypedArray,
-    private itemSize: number,
-    private normalized = false,
-    public name = ''
-  ) {
+      public array: TypedArray, private itemSize: number,
+      private normalized = false, public name = '') {
     this.count = array.length / itemSize;
   }
 
-  get length() { return this.count; }
+  get length() {
+    return this.count;
+  }
 
   clone() {
-    const newB = new BufferAttribute(this.array, this.itemSize, this.normalized, this.name);
+    const newB = new BufferAttribute(
+        this.array, this.itemSize, this.normalized, this.name);
     newB.needsUpdate = this.needsUpdate;
     return newB;
   }
@@ -79,18 +70,15 @@ export default class BufferAttribute {
   }
 
   setXY(index: number, x: number, y: number) {
-
     index *= this.itemSize;
 
     this.array[index + 0] = x;
     this.array[index + 1] = y;
 
     return this;
-
   }
 
   setXYZ(index: number, x: number, y: number, z: number) {
-
     index *= this.itemSize;
 
     this.array[index + 0] = x;
@@ -98,11 +86,9 @@ export default class BufferAttribute {
     this.array[index + 2] = z;
 
     return this;
-
   }
 
   setXYZW(index: number, x: number, y: number, z: number, w: number) {
-
     index *= this.itemSize;
 
     this.array[index + 0] = x;
@@ -111,7 +97,6 @@ export default class BufferAttribute {
     this.array[index + 3] = w;
 
     return this;
-
   }
 
   copyArray(array: ArrayLike<number>) {
@@ -131,7 +116,6 @@ export default class BufferAttribute {
       array[offset++] = color.r;
       array[offset++] = color.g;
       array[offset++] = color.b;
-
     }
 
     return this;
@@ -148,14 +132,12 @@ export default class BufferAttribute {
 
       array[offset++] = vector.x;
       array[offset++] = vector.y;
-
     }
 
     return this;
   }
 
   copyVector3sArray(vectors: Vector3[]) {
-
     const array = this.array;
     let offset = 0;
 
@@ -167,14 +149,12 @@ export default class BufferAttribute {
       array[offset++] = vector.x;
       array[offset++] = vector.y;
       array[offset++] = vector.z;
-
     }
 
     return this;
   }
 
   copyVector4sArray(vectors: Vector4[]) {
-
     const array = this.array;
     let offset = 0;
 
@@ -187,10 +167,8 @@ export default class BufferAttribute {
       array[offset++] = vector.y;
       array[offset++] = vector.z;
       array[offset++] = vector.w;
-
     }
 
     return this;
-
   }
 }

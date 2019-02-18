@@ -6,19 +6,16 @@
  * @author RkEclair / https://github.com/RkEclair
  */
 
-import Euler from "./Euler";
-import Vector3 from "./Vector3";
-import Matrix4 from "./Matrix4";
+import Euler from './Euler';
+import Matrix4 from './Matrix4';
+import Vector3 from './Vector3';
 
 export default class Quaternion {
   private onChange: Function = () => {};
 
   constructor(
-    private _x: number = 0,
-    private _y: number = 0,
-    private _z: number = 0,
-    private _w: number = 1
-  ) {}
+      private _x: number = 0, private _y: number = 0, private _z: number = 0,
+      private _w: number = 1) {}
 
   get x() {
     return this._x;
@@ -54,11 +51,10 @@ export default class Quaternion {
 
   static fromEuler(euler: Euler, update = false) {
     if (!(euler instanceof Euler)) {
-      throw new Error("ArgumentError: Expected the instance of Euler.");
+      throw new Error('ArgumentError: Expected the instance of Euler.');
     }
 
-    const {x, y, z, order} = euler,
-      newQ = new Quaternion();
+    const {x, y, z, order} = euler, newQ = new Quaternion();
     var c1 = Math.cos(x / 2);
     var c2 = Math.cos(y / 2);
     var c3 = Math.cos(z / 2);
@@ -68,44 +64,44 @@ export default class Quaternion {
     var s3 = Math.sin(z / 2);
 
     switch (order) {
-      case "XYZ":
+      case 'XYZ':
         newQ._x = s1 * c2 * c3 + c1 * s2 * s3;
         newQ._y = c1 * s2 * c3 - s1 * c2 * s3;
         newQ._z = c1 * c2 * s3 + s1 * s2 * c3;
         newQ._w = c1 * c2 * c3 - s1 * s2 * s3;
         break;
-      case "YXZ":
+      case 'YXZ':
         newQ._x = s1 * c2 * c3 + c1 * s2 * s3;
         newQ._y = c1 * s2 * c3 - s1 * c2 * s3;
         newQ._z = c1 * c2 * s3 - s1 * s2 * c3;
         newQ._w = c1 * c2 * c3 + s1 * s2 * s3;
         break;
-      case "ZXY":
+      case 'ZXY':
         newQ._x = s1 * c2 * c3 - c1 * s2 * s3;
         newQ._y = c1 * s2 * c3 + s1 * c2 * s3;
         newQ._z = c1 * c2 * s3 + s1 * s2 * c3;
         newQ._w = c1 * c2 * c3 - s1 * s2 * s3;
         break;
-      case "ZYX":
+      case 'ZYX':
         newQ._x = s1 * c2 * c3 - c1 * s2 * s3;
         newQ._y = c1 * s2 * c3 + s1 * c2 * s3;
         newQ._z = c1 * c2 * s3 - s1 * s2 * c3;
         newQ._w = c1 * c2 * c3 + s1 * s2 * s3;
         break;
-      case "YZX":
+      case 'YZX':
         newQ._x = s1 * c2 * c3 + c1 * s2 * s3;
         newQ._y = c1 * s2 * c3 + s1 * c2 * s3;
         newQ._z = c1 * c2 * s3 - s1 * s2 * c3;
         newQ._w = c1 * c2 * c3 - s1 * s2 * s3;
         break;
-      case "XZY":
+      case 'XZY':
         newQ._x = s1 * c2 * c3 - c1 * s2 * s3;
         newQ._y = c1 * s2 * c3 - s1 * c2 * s3;
         newQ._z = c1 * c2 * s3 + s1 * s2 * c3;
         newQ._w = c1 * c2 * c3 + s1 * s2 * s3;
         break;
       default:
-        throw new Error("ArgumentError: Illegal rotation order on Euler.");
+        throw new Error('ArgumentError: Illegal rotation order on Euler.');
     }
 
     if (update) newQ.onChange();
@@ -114,9 +110,8 @@ export default class Quaternion {
   }
 
   static fromAxisAngle(axis: Vector3, angle: number) {
-    const halfAngle = angle / 2,
-      s = Math.sin(halfAngle),
-      newQ = new Quaternion();
+    const halfAngle = angle / 2, s = Math.sin(halfAngle),
+          newQ = new Quaternion();
 
     newQ._x = axis.x * s;
     newQ._y = axis.y * s;
@@ -129,18 +124,9 @@ export default class Quaternion {
   }
 
   static fromRotationMatrix(m: Matrix4) {
-    const te = m.elements,
-      m11 = te[0],
-      m12 = te[4],
-      m13 = te[8],
-      m21 = te[1],
-      m22 = te[5],
-      m23 = te[9],
-      m31 = te[2],
-      m32 = te[6],
-      m33 = te[10],
-      trace = m11 + m22 + m33,
-      newQ = new Quaternion();
+    const te = m.elements, m11 = te[0], m12 = te[4], m13 = te[8], m21 = te[1],
+          m22 = te[5], m23 = te[9], m31 = te[2], m32 = te[6], m33 = te[10],
+          trace = m11 + m22 + m33, newQ = new Quaternion();
     let s: number;
 
     if (trace > 0) {
@@ -179,8 +165,7 @@ export default class Quaternion {
   }
 
   static fromUnitVectors(from: Vector3, to: Vector3) {
-    let v = new Vector3(),
-      r = from.dot(to) + 1;
+    let v = new Vector3(), r = from.dot(to) + 1;
     if (r < 0.000001) {
       r = 0;
       if (Math.abs(from.x) > Math.abs(from.z)) {
@@ -199,34 +184,21 @@ export default class Quaternion {
   }
 
   static slerpFlat(
-    dst: number[],
-    dstOffset: number,
-    src0: number[],
-    srcOffset0: number,
-    src1: number[],
-    srcOffset1: number,
-    t: number
-  ) {
+      dst: number[], dstOffset: number, src0: number[], srcOffset0: number,
+      src1: number[], srcOffset1: number, t: number) {
     // fuzz-free and array-based Quaternion SLERP operation
-    let x0 = src0[srcOffset0 + 0],
-      y0 = src0[srcOffset0 + 1],
-      z0 = src0[srcOffset0 + 2],
-      w0 = src0[srcOffset0 + 3];
-    const x1 = src1[srcOffset1 + 0],
-      y1 = src1[srcOffset1 + 1],
-      z1 = src1[srcOffset1 + 2],
-      w1 = src1[srcOffset1 + 3];
+    let x0 = src0[srcOffset0 + 0], y0 = src0[srcOffset0 + 1],
+        z0 = src0[srcOffset0 + 2], w0 = src0[srcOffset0 + 3];
+    const x1 = src1[srcOffset1 + 0], y1 = src1[srcOffset1 + 1],
+          z1 = src1[srcOffset1 + 2], w1 = src1[srcOffset1 + 3];
 
     if (w0 !== w1 || x0 !== x1 || y0 !== y1 || z0 !== z1) {
-      var s = 1 - t,
-        cos = x0 * x1 + y0 * y1 + z0 * z1 + w0 * w1,
-        dir = cos >= 0 ? 1 : -1,
-        sqrSin = 1 - cos * cos;
+      var s = 1 - t, cos = x0 * x1 + y0 * y1 + z0 * z1 + w0 * w1,
+          dir = cos >= 0 ? 1 : -1, sqrSin = 1 - cos * cos;
 
       // Skip the Slerp for tiny steps to avoid numeric problems:
       if (sqrSin > 0.000001) {
-        var sin = Math.sqrt(sqrSin),
-          len = Math.atan2(sin, cos * dir);
+        var sin = Math.sqrt(sqrSin), len = Math.atan2(sin, cos * dir);
 
         s = Math.sin(s * len) / sin;
         t = Math.sin(t * len) / sin;
@@ -291,16 +263,13 @@ export default class Quaternion {
   }
 
   rotateTowards(q: Quaternion, step: number) {
-    const oneAngle = step / this.angleTo(q),
-      works: Promise<Quaternion>[] = [];
+    const oneAngle = step / this.angleTo(q), works: Promise<Quaternion>[] = [];
     if (oneAngle === 0 || Number.isFinite(oneAngle))
       return [new Promise((resolve) => resolve(this))];
     for (let i = 0; i < step; ++i) {
-      works.push(
-        new Promise((resolve) => {
-          resolve(Quaternion.slerp(this, q, Math.min(1, i * oneAngle)));
-        })
-      );
+      works.push(new Promise((resolve) => {
+        resolve(Quaternion.slerp(this, q, Math.min(1, i * oneAngle)));
+      }));
     }
     return works;
   }
@@ -323,11 +292,8 @@ export default class Quaternion {
 
   lengthSq() {
     return (
-      this._x * this._x +
-      this._y * this._y +
-      this._z * this._z +
-      this._w * this._w
-    );
+        this._x * this._x + this._y * this._y + this._z * this._z +
+        this._w * this._w);
   }
   length() {
     return Math.sqrt(this.lengthSq());
@@ -410,7 +376,7 @@ export default class Quaternion {
     const sinHalfTheta = Math.sqrt(sqrSinHalfTheta);
     const halfTheta = Math.atan2(sinHalfTheta, cosHalfTheta);
     const ratioA = Math.sin((1 - t) * halfTheta) / sinHalfTheta,
-      ratioB = Math.sin(t * halfTheta) / sinHalfTheta;
+          ratioB = Math.sin(t * halfTheta) / sinHalfTheta;
 
     this._w = w * ratioA + this._w * ratioB;
     this._x = x * ratioA + this._x * ratioB;
@@ -424,8 +390,8 @@ export default class Quaternion {
 
   equals(q: Quaternion) {
     return (
-      this._x === q.x && this._y === q.y && this._z === q.z && this._w === q.w
-    );
+        this._x === q.x && this._y === q.y && this._z === q.z &&
+        this._w === q.w);
   }
 
   toArray(array: number[] = [], offset: number = 0) {

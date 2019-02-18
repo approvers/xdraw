@@ -1,8 +1,8 @@
 /**
-	* @author RkEclair / https://github.com/RkEclair
-	*/
+ * @author RkEclair / https://github.com/RkEclair
+ */
 
-import { Shader } from "../Material";
+import {Shader} from '../Material';
 
 const Background: Shader = {
   uniforms: {

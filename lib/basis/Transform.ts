@@ -2,21 +2,21 @@
  * @author RkEclair / https://github.com/RkEclair
  */
 
+import Components from './Components';
 import Euler from './Euler';
 import EventSource from './EventSource';
+import Matrix3 from './Matrix3';
 import Matrix4 from './Matrix4';
 import Quaternion from './Quaternion';
 import Sphere from './Sphere';
 import Vector3 from './Vector3';
-import Matrix3 from './Matrix3';
-import Components from './Components';
 
 let globalId = 0;
 
 export default class Transform extends EventSource {
   id: number;
   name: string;
-  parent: Transform | null = null;
+  parent: Transform|null = null;
   children: Transform[] = [];
 
   position = new Vector3();
@@ -42,7 +42,7 @@ export default class Transform extends EventSource {
   recieveShadow: true;
 
   // lazy boundings
-  boundingSphere: Sphere | null;
+  boundingSphere: Sphere|null;
 
   constructor(public readonly comps = new Components()) {
     super();
@@ -60,12 +60,24 @@ export default class Transform extends EventSource {
     this.updateMatrix();
   }
 
-  static get up() { return new Vector3(0, 1, 0); }
-  static get down() { return new Vector3(0, -1, 0); }
-  static get back() { return new Vector3(0, 0, -1); }
-  static get front() { return new Vector3(0, 0, 1); }
-  static get left() { return new Vector3(-1, 0, 0); }
-  static get right() { return new Vector3(1, 0, 0); }
+  static get up() {
+    return new Vector3(0, 1, 0);
+  }
+  static get down() {
+    return new Vector3(0, -1, 0);
+  }
+  static get back() {
+    return new Vector3(0, 0, -1);
+  }
+  static get front() {
+    return new Vector3(0, 0, 1);
+  }
+  static get left() {
+    return new Vector3(-1, 0, 0);
+  }
+  static get right() {
+    return new Vector3(1, 0, 0);
+  }
 
   clone() {
     const newT = new Transform(this.comps.clone());
@@ -116,7 +128,7 @@ export default class Transform extends EventSource {
         this.matrixWorld = this.matrix.clone();
       } else {
         this.matrixWorld =
-          this.parent.matrixWorld.clone().multiply(this.matrix);
+            this.parent.matrixWorld.clone().multiply(this.matrix);
       }
       this.matrixWorldNeedsUpdate = false;
       force = true;
@@ -144,12 +156,14 @@ export default class Transform extends EventSource {
     }
   }
 
-  lookAt(target: Vector3) {// This method does not support objects having non-uniformly-scaled parent(s)
+  lookAt(target: Vector3) {  // This method does not support objects having
+                             // non-uniformly-scaled parent(s)
     this.updateWorldMatrix(true, false);
 
     const position = Vector3.fromMatrixPosition(this.matrixWorld);
 
-    this.quaternion = Quaternion.fromRotationMatrix(Matrix4.lookAt(target, position, Transform.up));
+    this.quaternion = Quaternion.fromRotationMatrix(
+        Matrix4.lookAt(target, position, Transform.up));
 
     if (this.parent) {
       const m1 = Matrix4.extractRotation(this.parent.matrixWorld);
@@ -158,7 +172,8 @@ export default class Transform extends EventSource {
     }
   }
 
-  private traverseRecursive(func: (transform: Transform) => void, traversed: Transform[]) {
+  private traverseRecursive(
+      func: (transform: Transform) => void, traversed: Transform[]) {
     if (traversed.some(e => e === this)) return;
     traversed.push(this);
     this.children.forEach(e => {

@@ -2,7 +2,9 @@
  * @author RkEclair / https://github.com/RkEclair
  */
 
-interface EventDispatcher { [key: string]: any, type: string};
+interface EventDispatcher {
+  [key: string]: any, type: string
+}
 
 export default class EventSource {
   private listeners: {[key: string]: Function[]} = {};
@@ -16,9 +18,8 @@ export default class EventSource {
 
   hasEventListener(type: string, listener: Function) {
     return (
-      this.listeners[type] !== undefined &&
-      this.listeners[type].indexOf(listener) !== -1
-    );
+        this.listeners[type] !== undefined &&
+        this.listeners[type].indexOf(listener) !== -1);
   }
 
   removeEventListener(type: string, listener: Function) {

@@ -21,10 +21,7 @@ test('copyArray', () => {
 test('copyColorsArray', () => {
   const buffer = new BufferAttribute(new Float32Array(6), 3);
 
-  buffer.copyColorsArray([
-    Color.rgb(0, 0.5, 1),
-    Color.rgb(0.25, 1, 0)
-  ]);
+  buffer.copyColorsArray([Color.rgb(0, 0.5, 1), Color.rgb(0.25, 1, 0)]);
 
   expect(buffer.array).toEqual(new Float32Array([0, 0.5, 1, 0.25, 1, 0]));
 });
@@ -32,10 +29,7 @@ test('copyColorsArray', () => {
 test('copyVector2sArray', () => {
   const buffer = new BufferAttribute(new Float32Array(4), 2);
 
-  buffer.copyVector2sArray([
-    new Vector2(1, 2),
-    new Vector2(4, 5)
-  ]);
+  buffer.copyVector2sArray([new Vector2(1, 2), new Vector2(4, 5)]);
 
   expect(buffer.array).toEqual(new Float32Array([1, 2, 4, 5]));
 });
@@ -43,10 +37,7 @@ test('copyVector2sArray', () => {
 test('copyVector3sArray', () => {
   const buffer = new BufferAttribute(new Float32Array(6), 2);
 
-  buffer.copyVector3sArray([
-    new Vector3(1, 2, 3),
-    new Vector3(10, 20, 30)
-  ]);
+  buffer.copyVector3sArray([new Vector3(1, 2, 3), new Vector3(10, 20, 30)]);
 
   expect(buffer.array).toEqual(new Float32Array([1, 2, 3, 10, 20, 30]));
 });
@@ -54,16 +45,13 @@ test('copyVector3sArray', () => {
 test('copyVector4sArray', () => {
   const buffer = new BufferAttribute(new Float32Array(8), 2);
 
-  buffer.copyVector4sArray([
-    new Vector4(1, 2, 3, 4),
-    new Vector4(10, 20, 30, 40)
-  ]);
+  buffer.copyVector4sArray(
+      [new Vector4(1, 2, 3, 4), new Vector4(10, 20, 30, 40)]);
 
   expect(buffer.array).toEqual(new Float32Array([1, 2, 3, 4, 10, 20, 30, 40]));
 });
 
 test('set[X, Y, Z, W, XYZ, XYZW]/get[X, Y, Z, W]', () => {
-
   const f32a = new Float32Array([1, 2, 3, 4, 5, 6, 7, 8]);
   const a = new BufferAttribute(f32a, 4, false);
   const expected = new Float32Array([1, 2, -3, -4, -5, -6, 7, 8]);
@@ -77,7 +65,6 @@ test('set[X, Y, Z, W, XYZ, XYZW]/get[X, Y, Z, W]', () => {
 });
 
 test('setXY', () => {
-
   const f32a = new Float32Array([1, 2, 3, 4]);
   const a = new BufferAttribute(f32a, 2, false);
   const expected = new Float32Array([-1, -2, 3, 4]);
@@ -85,11 +72,9 @@ test('setXY', () => {
   a.setXY(0, -1, -2);
 
   expect(a.array).toEqual(expected);
-
 });
 
 test('setXYZ', () => {
-
   const f32a = new Float32Array([1, 2, 3, 4, 5, 6]);
   const a = new BufferAttribute(f32a, 3, false);
   const expected = new Float32Array([1, 2, 3, -4, -5, -6]);
@@ -97,11 +82,9 @@ test('setXYZ', () => {
   a.setXYZ(1, -4, -5, -6);
 
   expect(a.array).toEqual(expected);
-
 });
 
 test('setXYZW', () => {
-
   const f32a = new Float32Array([1, 2, 3, 4]);
   const a = new BufferAttribute(f32a, 4, false);
   const expected = new Float32Array([-1, -2, -3, -4]);
@@ -109,11 +92,11 @@ test('setXYZW', () => {
   a.setXYZW(0, -1, -2, -3, -4);
 
   expect(a.array).toEqual(expected);
-
 });
 
 test('clone', () => {
-  const attr = new BufferAttribute(new Float32Array([1, 2, 3, 4, 0.12, - 12]), 2);
+  const attr =
+      new BufferAttribute(new Float32Array([1, 2, 3, 4, 0.12, -12]), 2);
   attr.needsUpdate = true;
   const attrCopy = attr.clone();
 
@@ -121,6 +104,7 @@ test('clone', () => {
   expect(attrCopy.needsUpdate).toBeTruthy();
 });
 
-test("count", () => {
-  expect(new BufferAttribute(new Float32Array([1, 2, 3, 4, 5, 6]), 3).count).toEqual(2);
+test('count', () => {
+  expect(new BufferAttribute(new Float32Array([1, 2, 3, 4, 5, 6]), 3).count)
+      .toEqual(2);
 });

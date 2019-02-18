@@ -1,8 +1,8 @@
 /**
-	* @author RkEclair / https://github.com/RkEclair
-	*/
+ * @author RkEclair / https://github.com/RkEclair
+ */
 
-import Transform from "./Transform";
+import Transform from './Transform';
 
 export class XBind<T> {
   constructor(private value: T, private clamper: (newValue: T) => T) {}
@@ -13,7 +13,7 @@ export class XBind<T> {
       set: (newValue: T) => {
         this.value = this.clamper(newValue);
       }
-    }
+    };
   }
 }
 
@@ -23,29 +23,32 @@ export function rangeClamper(min: number, max: number) {
 
 export function selectClamper(selects: string[]) {
   return (newValue: string) => {
-    if (selects.some(e => e === newValue)) return newValue;
+    if (selects.some((e) => e === newValue)) return newValue;
     return selects[0];
   };
 }
 
 export class XStore {
-  constructor(private props: { [key: string]: any } = {}) { }
+  constructor(private props: {[key: string]: any} = {}) {}
 
   private binds: {[key: string]: XBind<any>} = {};
 
-  getBindValues(key: string) {
-    return Object.keys(this.binds).filter(e => e.startsWith(key)).reduce((prev, e) => {
-      prev[e.slice(key.length)] = {};
-      prev[e.slice(key.length)] = this.binds[e].get().value;
-      return prev;
-    }, {});
+  getBindValues(key: string): any {
+    return Object.keys(this.binds)
+        .filter((e) => e.startsWith(key))
+        .reduce((prev, e) => {
+          prev[e.slice(key.length)] = {};
+          prev[e.slice(key.length)] = this.binds[e].get().value;
+          return prev;
+        }, {});
   }
 
   hasBind(key: string) {
     return this.binds[key] !== undefined;
   }
 
-  addBind<T>(key: string, initValue: T, clamper: (newValue: T) => T = (v: T) => v) {
+  addBind<T>(
+      key: string, initValue: T, clamper: (newValue: T) => T = (v: T) => v) {
     this.binds[key] = new XBind<T>(initValue, clamper);
     return this;
   }
@@ -89,7 +92,7 @@ export default class Components {
 
   clone() {
     const newC = new Components();
-    this.componentList.forEach(e => newC.addComponent(e.func));
+    this.componentList.forEach((e) => newC.addComponent(e.func));
     return newC;
   }
 
@@ -99,7 +102,9 @@ export default class Components {
     return newC;
   }
 
-  process(transform: Transform, initState?: { [key: string]: any }) {
-    return this.componentList.reduce((prev, current) => current.func(prev, transform), new XStore(initState));
+  process(transform: Transform, initState?: {[key: string]: any}) {
+    return this.componentList.reduce(
+        (prev, current) => current.func(prev, transform),
+        new XStore(initState));
   }
 }

@@ -3,7 +3,7 @@
  * @author RkEclair / https://github.com/RkEclair
  */
 
-import { TypedArray } from './BufferAttribute';
+import {TypedArray} from './BufferAttribute';
 
 export default class InterleavedBufferAttribute {
   count: number;
@@ -20,7 +20,9 @@ export default class InterleavedBufferAttribute {
     if (value === true) this.version++;
   }
 
-  copyAt(srcOffset: number, attribute: InterleavedBufferAttribute, dstOffset: number) {
+  copyAt(
+      srcOffset: number, attribute: InterleavedBufferAttribute,
+      dstOffset: number) {
     srcOffset *= this.stride;
     dstOffset *= attribute.stride;
 
@@ -37,80 +39,62 @@ export default class InterleavedBufferAttribute {
   }
 
   clone() {
-    const newI = new InterleavedBufferAttribute(this.array.slice(), this.stride);
+    const newI =
+        new InterleavedBufferAttribute(this.array.slice(), this.stride);
     newI.dynamic = this.dynamic;
     return newI;
   }
 
   setX(index: number, x: number) {
-
     this.array[index * this.stride + this.offset] = x;
 
     return this;
-
   }
 
   setY(index: number, y: number) {
-
     this.array[index * this.stride + this.offset + 1] = y;
 
     return this;
-
   }
 
   setZ(index: number, z: number) {
-
     this.array[index * this.stride + this.offset + 2] = z;
 
     return this;
-
   }
 
   setW(index: number, w: number) {
-
     this.array[index * this.stride + this.offset + 3] = w;
 
     return this;
-
   }
 
   getX(index: number) {
-
     return this.array[index * this.stride + this.offset];
-
   }
 
   getY(index: number) {
-
     return this.array[index * this.stride + this.offset + 1];
-
   }
 
   getZ(index: number) {
-
     return this.array[index * this.stride + this.offset + 2];
-
   }
 
   getW(index: number) {
-
     return this.array[index * this.stride + this.offset + 3];
-
   }
 
   setXY(index: number, x: number, y: number) {
-
     index = index * this.stride + this.offset;
 
     this.array[index + 0] = x;
     this.array[index + 1] = y;
 
     return this;
-
   }
 
   setXYZ(index: number, x: number, y: number, z: number) {
-
     index = index * this.stride + this.offset;
 
     this.array[index + 0] = x;
@@ -118,11 +102,9 @@ export default class InterleavedBufferAttribute {
     this.array[index + 2] = z;
 
     return this;
-
   }
 
   setXYZW(index: number, x: number, y: number, z: number, w: number) {
-
     index = index * this.stride + this.offset;
 
     this.array[index + 0] = x;
@@ -131,6 +113,5 @@ export default class InterleavedBufferAttribute {
     this.array[index + 3] = w;
 
     return this;
-
   }
 }

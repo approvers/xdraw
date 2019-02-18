@@ -1,15 +1,15 @@
 /**
-  * @author mrdoob / http://mrdoob.com/
-  * @author alteredq / http://alteredqualia.com/
-  * @author szimek / https://github.com/szimek/
-	* @author RkEclair / https://github.com/RkEclair
-	*/
+ * @author mrdoob / http://mrdoob.com/
+ * @author alteredq / http://alteredqualia.com/
+ * @author szimek / https://github.com/szimek/
+ * @author RkEclair / https://github.com/RkEclair
+ */
 
-import Vector2 from '../Vector2';
-import Matrix3 from '../Matrix3';
-import { TextureMapping, TextureWrapping, TextureFilter, TextureFormat, TextureDataType, TextureEncoding } from '../../components/renderer/DrawTypes';
+import {TextureDataType, TextureEncoding, TextureFilter, TextureFormat, TextureMapping, TextureWrapping} from '../../components/renderer/DrawTypes';
+import {TypedArray} from '../BufferAttribute';
 import EventSource from '../EventSource';
-import { TypedArray } from '../BufferAttribute';
+import Matrix3 from '../Matrix3';
+import Vector2 from '../Vector2';
 
 export default class Texture extends EventSource {
   name = '';
@@ -26,48 +26,44 @@ export default class Texture extends EventSource {
   generateMipmaps = true;
   premultiplyAlpha = false;
   flipY = true;
-  unpackAlignment: 1 | 2 | 4 | 8 = 4;	// valid values: 1, 2, 4, 8 (see http://www.khronos.org/opengles/sdk/docs/man/xhtml/glPixelStorei.xml)
+  unpackAlignment: 1|2|4|8 =
+      4;  // valid values: 1, 2, 4, 8 (see
+          // http://www.khronos.org/opengles/sdk/docs/man/xhtml/glPixelStorei.xml)
 
-  // Values of encoding !== THREE.LinearEncoding only supported on map, envMap and emissiveMap.
+  // Values of encoding !== THREE.LinearEncoding only supported on map, envMap
+  // and emissiveMap.
   //
-  // Also changing the encoding after already used by a Material will not automatically make the Material
-  // update.  You need to explicitly call Material.needsUpdate to trigger it to recompile.
+  // Also changing the encoding after already used by a Material will not
+  // automatically make the Material update.  You need to explicitly call
+  // Material.needsUpdate to trigger it to recompile.
 
   version = 0;
   onUpdate = null;
 
   constructor(
-    private image: HTMLImageElement | HTMLCanvasElement | HTMLVideoElement | null = null,
-    public readonly mapping: TextureMapping = 'UV',
-    private wrapS = TextureWrapping.ClampToEdgeWrapping,
-    private wrapT = TextureWrapping.ClampToEdgeWrapping,
-    private magFilter: TextureFilter = 'Linear',
-    private minFilter: TextureFilter = 'LinearMipMapLinear',
-    private format: TextureFormat = 'RGBA',
-    private type: TextureDataType = 'UnsignedByte',
-    private anisotropy = 1,
-    public encoding: TextureEncoding = 'Linear'
-  ) {
+      private image: HTMLImageElement|HTMLCanvasElement|HTMLVideoElement|
+      null = null,
+      public readonly mapping: TextureMapping = 'UV',
+      private wrapS = TextureWrapping.ClampToEdgeWrapping,
+      private wrapT = TextureWrapping.ClampToEdgeWrapping,
+      private magFilter: TextureFilter = 'Linear',
+      private minFilter: TextureFilter = 'LinearMipMapLinear',
+      private format: TextureFormat = 'RGBA',
+      private type: TextureDataType = 'UnsignedByte', private anisotropy = 1,
+      public encoding: TextureEncoding = 'Linear') {
     super();
   }
 
   updateMatrix() {
-    this.matrix = Matrix3.fromUvTransform(this.offset.x, this.offset.y, this.repeat.x, this.repeat.y, this.rotation, this.center.x, this.center.y);
+    this.matrix = Matrix3.fromUvTransform(
+        this.offset.x, this.offset.y, this.repeat.x, this.repeat.y,
+        this.rotation, this.center.x, this.center.y);
   }
 
   clone() {
     const newT = new Texture(
-      this.image,
-      this.mapping,
-      this.wrapS,
-      this.wrapT,
-      this.magFilter,
-      this.minFilter,
-      this.format,
-      this.type,
-      this.anisotropy,
-      this.encoding
-    );
+        this.image, this.mapping, this.wrapS, this.wrapT, this.magFilter,
+        this.minFilter, this.format, this.type, this.anisotropy, this.encoding);
 
     newT.mipmaps = this.mipmaps.slice(0);
     newT.name = this.name;
@@ -89,22 +85,15 @@ export default class Texture extends EventSource {
   }
 
   toJSON(meta: any) {
-
     const isRootObject = (meta === undefined || typeof meta === 'string');
 
     if (!isRootObject && meta.textures[this.name] !== undefined) {
-
       return meta.textures[this.name];
-
     }
 
     const output = {
 
-      metadata: {
-        version: 4.5,
-        type: 'Texture',
-        generator: 'Texture.toJSON'
-      },
+      metadata: {version: 4.5, type: 'Texture', generator: 'Texture.toJSON'},
 
       name: this.name,
 
@@ -133,31 +122,23 @@ export default class Texture extends EventSource {
     };
 
     if (!isRootObject) {
-
       meta.textures[this.name] = output;
-
     }
 
     return output;
-
   }
 
   dispose() {
-
-    this.dispatchEvent({ type: 'dispose' });
-
+    this.dispatchEvent({type: 'dispose'});
   }
 
   transformUv(uv: Vector2) {
-
     if (this.mapping !== 'UV') return uv;
 
     uv.applyMatrix3(this.matrix);
 
     if (uv.x < 0 || uv.x > 1) {
-
       switch (this.wrapS) {
-
         case TextureWrapping.RepeatWrapping:
 
           uv.x = uv.x - Math.floor(uv.x);
@@ -171,24 +152,17 @@ export default class Texture extends EventSource {
         case TextureWrapping.MirroredRepeatWrapping:
 
           if (Math.abs(Math.floor(uv.x) % 2) === 1) {
-
             uv.x = Math.ceil(uv.x) - uv.x;
 
           } else {
-
             uv.x = uv.x - Math.floor(uv.x);
-
           }
           break;
-
       }
-
     }
 
     if (uv.y < 0 || uv.y > 1) {
-
       switch (this.wrapT) {
-
         case TextureWrapping.RepeatWrapping:
 
           uv.y = uv.y - Math.floor(uv.y);
@@ -202,28 +176,20 @@ export default class Texture extends EventSource {
         case TextureWrapping.MirroredRepeatWrapping:
 
           if (Math.abs(Math.floor(uv.y) % 2) === 1) {
-
             uv.y = Math.ceil(uv.y) - uv.y;
 
           } else {
-
             uv.y = uv.y - Math.floor(uv.y);
-
           }
           break;
-
       }
-
     }
 
     if (this.flipY) {
-
       uv.y = 1 - uv.y;
-
     }
 
     return uv;
-
   }
 
   set needsUpdate(value: boolean) {
@@ -234,19 +200,12 @@ export default class Texture extends EventSource {
 
 export class DataTexture {
   constructor(
-    public data: ArrayBuffer | TypedArray,
-    public width: number,
-    public height: number,
-    public format?: TextureFormat,
-    public type?: TextureDataType,
-    public mapping?: TextureMapping,
-    public wrapS?: TextureWrapping,
-    public wrapT?: TextureWrapping,
-    public magFilter?: TextureFilter,
-    public minFilter?: TextureFilter,
-    public anisotropy?: number,
-    public encoding?: TextureEncoding
-  ) { }
+      public data: ArrayBuffer|TypedArray, public width: number,
+      public height: number, public format?: TextureFormat,
+      public type?: TextureDataType, public mapping?: TextureMapping,
+      public wrapS?: TextureWrapping, public wrapT?: TextureWrapping,
+      public magFilter?: TextureFilter, public minFilter?: TextureFilter,
+      public anisotropy?: number, public encoding?: TextureEncoding) {}
 
   texture: Texture;
 }
