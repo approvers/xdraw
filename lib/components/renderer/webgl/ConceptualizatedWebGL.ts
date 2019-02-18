@@ -1,13 +1,20 @@
 /**
-	* @author RkEclair / https://github.com/RkEclair
-	*/
+ * @author RkEclair / https://github.com/RkEclair
+ */
 
-import WebGLClears from "./WebGLClears";
+import WebGLBufferFactory from './WebGLBufferFactory';
+import WebGLClears from './WebGLClears';
+import WebGLDrawCallFactory from './WebGLDrawCallFactory';
+import WebGLShaderFactory from './WebGLShaderFactory';
 
-const ConceptualizatedWebGL = (ctx: WebGLRenderingContext) => {
-  return {
-    clear: new WebGLClears(ctx)
-  };
-}
+const ConceptualizatedWebGL =
+    (ctx: WebGL2RenderingContext) => {
+      return {
+        clear: new WebGLClears(ctx),
+        shaderFactory: new WebGLShaderFactory(ctx),
+        bufferFactory: new WebGLBufferFactory(ctx),
+        drawCallFactory: new WebGLDrawCallFactory(ctx)
+      };
+    }
 
 export default ConceptualizatedWebGL;

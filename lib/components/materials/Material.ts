@@ -1,15 +1,17 @@
 import {XStore} from '../../basis/Components';
 
 /**
- * @author mrdoob / http://mrdoob.com/
- * @author alteredq / http://alteredqualia.com/
  * @author RkEclair / https://github.com/RkEclair
  */
 
-export interface Shader {
-  uniforms: {[locationName: string]: Float32Array|Int32Array;};
+export interface ShaderSet {
   vertexShader: string;
   fragmentShader: string;
+}
+
+export interface Shader {
+  uniforms: {[locationName: string]: Float32Array|Int32Array;};
+  shaders?: ShaderSet;
 }
 
 export function packMaterial(store: XStore, shader: Shader) {

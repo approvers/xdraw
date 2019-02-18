@@ -1,15 +1,10 @@
+import {ShaderSet} from '../Material';
+
 /**
  * @author RkEclair / https://github.com/RkEclair
  */
 
-import {Shader} from '../Material';
-
-const Cube: Shader = {
-  uniforms: {
-    tCube: new Float32Array([]),
-    tFlip: new Int32Array([-1]),
-    opacity: new Float32Array([1.0])
-  },
+const Box: ShaderSet = {
   vertexShader: `
 		varying vec3 vWorldDirection;
 		#include <common>
@@ -35,4 +30,4 @@ const Cube: Shader = {
 	`
 };
 
-export default Cube;
+export default Box;

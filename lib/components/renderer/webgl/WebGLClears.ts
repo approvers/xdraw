@@ -5,7 +5,7 @@ import Color from '../../../basis/Color';
  */
 
 export default class WebGLClears {
-  constructor(private gl: WebGLRenderingContext) {}
+  constructor(private gl: WebGL2RenderingContext) {}
 
   clearMask = 0;
 

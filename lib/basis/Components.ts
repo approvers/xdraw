@@ -102,9 +102,8 @@ export default class Components {
     return newC;
   }
 
-  process(transform: Transform, initState?: {[key: string]: any}) {
+  process(transform: Transform, initState: XStore) {
     return this.componentList.reduce(
-        (prev, current) => current.func(prev, transform),
-        new XStore(initState));
+        (prev, current) => current.func(prev, transform), initState);
   }
 }

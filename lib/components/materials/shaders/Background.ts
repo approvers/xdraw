@@ -1,14 +1,10 @@
+import {ShaderSet} from '../Material';
+
 /**
  * @author RkEclair / https://github.com/RkEclair
  */
 
-import {Shader} from '../Material';
-
-const Background: Shader = {
-  uniforms: {
-    'uvTransform': new Float32Array(),
-    't2D': new Int32Array(),
-  },
+const Background: ShaderSet = {
   vertexShader: `
 		varying vec2 vUv;
 		uniform mat3 uvTransform;

@@ -6,6 +6,7 @@ import {Component} from 'react';
 import Color from '../xdraw/basis/Color';
 import Transform from '../xdraw/basis/Transform';
 import MeshRenderer from '../xdraw/components/renderer/MeshRenderer'
+import {BackgroundBox} from '../xdraw/components/Model';
 
 export default class Index extends Component {
 	scene = null;
@@ -16,8 +17,10 @@ export default class Index extends Component {
 		this.canvas.height = 500;
 		console.log("Ready to render.");
 		this.scene = new Transform;
+		const bg = BackgroundBox();
+		this.scene.add(bg);
 	  this.scene.comps.addComponent(MeshRenderer(this.canvas, (clears) => {
-			clears.color = new Color(0x666666);
+			clears.color = new Color(0x444444);
 		}));
 		this.scene.update();
 		console.log("Rendered");

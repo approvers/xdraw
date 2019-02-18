@@ -2,7 +2,7 @@
  * @author RkEclair / https://github.com/RkEclair
  */
 
-import Components from './Components';
+import Components, {XStore} from './Components';
 import Euler from './Euler';
 import EventSource from './EventSource';
 import Matrix3 from './Matrix3';
@@ -25,6 +25,7 @@ export default class Transform extends EventSource {
   scale = new Vector3(1, 1, 1);
   visible = true;
   recieveRaycast = true;
+  static = false;
 
   matrix = new Matrix4();
   matrixWorld = new Matrix4();
@@ -38,11 +39,13 @@ export default class Transform extends EventSource {
 
   renderOrder: number = 0;
 
-  castShadow: true;
-  recieveShadow: true;
+  castShadow = true;
+  recieveShadow = true;
 
   // lazy boundings
   boundingSphere: Sphere|null;
+
+  store = new XStore;
 
   constructor(public readonly comps = new Components()) {
     super();
@@ -56,8 +59,12 @@ export default class Transform extends EventSource {
   }
 
   update() {
-    this.comps.process(this);
-    this.updateMatrix();
+    const updatePred = (t: Transform) => {
+      t.store = t.comps.process(t, t.store);
+      t.updateMatrix();
+    };
+    this.traverse(updatePred);
+    updatePred(this);
   }
 
   static get up() {
@@ -177,16 +184,16 @@ export default class Transform extends EventSource {
     if (traversed.some(e => e === this)) return;
     traversed.push(this);
     this.children.forEach(e => {
-      func(e);
       e.traverseRecursive(func, traversed);
+      func(e);
     });
   }
 
   traverse(func: (transform: Transform) => void) {
     const traversed: Transform[] = [];
     this.children.forEach(e => {
-      func(e);
       e.traverseRecursive(func, traversed);
+      func(e);
     });
   }
 }
