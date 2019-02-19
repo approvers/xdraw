@@ -2,42 +2,25 @@
  * @author RkEclair / https://github.com/RkEclair
  */
 
-interface EventDispatcher {
-  [key: string]: any, type: string
-}
+export default class EventSource<T> {
+  private listeners = new Array<(newValue: T) => void>();
 
-export default class EventSource {
-  private listeners: {[key: string]: Function[]} = {};
-
-  addEventListener(type: string, listener: Function) {
-    if (this.listeners[type] === undefined) {
-      this.listeners[type] = [];
+  addEventListener(listener: (newValue: T) => void) {
+    if (this.hasEventListener(listener)) {
+      return;
     }
-    this.listeners[type].push(listener);
+    this.listeners.push(listener);
   }
 
-  hasEventListener(type: string, listener: Function) {
-    return (
-        this.listeners[type] !== undefined &&
-        this.listeners[type].indexOf(listener) !== -1);
+  hasEventListener(listener: (newValue: T) => void) {
+    return this.listeners.indexOf(listener) !== undefined;
   }
 
-  removeEventListener(type: string, listener: Function) {
-    const listenersOfType = this.listeners[type];
-
-    if (listenersOfType !== undefined) {
-      const index = listenersOfType.indexOf(listener);
-      if (index !== -1) {
-        listenersOfType.splice(index, 1);
-      }
-    }
+  removeEventListener(listener: (newValue: T) => void) {
+    this.listeners = this.listeners.filter(e => e !== listener);
   }
 
-  dispatchEvent(event: EventDispatcher) {
-    const listenersOfType = this.listeners[event.type];
-
-    if (listenersOfType !== undefined) {
-      listenersOfType.forEach((e) => e.call(this, event));
-    }
+  dispatchEvent(event: {newValue: T; [key: string]: any;}) {
+    this.listeners.forEach((e) => e.call(null, event));
   }
 }

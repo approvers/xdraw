@@ -3,17 +3,22 @@
  */
 
 import Transform from './Transform';
+import EventSource from './EventSource';
 
 export class XBind<T> {
+  private dispatcher = new EventSource;
   constructor(private value: T, private clamper: (newValue: T) => T) {}
 
+  addListener(func: (v: T) => void) {
+    this.dispatcher.addEventListener(func);
+  }
+
   get() {
-    return {
-      value: this.value,
-      set: (newValue: T) => {
-        this.value = this.clamper(newValue);
-      }
-    };
+    return this.value;
+  }
+
+  set(newValue: T) {
+    this.value = this.clamper(newValue);
   }
 }
 
@@ -38,7 +43,7 @@ export class XStore {
         .filter((e) => e.startsWith(key))
         .reduce((prev, e) => {
           prev[e.slice(key.length)] = {};
-          prev[e.slice(key.length)] = this.binds[e].get().value;
+          prev[e.slice(key.length)] = this.binds[e].get();
           return prev;
         }, {});
   }

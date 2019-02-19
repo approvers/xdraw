@@ -1,41 +1,68 @@
+import Color from '../../basis/Color';
+import {XStore} from '../../basis/Components';
+import RectAreaLight from '../lights/RectAreaLight';
+
+import MaterialBase from './MaterialUtils';
+
 /**
  * @author RkEclair / https://github.com/RkEclair
  */
 
-import Material from './Material';
-import Color from '../../basis/Color';
-
-interface LinesOptions {
-  color?: Color;
-  lineWidth?: number;
-  linecap?: string;
-  linejoin?: string;
-  lights?: boolean;
+export enum LineStyle {
+  rect,
+  round,
+  bevel
 }
 
-export default class Lines extends Material {
-  color = new Color(0xffffff);
-
-  linewidth = 1;
-  linecap = 'round';
-  linejoin = 'round';
-
-  lights = false;
-
-  constructor(options: LinesOptions) {
-    super(options);
-    (Object as any).assign(this, options);
+const LineRenderers: {
+  [name: string]: (
+      gl: WebGL2RenderingContext, drawCall: (mode: number) => void) => void;
+} = {
+  Strip: (gl, drawCall) => {
+    drawCall(gl.LINE_STRIP);
+  },
+  Segments: (gl, drawCall) => {
+    drawCall(gl.LINES);
+  },
+  Loop: (gl, drawCall) => {
+    drawCall(gl.LINE_LOOP);
   }
+};
 
-  clone() {
-    return new Lines({...this});
-  }
+const LinesGenerator =
+    (renderer: (gl: WebGL2RenderingContext, drawCall: (mode: number) => void) =>
+         void) =>
+        (color = new Color(Math.random() * 0xffffff), lineWidth = 1,
+         lineCap = LineStyle.rect, lineJoin = LineStyle.rect) =>
+            MaterialBase(
+                (store: XStore) => {
+                  if (!store.hasBind('material.color')) {
+                    store.addBind('material.color', color);
+                    store.addBind('material.lineWidth', lineWidth);
+                    store.addBind('material.lineCap', lineCap);
+                    store.addBind('material.lineJoin', lineJoin);
+                  }
+                  return store;
+                },
+                {
+                  color: new Float32Array([color.r, color.g, color.b]),
+                  lineWidth: new Int32Array([lineWidth]),
+                  lineCap: new Int32Array([lineCap]),
+                  lineJoin: new Int32Array([lineJoin])
+                },
+                renderer);
 
-  toJSON() {
-    throw new Error('Not implemented');
-  }
-}
+const Lines =
+    Object.keys(LineRenderers)
+        .reduce(
+            (prev, key) => {
+              prev[key] = LinesGenerator(LineRenderers[key]);
+              return prev;
+            },
+            new Map<
+                string,
+                (color: Color, lineWidth?: number, lineCap?: LineStyle,
+                 lineJoin?: LineStyle) => (store: XStore) => void>())
 
-export class LineSegments extends Lines {}
 
-export class LineLoop extends Lines {}
+export default Lines;

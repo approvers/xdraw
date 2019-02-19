@@ -6,7 +6,8 @@
 import {TypedArray} from './BufferAttribute';
 
 export default class InterleavedBufferAttribute {
-  count: number;
+  public readonly count: number;
+  public readonly isFloat: boolean;
   dynamic = false;
   offset = 0;
 
@@ -14,6 +15,7 @@ export default class InterleavedBufferAttribute {
 
   constructor(public array: TypedArray, public stride: number) {
     this.count = array.length / stride;
+    this.isFloat = array instanceof Float32Array;
   }
 
   set needsUpdate(value) {
