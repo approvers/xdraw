@@ -1,10 +1,11 @@
-import {ShaderSet} from '../Material';
+import Matrix3 from '../../../basis/Matrix3';
+import MaterialBase from '../MaterialUtils';
 
 /**
  * @author RkEclair / https://github.com/RkEclair
  */
 
-const Background: ShaderSet = {
+const Background = {
   vertexShader: `
 		varying vec2 vUv;
 		uniform mat3 uvTransform;

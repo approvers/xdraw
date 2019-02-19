@@ -2,8 +2,8 @@
  * @author RkEclair / https://github.com/RkEclair
  */
 
-import Transform from './Transform';
 import EventSource from './EventSource';
+import Transform from './Transform';
 
 export class XBind<T> {
   private dispatcher = new EventSource;
@@ -97,11 +97,11 @@ export default class Components {
 
   clone() {
     const newC = new Components();
-    this.componentList.forEach((e) => newC.addComponent(e.func));
+    this.componentList.forEach((e) => newC.add(e.func));
     return newC;
   }
 
-  addComponent(component: XComponent) {
+  add(component: XComponent) {
     const newC = new Component(component, this.componentList);
     this.componentList.push(newC);
     return newC;

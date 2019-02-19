@@ -136,6 +136,7 @@ void main() {
      }) => (store: XStore, transform: Transform) => {
       body(store, transform);
       packMaterial(store, renderer, shaders, uniforms);
+      return store;
     };
 
 

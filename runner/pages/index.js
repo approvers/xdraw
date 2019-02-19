@@ -19,7 +19,7 @@ export default class Index extends Component {
 		this.scene = new Transform;
 		const bg = BackgroundBox();
 		this.scene.add(bg);
-	  this.scene.comps.addComponent(MeshRenderer(this.canvas, (clears) => {
+	  this.scene.comps.add(MeshRenderer(this.canvas, (clears) => {
 			clears.color = new Color(0x444444);
 		}));
 		this.scene.update();

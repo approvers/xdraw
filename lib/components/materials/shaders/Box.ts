@@ -1,10 +1,8 @@
-import {ShaderSet} from '../Material';
-
 /**
  * @author RkEclair / https://github.com/RkEclair
  */
 
-const Box: ShaderSet = {
+const Box = {
   vertexShader: `
 		varying vec3 vWorldDirection;
 		#include <common>

@@ -7,8 +7,6 @@
  */
 
 import Transform from '../basis/Transform';
-import Background from './materials/shaders/Background';
-import Box from './materials/shaders/Box';
 import Unlit from './materials/Unlit';
 import BoxMesh from './meshes/BoxMesh';
 import PlaneMesh from './meshes/PlaneMesh';
@@ -18,14 +16,14 @@ export function BackgroundPlane(width = 1, height = 1) {
   t.recieveRaycast = false;
   t.recieveShadow = false;
   t.castShadow = false;
-  t.comps.addComponent(PlaneMesh(width, height));
-  t.comps.addComponent(Unlit({shaders: Background}));
+  t.comps.add(PlaneMesh(width, height));
+  t.comps.add(Unlit());
   return t;
 }
 
 export function BackgroundBox(width = 1, height = 1, depth = 1) {
   const t = new Transform;
-  t.comps.addComponent(BoxMesh(width, height, depth));
-  t.comps.addComponent(Unlit({shaders: Box}));
+  t.comps.add(BoxMesh(width, height, depth));
+  t.comps.add(Unlit());
   return t;
 }
