@@ -1,4 +1,5 @@
 import BufferAttribute from '../../basis/BufferAttribute';
+import Color from '../../basis/Color';
 import {XBind, XStore} from '../../basis/Components';
 import Transform from '../../basis/Transform';
 
@@ -8,19 +9,13 @@ import Transform from '../../basis/Transform';
 
 function extractAttributes(gl: WebGL2RenderingContext, program: WebGLProgram) {
   const attributeCount = gl.getProgramParameter(program, gl.ACTIVE_ATTRIBUTES);
-  const attributes:
-      {[name: string]: {load: (buffer: BufferAttribute) => void;}} = {};
+  const locations: {[name: string]: number} = {};
   for (let i = 0; i < attributeCount; ++i) {
     const attribute = gl.getActiveAttrib(program, i);
     if (attribute === null) continue;
-    attributes[attribute.name] = {
-      load: (buffer: BufferAttribute) => {
-        gl.vertexAttribPointer(
-            i, buffer.length, buffer.isFloat ? gl.FLOAT : gl.INT, false, 0, 0);
-      }
-    };
+    locations[attribute.name] = i;
   }
-  return attributes;
+  return locations;
 }
 
 function extractUniforms(gl: WebGL2RenderingContext, program: WebGLProgram) {
@@ -54,69 +49,65 @@ export type ShaderProgramSet = {
   fragmentShaderProgram: string
 };
 
-function makeShader(gl: WebGL2RenderingContext, programSet: ShaderProgramSet) {
-  const vertexShader =
-      compileShader(gl, gl.VERTEX_SHADER, programSet.vertexShaderProgram);
-  const fragmentShader =
-      compileShader(gl, gl.FRAGMENT_SHADER, programSet.fragmentShaderProgram);
-  const program = gl.createProgram();
-  if (program === null) throw new Error('Fail to create program.');
-  gl.attachShader(program, vertexShader);
-  gl.attachShader(program, fragmentShader);
-  gl.linkProgram(program);
-  const success = gl.getProgramParameter(program, gl.LINK_STATUS);
-  if (success) {
-    return {
-      use: () => {
-        gl.useProgram(program);
-      },
-      uniforms: extractUniforms(gl, program),
-      attributes: extractAttributes(gl, program)
-    };
-  }
+const makeShader =
+    (programSet: ShaderProgramSet) => (gl: WebGL2RenderingContext) => {
+      const vertexShader =
+          compileShader(gl, gl.VERTEX_SHADER, programSet.vertexShaderProgram);
+      const fragmentShader = compileShader(
+          gl, gl.FRAGMENT_SHADER, programSet.fragmentShaderProgram);
+      const program = gl.createProgram();
+      if (program === null) throw new Error('Fail to create program.');
+      gl.attachShader(program, vertexShader);
+      gl.attachShader(program, fragmentShader);
+      gl.linkProgram(program);
+      const success = gl.getProgramParameter(program, gl.LINK_STATUS);
+      if (success) {
+        return {
+          use: () => {
+            gl.useProgram(program);
+          },
+          uniforms: extractUniforms(gl, program),
+          attributes: extractAttributes(gl, program)
+        };
+      }
 
-  console.error(gl.getProgramInfoLog(program));
-  gl.deleteProgram(program);
-  throw new Error('Fail to link shaders.')
-}
+      console.error(gl.getProgramInfoLog(program));
+      gl.deleteProgram(program);
+      throw new Error('Fail to link shaders.')
+    }
+
+export type UniformUpdater = (location: WebGLUniformLocation) =>
+    (gl: WebGL2RenderingContext, newV: any) => void;
+
+const bindWithUniforms =
+    (binds: {[key: string]: XBind<any>},
+     uniforms: {[locationName: string]: UniformUpdater}) =>
+        (gl: WebGL2RenderingContext, location: WebGLUniformLocation) => {
+          Object.keys(uniforms).forEach(key => {
+            const bind = binds[key];
+            if (bind === undefined) return;
+            bind.addListener((v) => {
+              uniforms[key](location)(gl, v);
+            });
+          });
+        };
 
 const packMaterial =
     (store: XStore,
      renderer: (gl: WebGL2RenderingContext, drawCall: (mode: number) => void) =>
          void,
      shaders: ShaderProgramSet,
-     uniforms: {[locationName: string]: Float32Array|Int32Array;}) => {
+     uniforms: {[locationName: string]: UniformUpdater;}) => {
       store.set('material', {
         uniforms: bindWithUniforms(store.getBindValues('material.'), uniforms),
         renderer,
-        init: (gl: WebGL2RenderingContext) => {
-          makeShader(gl, shaders);
-        },
-        attributeLoader: (attributes: BufferAttribute) => {
-          ;  // TODO
-        }
+        shader: makeShader(shaders)
       });
     };
 
-function updateUniform(
-    gl: WebGL2RenderingContext, data: Float32Array|Int32Array) {}
-
-const bindWithUniforms =
-    (binds: {[key: string]: XBind<Float32Array|Int32Array>},
-     uniforms: {[locationName: string]: Float32Array|Int32Array;}) =>
-        (gl: WebGL2RenderingContext) => {
-          Object.keys(uniforms).forEach(key => {
-            const bind = binds[key];
-            if (bind === undefined) return;
-            bind.addListener((v) => {
-              updateUniform(gl, v);
-            });
-          });
-        };
-
 const MaterialBase =
     (body: (store: XStore, transform: Transform) => void,
-     uniforms: {[locationName: string]: Float32Array|Int32Array;},
+     uniforms: {[locationName: string]: UniformUpdater;},
      renderer: (gl: WebGL2RenderingContext, drawCall: (mode: number) => void) =>
          void,
      shaders: ShaderProgramSet = {
@@ -141,3 +132,8 @@ void main() {
 
 
 export default MaterialBase;
+
+export const ColorUniform = (loc: WebGLUniformLocation) =>
+    (gl: WebGL2RenderingContext, color: Color) => {
+      gl.uniform4f(loc, color.r, color.g, color.b, color.a);
+    }

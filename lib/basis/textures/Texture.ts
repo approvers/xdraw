@@ -7,11 +7,10 @@
 
 import {TextureDataType, TextureEncoding, TextureFilter, TextureFormat, TextureMapping, TextureWrapping} from '../../components/renderer/DrawTypes';
 import {TypedArray} from '../BufferAttribute';
-import EventSource from '../EventSource';
 import Matrix3 from '../Matrix3';
 import Vector2 from '../Vector2';
 
-export default class Texture extends EventSource {
+export default class Texture {
   name = '';
   mipmaps = [];
 
@@ -50,9 +49,7 @@ export default class Texture extends EventSource {
       private minFilter: TextureFilter = 'LinearMipMapLinear',
       private format: TextureFormat = 'RGBA',
       private type: TextureDataType = 'UnsignedByte', private anisotropy = 1,
-      public encoding: TextureEncoding = 'Linear') {
-    super();
-  }
+      public encoding: TextureEncoding = 'Linear') {}
 
   updateMatrix() {
     this.matrix = Matrix3.fromUvTransform(
@@ -126,10 +123,6 @@ export default class Texture extends EventSource {
     }
 
     return output;
-  }
-
-  dispose() {
-    this.dispatchEvent({type: 'dispose'});
   }
 
   transformUv(uv: Vector2) {

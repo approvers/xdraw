@@ -4,23 +4,18 @@
  * @author ikerr / http://verold.com
  */
 
-import Transform, { XObject } from "../basis/Transform";
-import Matrix4 from "../basis/Matrix4";
-import BufferMesh from "../meshes/BufferMesh";
-import Material from "../materials/Material";
-import Vector4 from "../basis/Vector4";
-import { DataTexture } from "../textures/Texture";
-
-export class Bone  {
-  
-}
+import {XStore} from '../basis/Components';
+import Matrix4 from '../basis/Matrix4';
+import {DataTexture} from '../basis/textures/Texture';
+import Transform from '../basis/Transform';
+import Vector4 from '../basis/Vector4';
 
 export class Skeleton {
   boneMatrices: Float32Array;
   boneTexture?: DataTexture;
 
-  constructor(public bones: Bone[] = [], public boneInverses: Matrix4[] = []) {
-
+  constructor(
+      public bones: Transform[] = [], public boneInverses: Matrix4[] = []) {
     // copy the bone array
     this.bones = bones.slice(0);
     this.boneMatrices = new Float32Array(bones.length * 16);
@@ -41,33 +36,31 @@ export class Skeleton {
 
   calculateInverses() {
     this.bones.forEach(e => {
-      this.boneInverses.push(e.transform.matrixWorld.inverse());
+      this.boneInverses.push(e.matrixWorld.inverse());
     });
   }
 
   pose() {
     // recover the bind-time world matrices
     this.bones.forEach((e, i) => {
-      e.transform.matrixWorld = this.boneInverses[i].inverse();
+      e.matrixWorld = this.boneInverses[i].inverse();
     })
 
     // compute the local matrices, positions, rotations and scales
 
     for (const bone of this.bones) {
-      if (bone.transform.parent && bone.transform.parent.object instanceof Bone) {
-
-        bone.transform.matrix = bone.transform.parent.matrixWorld.inverse().multiply(bone.transform.matrixWorld);
+      if (bone.parent !== null) {
+        bone.matrix =
+            bone.parent.matrixWorld.inverse().multiply(bone.matrixWorld);
 
       } else {
-
-        bone.transform.matrix = bone.transform.matrixWorld.clone();
-
+        bone.matrix = bone.matrixWorld.clone();
       }
 
-      const { position, quaternion, scale } = bone.transform.matrix.decompose();
-      bone.transform.position = position;
-      bone.transform.quaternion = quaternion;
-      bone.transform.scale = scale;
+      const {position, quaternion, scale} = bone.matrix.decompose();
+      bone.position = position;
+      bone.quaternion = quaternion;
+      bone.scale = scale;
     }
   }
 
@@ -79,7 +72,7 @@ export class Skeleton {
     // flatten bone matrices to array
     for (let i = 0; i < bones.length; i++) {
       // compute the offset between the current and the original transform
-      const matrix = bones[i] ? bones[i].transform.matrixWorld : Matrix4.identity();
+      const matrix = bones[i] ? bones[i].matrixWorld : Matrix4.identity();
 
       const offsetMatrix = matrix.multiply(boneInverses[i]);
       this.boneMatrices = new Float32Array(offsetMatrix.toArray(i * 16));
@@ -94,68 +87,60 @@ export class Skeleton {
     return new Skeleton(this.bones, this.boneInverses);
   }
 
-  getBoneByName(name: string) {
-		return this.bones.find(e => e.transform.name === name);
+  getTransformByName(name: string) {
+    return this.bones.find(e => e.name === name);
   }
 }
 
-export default class Outfit  {
-  
-  bindMode: 'detached' | 'attached';
-  bindMatrix = new Matrix4();
-  bindMatrixInverse = new Matrix4();
-  skeleton: Skeleton;
+const Outfit =
+    () => {
+      let binded = true;
+      return (store: XStore, transform: Transform) => {
+        transform.updateMatrixWorld = function(force?: boolean) {
+          transform.updateMatrixWorld(force)
 
-  constructor(public readonly mesh: BufferMesh, public readonly material: Material) {
-    this.bindMode = 'attached';
-  }
+          if (binded) {
+            this.bindMatrixInverse = transform.matrixWorld.inverse();
+          }
+          else {
+            this.bindMatrixInverse = this.bindMatrix.inverse();
+          }
+        };
+        store.set('outfit', {
+          bind(skeleton: Skeleton, bindMatrix?: Matrix4) {
+            this.skeleton = skeleton;
+            if (bindMatrix === undefined) {
+              this.transform.updateMatrixWorld(true);
+              this.skeleton.calculateInverses();
+              bindMatrix = transform.matrixWorld;
+            }
+            this.bindMatrix = bindMatrix.clone();
+            this.bindMatrixInverse = bindMatrix.inverse();
+          },
+          pose() {
+            this.skeleton.pose();
+          },
+          normalizeSkinWeights() {
+            let vector = new Vector4();
+            const skinWeight = store.getBindValues('mesh.').skinWeight;
 
-  bind(skeleton: Skeleton, bindMatrix?: Matrix4) {
-    this.skeleton = skeleton;
-    if (bindMatrix === undefined) {
-      this.transform.updateMatrixWorld(true);
-      this.skeleton.calculateInverses();
-      bindMatrix = this.transform.matrixWorld;
-    }
-    this.bindMatrix = bindMatrix.clone();
-    this.bindMatrixInverse = bindMatrix.inverse();
-  }
-
-  pose() {
-    this.skeleton.pose();
-  }
-
-  normalizeSkinWeights() {
-    let vector = new Vector4();
-    const skinWeight = this.mesh.attributes.skinWeight;
-
-    for (let i = 0, l = skinWeight.count; i < l; i++) {
-      vector.x = skinWeight.getX(i);
-      vector.y = skinWeight.getY(i);
-      vector.z = skinWeight.getZ(i);
-      vector.w = skinWeight.getW(i);
-      const scale = 1.0 / vector.manhattanLength();
-      if (scale !== Infinity) {
-        vector.multiplyScalar(scale);
-      } else {
-        vector = new Vector4(1, 0, 0, 0); // do something reasonable
+            for (let i = 0; i < skinWeight.count; i++) {
+              vector.x = skinWeight.getX(i);
+              vector.y = skinWeight.getY(i);
+              vector.z = skinWeight.getZ(i);
+              vector.w = skinWeight.getW(i);
+              const scale = 1.0 / vector.manhattanLength();
+              if (scale !== Infinity) {
+                vector.multiplyScalar(scale);
+              } else {
+                vector = new Vector4(1, 0, 0, 0);  // do something reasonable
+              }
+              skinWeight.setXYZW(i, vector.x, vector.y, vector.z, vector.w);
+            }
+          }
+        })
+        return store;
       }
-      skinWeight.setXYZW(i, vector.x, vector.y, vector.z, vector.w);
     }
-  }
 
-  updateMatrixWorld(force: boolean) {
-    this.transform.updateMatrixWorld(force)
-
-    if (this.bindMode === 'attached') {
-      this.bindMatrixInverse = this.transform.matrixWorld.inverse();
-    } else {
-      this.bindMatrixInverse = this.bindMatrix.inverse();
-    }
-  }
-  clone() {
-    const newO = new Outfit(this.mesh, this.material);
-    newO.bind(this.skeleton, this.bindMatrix);
-    return newO;
-  }
-}
+export default Outfit;
