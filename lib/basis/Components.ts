@@ -48,6 +48,16 @@ export class XStore {
         }, {});
   }
 
+  getBindsStartsWith(key: string): any {
+    return Object.keys(this.binds)
+        .filter((e) => e.startsWith(key))
+        .reduce((prev, e) => {
+          prev[e.slice(key.length)] = {};
+          prev[e.slice(key.length)] = this.binds[e];
+          return prev;
+        }, {});
+  }
+
   hasBind(key: string) {
     return this.binds[key] !== undefined;
   }

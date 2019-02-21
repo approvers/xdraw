@@ -76,21 +76,23 @@ const makeShader =
       throw new Error('Fail to link shaders.')
     }
 
-export type UniformUpdater = (location: WebGLUniformLocation) =>
-    (gl: WebGL2RenderingContext, newV: any) => void;
+export type UniformUpdater =
+    (location: WebGLUniformLocation, gl: WebGL2RenderingContext, newV: any) =>
+        void;
 
 const bindWithUniforms =
     (binds: {[key: string]: XBind<any>},
      uniforms: {[locationName: string]: UniformUpdater}) =>
-        (gl: WebGL2RenderingContext, location: WebGLUniformLocation) => {
-          Object.keys(uniforms).forEach(key => {
-            const bind = binds[key];
-            if (bind === undefined) return;
-            bind.addListener((v) => {
-              uniforms[key](location)(gl, v);
-            });
-          });
-        };
+        (locations: {[locationName: string]: WebGLUniformLocation}) =>
+            (gl: WebGL2RenderingContext) => {
+              Object.keys(uniforms).forEach(key => {
+                const bind = binds[key];
+                if (bind === undefined) return;
+                bind.addListener((v) => {
+                  uniforms[key](locations[key], gl, v);
+                });
+              });
+            };
 
 const packMaterial =
     (store: XStore,
@@ -99,7 +101,8 @@ const packMaterial =
      shaders: ShaderProgramSet,
      uniforms: {[locationName: string]: UniformUpdater;}) => {
       store.set('material', {
-        uniforms: bindWithUniforms(store.getBindValues('material.'), uniforms),
+        uniforms:
+            bindWithUniforms(store.getBindsStartsWith('material.'), uniforms),
         renderer,
         shader: makeShader(shaders)
       });
@@ -133,7 +136,7 @@ void main() {
 
 export default MaterialBase;
 
-export const ColorUniform = (loc: WebGLUniformLocation) =>
-    (gl: WebGL2RenderingContext, color: Color) => {
+export const ColorUniform =
+    (loc: WebGLUniformLocation, gl: WebGL2RenderingContext, color: Color) => {
       gl.uniform4f(loc, color.r, color.g, color.b, color.a);
     }

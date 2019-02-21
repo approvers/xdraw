@@ -2,10 +2,9 @@
  * @author RkEclair / https://github.com/RkEclair
  */
 
-import BufferAttribute from '../../basis/BufferAttribute';
 import {XStore} from '../../basis/Components';
 import Transform from '../../basis/Transform';
-import {ShaderSet} from '../materials/Material';
+import {MeshExports} from '../meshes/MeshUtils';
 
 import ConceptualizatedWebGL from './webgl/ConceptualizatedWebGL';
 import WebGLClears from './webgl/WebGLClears';
@@ -22,25 +21,35 @@ const MeshRenderer =
 
       return (store: XStore, transform: Transform) => {
         const meshAndShaders: {
-          transform: Transform; mesh: any; shaders: any[];
-          drawType: 'line' | 'triangle';
+          transform: Transform; mesh: MeshExports; material: {
+            uniforms:
+                (locations: {[locationName: string]: WebGLUniformLocation;}) =>
+                    (gl: WebGL2RenderingContext) => void
+            renderer: (
+                gl: WebGL2RenderingContext, drawCall: (mode: number) => void) =>
+                void;
+            shader: (gl: WebGL2RenderingContext) => {
+              use: () => void;
+              uniforms: {[name: string]: number;};
+              attributes: {[name: string]: number;};
+            };
+          };
         }[] = [];
         (lookingTransform || transform).traverse((t) => {
           if (t.store.has('mesh') || t.store.has('shaders')) {
             meshAndShaders.push({
               transform: t,
               mesh: t.store.get('mesh'),
-              shaders: t.store.get('shaders'),
-              drawType: t.store.get('drawing.mode') || 'triangle'
+              material: t.store.get('material')
             });
           }
         });
-        const drawCalls = meshAndShaders.map(e => {
-          return gl.drawCallFactory.makeDrawCall(gl, e);
-        });
+        const drawCalls =
+            meshAndShaders.map(e => gl.drawCallFactory.makeDrawCall(e));
 
         console.log(drawCalls);
         gl.clear.clear();
+        drawCalls.forEach(e => e());
         return store;
       }
     }

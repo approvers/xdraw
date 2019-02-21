@@ -1,7 +1,7 @@
 import Color from '../../basis/Color';
 import {XStore} from '../../basis/Components';
 
-import MaterialBase from './MaterialUtils';
+import MaterialBase, { ColorUniform } from './MaterialUtils';
 
 /**
  * @author RkEclair / https://github.com/RkEclair
@@ -14,7 +14,7 @@ const Unlit = (color = new Color(Math.random() * 0xffffff)) => MaterialBase(
       }
       return store;
     },
-    {color: new Float32Array([color.r, color.g, color.b])},
+    {color: ColorUniform},
     (gl, drawCall) => {
       drawCall(gl.TRIANGLE_STRIP);
     });
