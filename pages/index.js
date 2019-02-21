@@ -3,10 +3,10 @@
 	*/
 
 import {Component} from 'react';
-import Color from '../xdraw/basis/Color';
-import Transform from '../xdraw/basis/Transform';
-import MeshRenderer from '../xdraw/components/renderer/MeshRenderer'
-import {BackgroundBox} from '../xdraw/components/Model';
+import Color from '../lib/basis/Color';
+import Transform from '../lib/basis/Transform';
+import MeshRenderer from '../lib/components/renderer/MeshRenderer'
+import {BackgroundBox} from '../lib/components/Model';
 
 export default class Index extends Component {
 	scene = null;
@@ -22,9 +22,14 @@ export default class Index extends Component {
 	  this.scene.comps.add(MeshRenderer(this.canvas, (clears) => {
 			clears.color = new Color(0x444444);
 		}));
-		this.scene.update();
+		this.updateFrame();
 		console.log("Rendered");
 	}
+
+	updateFrame = () => {
+		this.scene.update();
+		console.log(this.scene);
+	};
 
 	render() {
 		return <div>
