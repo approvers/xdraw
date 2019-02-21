@@ -30,7 +30,7 @@ export default class Matrix4 {
 
   static extractRotation(m: Matrix4) {  // does not support reflection matrices
 
-    const te = new Matrix4();
+    const newM = new Matrix4(), te = newM.elements;
     const me = m.elements;
 
     const scaleX = 1 / Vector3.fromMatrixColumn(m, 0).length();
@@ -57,7 +57,7 @@ export default class Matrix4 {
     te[14] = 0;
     te[15] = 1;
 
-    return te;
+    return newM;
   }
 
   clone() {
@@ -139,10 +139,11 @@ export default class Matrix4 {
   }
 
   inverse(m: Matrix4 = Matrix4.identity()) {
-    const te = new Matrix4(), me = m.elements, n11 = me[0], n21 = me[1],
-          n31 = me[2], n41 = me[3], n12 = me[4], n22 = me[5], n32 = me[6],
-          n42 = me[7], n13 = me[8], n23 = me[9], n33 = me[10], n43 = me[11],
-          n14 = me[12], n24 = me[13], n34 = me[14], n44 = me[15],
+    const newM = new Matrix4(), te = newM.elements, me = m.elements,
+          n11 = me[0], n21 = me[1], n31 = me[2], n41 = me[3], n12 = me[4],
+          n22 = me[5], n32 = me[6], n42 = me[7], n13 = me[8], n23 = me[9],
+          n33 = me[10], n43 = me[11], n14 = me[12], n24 = me[13], n34 = me[14],
+          n44 = me[15],
           t11 = n23 * n34 * n42 - n24 * n33 * n42 + n24 * n32 * n43 -
         n22 * n34 * n43 - n23 * n32 * n44 + n22 * n33 * n44,
           t12 = n14 * n33 * n42 - n13 * n34 * n42 - n14 * n32 * n43 +
@@ -205,7 +206,7 @@ export default class Matrix4 {
               n11 * n23 * n32 - n12 * n21 * n33 + n11 * n22 * n33) *
         detInv;
 
-    return te;
+    return newM;
   }
 
   static makeRotationFromQuaternion(q: Quaternion) {
@@ -213,7 +214,7 @@ export default class Matrix4 {
   }
 
   static compose(position: Vector3, quaternion: Quaternion, scale: Vector3) {
-    const te = new Matrix4();
+    const newM = new Matrix4(), te = newM.elements;
 
     const x = quaternion.x, y = quaternion.y, z = quaternion.z,
           w = quaternion.w;
@@ -244,7 +245,7 @@ export default class Matrix4 {
     te[14] = position.z;
     te[15] = 1;
 
-    return te;
+    return newM;
   }
 
   decompose(): {position: Vector3, quaternion: Quaternion, scale: Vector3} {
@@ -296,7 +297,7 @@ export default class Matrix4 {
 
     // TODO: make this more efficient
     //( based on
-    //http://www.euclideanspace.com/maths/algebra/matrix/functions/inverse/fourD/index.htm
+    // http://www.euclideanspace.com/maths/algebra/matrix/functions/inverse/fourD/index.htm
     //)
 
     return (
@@ -317,7 +318,7 @@ export default class Matrix4 {
   }
 
   static lookAt(eye: Vector3, target: Vector3, up: Vector3) {
-    const te = new Matrix4();
+    const newM = new Matrix4(), te = newM.elements;
     const z = eye.clone().sub(target);
 
     if (z.lengthSq() === 0) {
@@ -352,7 +353,7 @@ export default class Matrix4 {
     te[6] = y.z;
     te[10] = z.z;
 
-    return te;
+    return newM;
   }
 
   makePerspective(

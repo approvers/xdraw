@@ -1,4 +1,5 @@
 import Transform from '../../../basis/Transform';
+import {MaterialExports} from '../../materials/MaterialUtils';
 import {MeshExports} from '../../meshes/MeshUtils';
 
 /**
@@ -11,27 +12,19 @@ export default class WebGLDrawCallFactory {
   makeDrawCall({transform, mesh, material}: {
     transform: Transform;
     mesh?: MeshExports;
-    material?: {
-      uniforms: (locations: {[locationName: string]: WebGLUniformLocation;}) =>
-          (gl: WebGL2RenderingContext) => void
-      renderer:
-          (gl: WebGL2RenderingContext,
-           drawCall: (mode: number) => void) => void;
-      shader: (gl: WebGL2RenderingContext) => {
-        use: () => void;
-        uniforms: {[name: string]: number;};
-        attributes: {[name: string]: number;};
-      };
-    };
+    material?: MaterialExports;
   }) {
     if (mesh === undefined || material === undefined) {
       return () => {};
     }
     const shader = material.shader(this.gl);
-    const meshUpdaters = mesh(shader.attributes);
     material.uniforms(shader.uniforms)(this.gl);
     return () => {
-      const {start, count} = meshUpdaters(this.gl);
+      shader.use();
+      const {start, count} = mesh(shader.attributes)(this.gl);
+      this.gl.uniformMatrix4fv(
+          shader.uniforms['modelViewProjection'], false,
+          transform.matrix.toArray());
       material.renderer(
           this.gl, (mode: number) => {this.gl.drawArrays(mode, start, count)});
     };

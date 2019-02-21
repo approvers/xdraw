@@ -4,6 +4,7 @@
 
 import {XStore} from '../../basis/Components';
 import Transform from '../../basis/Transform';
+import {MaterialExports} from '../materials/MaterialUtils';
 import {MeshExports} from '../meshes/MeshUtils';
 
 import ConceptualizatedWebGL from './webgl/ConceptualizatedWebGL';
@@ -20,20 +21,12 @@ const MeshRenderer =
       backgroundSetter(gl.clear);
 
       return (store: XStore, transform: Transform) => {
+        if (store.has('camera')) {
+          const camera = store.get('camera');
+          transform.traverse(camera.updateProjectionMatrix);
+        }
         const meshAndShaders: {
-          transform: Transform; mesh: MeshExports; material: {
-            uniforms:
-                (locations: {[locationName: string]: WebGLUniformLocation;}) =>
-                    (gl: WebGL2RenderingContext) => void
-            renderer: (
-                gl: WebGL2RenderingContext, drawCall: (mode: number) => void) =>
-                void;
-            shader: (gl: WebGL2RenderingContext) => {
-              use: () => void;
-              uniforms: {[name: string]: number;};
-              attributes: {[name: string]: number;};
-            };
-          };
+          transform: Transform; mesh: MeshExports; material: MaterialExports;
         }[] = [];
         (lookingTransform || transform).traverse((t) => {
           if (t.store.has('mesh') || t.store.has('shaders')) {
@@ -46,8 +39,6 @@ const MeshRenderer =
         });
         const drawCalls =
             meshAndShaders.map(e => gl.drawCallFactory.makeDrawCall(e));
-
-        console.log(drawCalls);
         gl.clear.clear();
         drawCalls.forEach(e => e());
         return store;

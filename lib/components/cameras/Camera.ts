@@ -37,7 +37,7 @@ const Camera =
           // film not completely covered in landscape format (aspect > 1)
           return self.filmGauge / Math.max(self.aspect, 1);
         },
-        updateProjectionMatrix(view?: {
+        updateProjectionMatrix(t: Transform, view?: {
           width: number,
           height: number,
           fullWidth: number,
@@ -62,10 +62,8 @@ const Camera =
           const skew = filmOffset;
           if (skew !== 0) left += self.near * skew / this.filmWidth();
 
-          transform.projectionMatrix.makePerspective(
+          t.matrix = t.matrix.makePerspective(
               left, left + width, top, top - height, self.near, self.far);
-
-          transform.projectionMatrixInverse.inverse(transform.projectionMatrix);
         }
       });
       return store;

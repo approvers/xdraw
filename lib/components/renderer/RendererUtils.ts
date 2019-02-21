@@ -1,14 +1,12 @@
 /**
-	* @author RkEclair / https://github.com/RkEclair
-	*/
+ * @author RkEclair / https://github.com/RkEclair
+ */
 
-import { XStore } from "../../basis/Components";
-import BufferAttribute from "../../basis/BufferAttribute";
+import BufferAttribute from '../../basis/BufferAttribute';
+import {XStore} from '../../basis/Components';
 
 export function extractMesh(store: XStore): {
-  indices: BufferAttribute;
-  position: BufferAttribute;
-  normal: BufferAttribute;
+  index: BufferAttribute; position: BufferAttribute; normal: BufferAttribute;
   uv: BufferAttribute;
 } {
   return store.get('mesh');

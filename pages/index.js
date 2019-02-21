@@ -7,6 +7,8 @@ import Color from '../lib/basis/Color';
 import Transform from '../lib/basis/Transform';
 import MeshRenderer from '../lib/components/renderer/MeshRenderer'
 import {BackgroundBox} from '../lib/components/Model';
+import Vector3 from '../lib/basis/Vector3';
+import Camera from '../lib/components/cameras/Camera';
 
 export default class Index extends Component {
 	scene = null;
@@ -19,6 +21,8 @@ export default class Index extends Component {
 		this.scene = new Transform;
 		const bg = BackgroundBox();
 		this.scene.add(bg);
+		this.scene.comps.add(Camera("Perspective"));
+		this.scene.translate(new Vector3(0, 0, -5));
 	  this.scene.comps.add(MeshRenderer(this.canvas, (clears) => {
 			clears.color = new Color(0x444444);
 		}));

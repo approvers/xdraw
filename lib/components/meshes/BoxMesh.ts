@@ -4,13 +4,15 @@
  * @author RkEclair / https://github.com/RkEclair
  */
 
-import { XStore } from '../../basis/Components';
+import {XStore} from '../../basis/Components';
 import Transform from '../../basis/Transform';
 import Vector3 from '../../basis/Vector3';
-import { packMesh } from './MeshUtils';
+import {packMesh} from './MeshUtils';
 
 function buildPlane(
-  u: string, v: string, w: string, udir: number, vdir: number, width: number, height: number, depth: number, gridX: number, gridY: number, indices: number[], vertices: number[], normals: number[], uvs: number[]) {
+    u: string, v: string, w: string, udir: number, vdir: number, width: number,
+    height: number, depth: number, gridX: number, gridY: number,
+    index: number[], vertex: number[], normal: number[], uv: number[]) {
   const segmentWidth = width / gridX;
   const segmentHeight = height / gridY;
 
@@ -23,7 +25,7 @@ function buildPlane(
 
   const vector = new Vector3();
 
-  // generate vertices, normals and uvs
+  // generate vertex, normal and uv
   for (let iy = 0; iy < gridY1; iy++) {
     const y = iy * segmentHeight - heightHalf;
 
@@ -36,7 +38,7 @@ function buildPlane(
       vector[w] = depthHalf;
 
       // now apply vector to vertex buffer
-      vertices.push(...vector.toArray());
+      vertex.push(...vector.toArray());
 
       // set values to correct vector component
       vector[u] = 0;
@@ -44,19 +46,19 @@ function buildPlane(
       vector[w] = depth > 0 ? 1 : -1;
 
       // now apply vector to normal buffer
-      normals.push(...vector.toArray());
+      normal.push(...vector.toArray());
 
-      // uvs
-      uvs.push(ix / gridX, 1 - iy / gridY);
+      // uv
+      uv.push(ix / gridX, 1 - iy / gridY);
     }
   }
 
-  // indices
+  // index
 
-  // 1. you need three indices to draw a single face
+  // 1. you need three index to draw a single face
   // 2. a single segment consists of two faces
-  // 3. so we need to generate six (2*3) indices per segment
-  const indexOffset = indices.length + gridY * gridX;
+  // 3. so we need to generate six (2*3) index per segment
+  const indexOffset = index.length + gridY * gridX;
   for (let iy = 0; iy < gridY; iy++) {
     for (let ix = 0; ix < gridX; ix++) {
       const a = indexOffset + ix + gridX1 * iy;
@@ -65,57 +67,64 @@ function buildPlane(
       const d = indexOffset + (ix + 1) + gridX1 * iy;
 
       // faces
-      indices.push(a, b, d);
-      indices.push(b, c, d);
+      index.push(a, b, d);
+      index.push(b, c, d);
     }
   }
 }
 
-const BoxMesh = (width = 1, height = 1, depth = 1,
-  widthSegments: number = 1, heightSegments: number = 1,
-  depthSegments: number = 1
-) => (store: XStore, _transform: Transform) => {
+const BoxMesh =
+    (width = 1, height = 1, depth = 1, widthSegments: number = 1,
+     heightSegments: number = 1, depthSegments: number = 1) =>
+        (store: XStore, _transform: Transform) => {
+          if (!store.hasBind('boxmesh.mode')) {
+            store.addBind('boxmesh.width', width)
+                .addBind('boxmesh.height', height)
+                .addBind('boxmesh.depth', depth)
+                .addBind(
+                    'boxmesh.widthSegments', widthSegments,
+                    (v: number) => Math.floor(v))
+                .addBind(
+                    'boxmesh.heightSegments', heightSegments,
+                    (v: number) => Math.floor(v))
+                .addBind(
+                    'boxmesh.depthSegments', depthSegments,
+                    (v: number) => Math.floor(v))
+          }
+          const self = store.getBindValues('boxmesh.');
 
-  if (!store.hasBind('boxmesh.mode')) {
-    store.addBind('boxmesh.width', width)
-      .addBind('boxmesh.height', height)
-      .addBind('boxmesh.depth', depth)
-      .addBind('boxmesh.widthSegments', widthSegments, (v: number) => Math.floor(v))
-      .addBind('boxmesh.heightSegments', heightSegments, (v: number) => Math.floor(v))
-      .addBind('boxmesh.depthSegments', depthSegments, (v: number) => Math.floor(v))
-  }
-  const self = store.getBindValues('boxmesh.');
+          const index: number[] = [], vertex: number[] = [],
+                       normal: number[] = [], uv: number[] = [];
 
-  const indices: number[] = [], vertices: number[] = [], normals: number[] = [], uvs: number[] = [];
-
-  // build each side of the box geometry
-  buildPlane(
-    'z', 'y', 'x', -1, -1, self.depth, self.height, self.width, self.depthSegments,
-    self.heightSegments,
-    indices, vertices, normals, uvs);  // px
-  buildPlane(
-    'z', 'y', 'x', 1, -1, self.depth, self.height, -self.width, self.depthSegments,
-    self.heightSegments,
-    indices, vertices, normals, uvs);  // nx
-  buildPlane(
-    'x', 'z', 'y', 1, 1, self.width, self.depth, self.height, self.widthSegments, self.depthSegments,
-    indices, vertices, normals, uvs);  // py
-  buildPlane(
-    'x', 'z', 'y', 1, -1, self.width, self.depth, -self.height, self.widthSegments,
-    self.depthSegments,
-    indices, vertices, normals, uvs);  // ny
-  buildPlane(
-    'x', 'y', 'z', 1, -1, self.width, self.height, self.depth, self.widthSegments,
-    self.heightSegments,
-    indices, vertices, normals, uvs);  // pz
-  buildPlane(
-    'x', 'y', 'z', -1, -1, self.width, self.height, -self.depth, self.widthSegments,
-    self.heightSegments,
-    indices, vertices, normals, uvs);  // nz
+          // build each side of the box geometry
+          buildPlane(
+              'z', 'y', 'x', -1, -1, self.depth, self.height, self.width,
+              self.depthSegments, self.heightSegments, index, vertex, normal,
+              uv);  // px
+          buildPlane(
+              'z', 'y', 'x', 1, -1, self.depth, self.height, -self.width,
+              self.depthSegments, self.heightSegments, index, vertex, normal,
+              uv);  // nx
+          buildPlane(
+              'x', 'z', 'y', 1, 1, self.width, self.depth, self.height,
+              self.widthSegments, self.depthSegments, index, vertex, normal,
+              uv);  // py
+          buildPlane(
+              'x', 'z', 'y', 1, -1, self.width, self.depth, -self.height,
+              self.widthSegments, self.depthSegments, index, vertex, normal,
+              uv);  // ny
+          buildPlane(
+              'x', 'y', 'z', 1, -1, self.width, self.height, self.depth,
+              self.widthSegments, self.heightSegments, index, vertex, normal,
+              uv);  // pz
+          buildPlane(
+              'x', 'y', 'z', -1, -1, self.width, self.height, -self.depth,
+              self.widthSegments, self.heightSegments, index, vertex, normal,
+              uv);  // nz
 
 
-  packMesh(store, indices, vertices, normals, uvs);
-  return store;
-}
+          packMesh(store, {index, vertex, normal, uv});
+          return store;
+        }
 
 export default BoxMesh;

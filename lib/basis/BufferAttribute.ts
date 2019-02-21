@@ -13,7 +13,12 @@ export type TypedArray =|Int8Array|Uint8Array|Int16Array|Uint16Array|Int32Array|
 export default class BufferAttribute {
   public readonly count: number;
   public readonly isFloat: boolean;
-  needsUpdate: boolean;
+
+  set needsUpdate(v: boolean) {
+    if (v === true) {
+      ;
+    }
+  }
 
   static fromArray<T extends TypedArray>(
       buffer: new(any: any) => T, array: number[], itemSize: number,
@@ -22,7 +27,7 @@ export default class BufferAttribute {
   }
 
   constructor(
-      public array: TypedArray, private itemSize: number,
+      public readonly array: TypedArray, public readonly itemSize: number,
       private normalized = false, public name = '') {
     this.count = array.length / itemSize;
     this.isFloat = array instanceof Float32Array;

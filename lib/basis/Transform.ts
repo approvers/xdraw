@@ -13,7 +13,7 @@ import Vector3 from './Vector3';
 
 let globalId = 0;
 
-export default class Transform extends EventSource {
+export default class Transform {
   id: number;
   name: string;
   parent: Transform|null = null;
@@ -29,11 +29,6 @@ export default class Transform extends EventSource {
 
   matrix = new Matrix4();
   matrixWorld = new Matrix4();
-  matrixWorldInverse = new Matrix4();
-  modelViewMatrix = new Matrix4();
-  projectionMatrix = new Matrix4();
-  projectionMatrixInverse = new Matrix4();
-  normalMatrix = new Matrix3();
   matrixAutoUpdate = true;
   matrixWorldNeedsUpdate = true;
 
@@ -43,12 +38,17 @@ export default class Transform extends EventSource {
   recieveShadow = true;
 
   // lazy boundings
-  boundingSphere: Sphere|null;
+  boundingSphere: Sphere|null = null;
 
   store = new XStore;
 
+  readonly willUpdate = new EventSource<Transform>();
+  readonly didUpdate = new EventSource<Transform>();
+  readonly awake = new EventSource<Transform>();
+  readonly start = new EventSource<Transform>();
+  readonly dispose = new EventSource<Transform>();
+
   constructor(public readonly comps = new Components()) {
-    super();
     this.id = globalId++;
     this.name = `${this.id}`;
   }
@@ -60,11 +60,11 @@ export default class Transform extends EventSource {
 
   update() {
     const updatePred = (t: Transform) => {
-      t.store = t.comps.process(t, t.store);
       t.updateMatrix();
+      t.store = t.comps.process(t, t.store);
     };
-    this.traverse(updatePred);
     updatePred(this);
+    this.traverse(updatePred);
   }
 
   static get up() {
@@ -101,11 +101,6 @@ export default class Transform extends EventSource {
 
     newT.matrix = this.matrix.clone();
     newT.matrixWorld = this.matrixWorld.clone();
-    newT.matrixWorldInverse = this.matrixWorldInverse.clone();
-    newT.modelViewMatrix = this.modelViewMatrix.clone();
-    newT.projectionMatrix = this.projectionMatrix.clone();
-    newT.projectionMatrixInverse = this.projectionMatrixInverse.clone();
-    newT.normalMatrix = this.normalMatrix.clone();
     newT.matrixAutoUpdate = this.matrixAutoUpdate;
 
     newT.renderOrder = this.renderOrder;
@@ -128,39 +123,48 @@ export default class Transform extends EventSource {
   }
 
   updateMatrixWorld(force = false) {
-    if (this.matrixAutoUpdate) this.updateMatrix();
+    const pred = (t: Transform) => {
+      if (t.matrixAutoUpdate) t.updateMatrix();
 
-    if (this.matrixWorldNeedsUpdate || force) {
-      if (this.parent === null) {
-        this.matrixWorld = this.matrix.clone();
-      } else {
-        this.matrixWorld =
-            this.parent.matrixWorld.clone().multiply(this.matrix);
+      if (t.matrixWorldNeedsUpdate || force) {
+        if (t.parent === null) {
+          t.matrixWorld = t.matrix.clone();
+        } else {
+          t.matrixWorld = t.parent.matrixWorld.clone().multiply(t.matrix);
+        }
+        t.matrixWorldNeedsUpdate = false;
+        force = true;
       }
-      this.matrixWorldNeedsUpdate = false;
-      force = true;
-    }
-
-    this.children.forEach((e) => e.updateMatrixWorld(force));
+    };
+    pred(this);
+    this.traverse(pred);
   }
 
   updateWorldMatrix(updateParents: boolean, updateChildren: boolean) {
-    const parent = this.parent;
-    if (updateParents === true && parent !== null) {
-      parent.updateWorldMatrix(true, false);
-    }
+    const pred = (t: Transform) => {
+      const parent = t.parent;
+      if (updateParents === true && parent !== null) {
+        parent.updateWorldMatrix(true, false);
+      }
 
-    if (this.matrixAutoUpdate) this.updateMatrix();
-    if (this.parent === null) {
-      this.matrixWorld = this.matrix.clone();
-    } else {
-      this.matrixWorld = this.parent.matrixWorld.clone().multiply(this.matrix);
-    }
+      if (t.matrixAutoUpdate) t.updateMatrix();
+      if (parent === null) {
+        t.matrixWorld = t.matrix.clone();
+      } else {
+        t.matrixWorld = parent.matrixWorld.clone().multiply(t.matrix);
+      }
+    };
 
     // update children
     if (updateChildren === true) {
-      this.children.forEach(e => e.updateWorldMatrix(false, true));
+      updateParents = false;
+      updateChildren = true;
+      this.traverse(pred);
     }
+  }
+
+  translate(amount: Vector3) {
+    this.position = this.position.add(amount);
   }
 
   lookAt(target: Vector3) {  // This method does not support objects having
