@@ -32,6 +32,8 @@ export default class WebGLDrawCallFactory {
     material.uniforms(shader.uniforms)(this.gl);
     return () => {
       const {start, count} = meshUpdaters(this.gl);
+      shader.use();
+      this.gl.uniformMatrix4fv(shader.uniforms['modelViewProjection'], false, transform.matrix.toArray());
       material.renderer(
           this.gl, (mode: number) => {this.gl.drawArrays(mode, start, count)});
     };

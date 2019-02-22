@@ -47,7 +47,6 @@ const MeshRenderer =
         const drawCalls =
             meshAndShaders.map(e => gl.drawCallFactory.makeDrawCall(e));
 
-        console.log(drawCalls);
         gl.clear.clear();
         drawCalls.forEach(e => e());
         return store;

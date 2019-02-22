@@ -20,11 +20,13 @@ function extractAttributes(gl: WebGL2RenderingContext, program: WebGLProgram) {
 
 function extractUniforms(gl: WebGL2RenderingContext, program: WebGLProgram) {
   const uniformCount = gl.getProgramParameter(program, gl.ACTIVE_UNIFORMS);
-  const uniforms: {[name: string]: number} = {};
+  const uniforms: {[name: string]: WebGLUniformLocation} = {};
   for (let i = 0; i < uniformCount; ++i) {
     const uniform = gl.getActiveUniform(program, i);
     if (uniform === null) continue;
-    uniforms[uniform.name] = i;
+    const loc = gl.getUniformLocation(program, uniform.name);
+    if (loc === null) continue;
+    uniforms[uniform.name] = loc;
   }
   return uniforms;
 }
@@ -116,8 +118,9 @@ const MaterialBase =
      shaders: ShaderProgramSet = {
        vertexShaderProgram: `
 attribute vec4 position;
+uniform mat4 modelViewProjection;
 void main() {
-  gl_Position = position;
+  gl_Position = modelViewProjection * position;
 }
 `,
        fragmentShaderProgram: `
