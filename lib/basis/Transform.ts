@@ -20,7 +20,6 @@ export default class Transform {
   children: Transform[] = [];
 
   position = new Vector3();
-  rotation = new Euler();
   quaternion = new Quaternion();
   scale = new Vector3(1, 1, 1);
   visible = true;
@@ -93,7 +92,6 @@ export default class Transform {
     newT.parent = this.parent;
 
     newT.position = this.position.clone();
-    newT.rotation = this.rotation.clone();
     newT.quaternion = this.quaternion.clone();
     newT.scale = this.scale.clone();
     newT.visible = this.visible;
@@ -165,6 +163,11 @@ export default class Transform {
 
   translate(amount: Vector3) {
     this.position = this.position.add(amount);
+  }
+
+  rotate(amount: Euler) {
+    const v = Euler.fromQuaternion(this.quaternion, amount.order);
+    this.quaternion = Quaternion.fromEuler(v.add(amount));
   }
 
   lookAt(target: Vector3) {  // This method does not support objects having

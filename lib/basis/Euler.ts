@@ -99,4 +99,9 @@ export default class Euler {
   clone() {
     return new Euler(this.x, this.y, this.z, this.order);
   }
+
+  add(v: Euler) {
+    if (this.order !== v.order) throw new Error('Cannot add different Eulers.');
+    return new Euler(this.x + v.x, this.y + v.y, this.z + v.z, this.order);
+  }
 }

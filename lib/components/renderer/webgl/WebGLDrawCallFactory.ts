@@ -23,12 +23,11 @@ export default class WebGLDrawCallFactory {
     const shader = material.shader(this.gl);
     material.uniforms(shader.uniforms)(this.gl);
     return () => {
-      shader.use();
       const {start, count} = mesh(shader.attributes)(this.gl);
+      shader.use();
       this.gl.uniformMatrix4fv(
           shader.uniforms['modelViewProjection'], false,
           transform.matrix.toArray());
-      console.log(count);
       material.renderer(
           this.gl, (mode: number) => {this.gl.drawArrays(mode, start, count)});
     };

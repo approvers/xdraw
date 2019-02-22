@@ -5,24 +5,25 @@
 import BufferAttribute from '../../basis/BufferAttribute';
 import {XStore} from '../../basis/Components';
 
-const MeshUpdater = (data: {[name: string]: BufferAttribute}) =>
-    (attributeLocations: {[name: string]: number}) => (
-        gl: WebGL2RenderingContext) => {
-      Object.keys(data).forEach((key) => {
-        const buf = gl.createBuffer();
-        if (buf === null) throw new Error('Fail to create buffer.');
-        const target =
-            key === 'index' ? gl.ELEMENT_ARRAY_BUFFER : gl.ARRAY_BUFFER;
-        gl.bindBuffer(target, buf);
-        gl.bufferData(target, data[key].array, gl.STATIC_DRAW);
-        const attributeLocation = attributeLocations[key];
-        gl.enableVertexAttribArray(attributeLocation);
-        gl.vertexAttribPointer(
-            attributeLocation, data[key].itemSize,
-            data[key].isFloat ? gl.FLOAT : gl.SHORT, false, 0, 0);
-      });
-      return {start: 0, count: (data['position'] ? data['position'].count : 0)};
-    };
+const MeshUpdater = (data: {[name: string]: BufferAttribute}) => (
+    attributeLocations:
+        {[name: string]: number}) => (gl: WebGL2RenderingContext) => {
+  Object.keys(attributeLocations).forEach((key) => {
+    const buf = gl.createBuffer();
+    if (buf === null) throw new Error('Fail to create buffer.');
+    const target =
+        key === 'indixes' ? gl.ELEMENT_ARRAY_BUFFER : gl.ARRAY_BUFFER;
+    gl.bindBuffer(target, buf);
+    gl.bufferData(target, data[key].array, gl.STATIC_DRAW);
+    const attributeLocation = attributeLocations[key];
+    gl.enableVertexAttribArray(attributeLocation);
+    gl.vertexAttribPointer(
+        attributeLocation, data[key].itemSize,
+        data[key].isFloat ? gl.FLOAT : gl.INT, false, 0, 0);
+  });
+
+  return {start: 0, count: (data['position'] ? data['position'].length : 0)};
+};
 
 export function packMesh(store: XStore, nums: {[key: string]: number[]}) {
   const attributes = {

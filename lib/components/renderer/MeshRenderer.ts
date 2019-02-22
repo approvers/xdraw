@@ -40,8 +40,6 @@ const MeshRenderer =
         const drawCalls =
             meshAndShaders.map(e => gl.drawCallFactory.makeDrawCall(e));
 
-
-        ctx.viewport(0, 0, canvas.width, canvas.height);
         gl.clear.clear();
         drawCalls.forEach(e => e());
         return store;
