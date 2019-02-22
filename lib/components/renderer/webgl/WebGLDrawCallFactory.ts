@@ -14,8 +14,11 @@ export default class WebGLDrawCallFactory {
     mesh?: MeshExports;
     material?: MaterialExports;
   }) {
+    console.log(mesh, material);
     if (mesh === undefined || material === undefined) {
-      return () => {};
+      return () => {
+        console.warn('The mesh or material are missing.');
+      };
     }
     const shader = material.shader(this.gl);
     material.uniforms(shader.uniforms)(this.gl);
@@ -25,6 +28,7 @@ export default class WebGLDrawCallFactory {
       this.gl.uniformMatrix4fv(
           shader.uniforms['modelViewProjection'], false,
           transform.matrix.toArray());
+      console.log(count);
       material.renderer(
           this.gl, (mode: number) => {this.gl.drawArrays(mode, start, count)});
     };

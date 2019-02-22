@@ -74,57 +74,30 @@ function buildPlane(
 }
 
 const BoxMesh =
-    (width = 1, height = 1, depth = 1, widthSegments: number = 1,
-     heightSegments: number = 1, depthSegments: number = 1) =>
-        (store: XStore, _transform: Transform) => {
-          if (!store.hasBind('boxmesh.mode')) {
-            store.addBind('boxmesh.width', width)
-                .addBind('boxmesh.height', height)
-                .addBind('boxmesh.depth', depth)
-                .addBind(
-                    'boxmesh.widthSegments', widthSegments,
-                    (v: number) => Math.floor(v))
-                .addBind(
-                    'boxmesh.heightSegments', heightSegments,
-                    (v: number) => Math.floor(v))
-                .addBind(
-                    'boxmesh.depthSegments', depthSegments,
-                    (v: number) => Math.floor(v))
-          }
-          const self = store.getBindValues('boxmesh.');
+    (width = 1, height = 1, depth = 1) => (
+        store: XStore, _transform: Transform) => {
+      if (!store.hasBind('boxmesh.mode')) {
+        store.addBind('boxmesh.width', width)
+            .addBind('boxmesh.height', height)
+            .addBind('boxmesh.depth', depth);
+      }
+      const self = store.getBindValues('boxmesh.');
 
-          const index: number[] = [], vertex: number[] = [],
-                       normal: number[] = [], uv: number[] = [];
+      const index: number[] =
+          [0, 1, 3, 1, 2, 7, 2, 6, 1, 6, 5, 0, 5, 4, 7, 0, 7, 6, 4, 6, 5],
+                   vertex: number[] =
+                       [
+                         self.width,  self.height, self.depth,   -self.width,
+                         self.height, self.depth,  -self.width,  -self.height,
+                         self.depth,  self.width,  -self.height, self.depth,
+                         self.width,  self.height, -self.depth,  -self.width,
+                         self.height, -self.depth, -self.width,  -self.height,
+                         -self.depth, self.width,  -self.height, -self.depth,
+                       ],
+                   normal: number[] = [], uv: number[] = [];
 
-          // build each side of the box geometry
-          buildPlane(
-              'z', 'y', 'x', -1, -1, self.depth, self.height, self.width,
-              self.depthSegments, self.heightSegments, index, vertex, normal,
-              uv);  // px
-          buildPlane(
-              'z', 'y', 'x', 1, -1, self.depth, self.height, -self.width,
-              self.depthSegments, self.heightSegments, index, vertex, normal,
-              uv);  // nx
-          buildPlane(
-              'x', 'z', 'y', 1, 1, self.width, self.depth, self.height,
-              self.widthSegments, self.depthSegments, index, vertex, normal,
-              uv);  // py
-          buildPlane(
-              'x', 'z', 'y', 1, -1, self.width, self.depth, -self.height,
-              self.widthSegments, self.depthSegments, index, vertex, normal,
-              uv);  // ny
-          buildPlane(
-              'x', 'y', 'z', 1, -1, self.width, self.height, self.depth,
-              self.widthSegments, self.heightSegments, index, vertex, normal,
-              uv);  // pz
-          buildPlane(
-              'x', 'y', 'z', -1, -1, self.width, self.height, -self.depth,
-              self.widthSegments, self.heightSegments, index, vertex, normal,
-              uv);  // nz
-
-
-          packMesh(store, {index, vertex, normal, uv});
-          return store;
-        }
+      packMesh(store, {index, vertex, normal, uv});
+      return store;
+    }
 
 export default BoxMesh;

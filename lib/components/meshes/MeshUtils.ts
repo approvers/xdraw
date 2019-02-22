@@ -11,8 +11,10 @@ const MeshUpdater = (data: {[name: string]: BufferAttribute}) =>
       Object.keys(data).forEach((key) => {
         const buf = gl.createBuffer();
         if (buf === null) throw new Error('Fail to create buffer.');
-        gl.bindBuffer(gl.ARRAY_BUFFER, buf);
-        gl.bufferData(gl.ARRAY_BUFFER, data[key].array, gl.STATIC_DRAW);
+        const target =
+            key === 'index' ? gl.ELEMENT_ARRAY_BUFFER : gl.ARRAY_BUFFER;
+        gl.bindBuffer(target, buf);
+        gl.bufferData(target, data[key].array, gl.STATIC_DRAW);
         const attributeLocation = attributeLocations[key];
         gl.enableVertexAttribArray(attributeLocation);
         gl.vertexAttribPointer(

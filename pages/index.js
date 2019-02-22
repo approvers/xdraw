@@ -17,23 +17,17 @@ export default class Index extends Component {
 	componentDidMount() {
 		this.canvas.width = 500;
 		this.canvas.height = 500;
-		console.log("Ready to render.");
+
 		this.scene = new Transform;
 		const bg = BackgroundBox();
 		this.scene.add(bg);
 		this.scene.comps.add(Camera("Perspective"));
 		this.scene.translate(new Vector3(0, 0, -5));
 	  this.scene.comps.add(MeshRenderer(this.canvas, (clears) => {
-			clears.color = new Color(0x444444);
+			clears.color = new Color(0x1a1d19);
 		}));
-		this.updateFrame();
-		console.log("Rendered");
-	}
-
-	updateFrame = () => {
 		this.scene.update();
-		console.log(this.scene);
-	};
+	}
 
 	render() {
 		return <div>
