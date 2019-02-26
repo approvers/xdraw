@@ -30,20 +30,33 @@ export default class Index extends Component {
 	  this.scene.comps.add(MeshRenderer(this.canvas, (clears) => {
 			clears.color = new Color(0x1a1d1a);
 		}));
+		this.box.rotate(Euler.fromDegressRotations(1, 0, 1));
+		this.scene.update();
+
 		this.updateFrame();
 	}
 
 	frameId = 0;
 
 	updateFrame = () => {
-		this.box.rotate(new Euler(0, 0, 10));
+		this.box.rotate(Euler.fromDegressRotations(1, 0, 1));
 		this.scene.update();
 		this.frameId = requestAnimationFrame(this.updateFrame);
+	};
+
+	state = {
+		paused: false
 	};
 
 	render() {
 		return <div>
 			<canvas ref={e => this.canvas = e}></canvas>
+			<button onClick={e =>{ 
+				if (!this.state.paused)
+				cancelAnimationFrame(this.frameId);
+				else this.updateFrame();
+				this.setState({paused: !this.state.paused});
+			}}>{this.state.paused ? "Push to play" : "Push to pause"}</button>
 			<style jsx>{`
 				canvas { width: 100; height: 100; }
 			`}</style>

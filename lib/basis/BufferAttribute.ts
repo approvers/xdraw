@@ -28,7 +28,7 @@ export default class BufferAttribute {
 
   constructor(
       public readonly array: TypedArray, public readonly itemSize: number,
-      private normalized = false, public name = '') {
+      private normalized = false) {
     this.count = array.length / itemSize;
     this.isFloat = array instanceof Float32Array;
   }
@@ -38,8 +38,8 @@ export default class BufferAttribute {
   }
 
   clone() {
-    const newB = new BufferAttribute(
-        this.array, this.itemSize, this.normalized, this.name);
+    const newB =
+        new BufferAttribute(this.array, this.itemSize, this.normalized);
     newB.needsUpdate = this.needsUpdate;
     return newB;
   }

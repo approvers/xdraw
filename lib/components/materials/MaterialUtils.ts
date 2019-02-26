@@ -64,8 +64,9 @@ const makeShader =
       const success = gl.getProgramParameter(program, gl.LINK_STATUS);
       if (success) {
         return {
-          use: () => {
+          use: (vao: WebGLVertexArrayObject) => {
             gl.useProgram(program);
+            gl.bindVertexArray(vao);
           },
           uniforms: extractUniforms(gl, program),
           attributes: extractAttributes(gl, program)
@@ -144,7 +145,7 @@ export type MaterialExports = {
   renderer: (gl: WebGL2RenderingContext, drawCall: (mode: number) => void) =>
       void;
   shader: (gl: WebGL2RenderingContext) => {
-    use: () => void;
+    use: (vao: WebGLVertexArrayObject) => void;
     uniforms: {[name: string]: WebGLUniformLocation;};
     attributes: {[name: string]: number;};
   };

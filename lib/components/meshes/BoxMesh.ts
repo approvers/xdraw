@@ -18,20 +18,19 @@ const BoxMesh =
       }
       const self = store.getBindValues('boxmesh.');
 
-      const indices: number[] =
-          [0, 1, 3, 1, 2, 7, 2, 6, 1, 6, 5, 0, 5, 4, 7, 0, 7, 6, 4, 6, 5],
-                     vertices: number[] =
-                         [
-                           self.width,   self.height, self.depth,  self.width,
-                           -self.height, self.depth,  -self.width, -self.height,
-                           self.depth,   -self.width, self.height, self.depth,
-                           self.width,   self.height, -self.depth, self.width,
-                           -self.height, -self.depth, -self.width, -self.height,
-                           -self.depth,  -self.width, self.height, -self.depth,
-                         ].map(e => e / 2),
-                     normals: number[] = [], uvs: number[] = [];
+      // const indices: number[] = [0, 1, 3, 1, 2, 7, 2, 6, 1, 6, 5, 0, 5,
+      // 4, 7, 0, 7, 6, 4, 6, 5];
+      const vertices: number[] =
+          [
+            self.width,  self.height,  self.depth,   self.width,  -self.height,
+            self.depth,  -self.width,  -self.height, self.depth,  -self.width,
+            self.height, self.depth,   self.width,   self.height, -self.depth,
+            self.width,  -self.height, -self.depth,  -self.width, -self.height,
+            -self.depth, -self.width,  self.height,  -self.depth,
+          ].map(e => e / 2),
+                      normals: number[] = [], uvs: number[] = [];
 
-      packMesh(store, {indices, vertices, normals, uvs});
+      packMesh(store, {vertices, normals, uvs});
       return store;
     }
 

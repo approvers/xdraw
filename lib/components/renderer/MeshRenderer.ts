@@ -3,12 +3,17 @@
  */
 
 import {XStore} from '../../basis/Components';
+import Matrix4 from '../../basis/Matrix4';
 import Transform from '../../basis/Transform';
 import {MaterialExports} from '../materials/MaterialUtils';
 import {MeshExports} from '../meshes/MeshUtils';
 
 import ConceptualizatedWebGL from './webgl/ConceptualizatedWebGL';
 import WebGLClears from './webgl/WebGLClears';
+
+export type meshAndShader = {
+  matrix: Matrix4, mesh: MeshExports; material: MaterialExports;
+};
 
 const MeshRenderer =
     (canvas: HTMLCanvasElement, backgroundSetter: (clears: WebGLClears) => void,
@@ -20,25 +25,34 @@ const MeshRenderer =
       const gl = ConceptualizatedWebGL(ctx);
       backgroundSetter(gl.clear);
 
+      const meshAndShaders = new WeakMap<Transform, meshAndShader>();
+
       return (store: XStore, transform: Transform) => {
         if (store.has('camera')) {
           const camera = store.get('camera');
           transform.traverse(camera.updateProjectionMatrix);
         }
-        const meshAndShaders: {
-          transform: Transform; mesh: MeshExports; material: MaterialExports;
-        }[] = [];
+        const transforms: Transform[] = [];
         (lookingTransform || transform).traverse((t) => {
-          if (t.store.has('mesh') || t.store.has('shaders')) {
-            meshAndShaders.push({
-              transform: t,
+          if (t.store.has('mesh') && t.store.has('material')) {
+            transforms.push(t);
+            const cache = meshAndShaders.get(t);
+            if (cache !== undefined && cache.matrix === t.matrix) return;
+            meshAndShaders.set(t, {
+              matrix: t.matrix,
               mesh: t.store.get('mesh'),
               material: t.store.get('material')
             });
           }
         });
-        const drawCalls =
-            meshAndShaders.map(e => gl.drawCallFactory.makeDrawCall(e));
+        const drawCalls = transforms.map(e => {
+          const meshShader = meshAndShaders.get(e);
+          if (!meshShader)
+            return () => {
+              console.warn('The transform is empty.', e);
+            };
+          return gl.drawCallFactory.makeDrawCall(meshShader);
+        });
 
         gl.clear.clear();
         drawCalls.forEach(e => e());

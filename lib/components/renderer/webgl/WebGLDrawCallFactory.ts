@@ -1,6 +1,4 @@
-import Transform from '../../../basis/Transform';
-import {MaterialExports} from '../../materials/MaterialUtils';
-import {MeshExports} from '../../meshes/MeshUtils';
+import {meshAndShader} from '../MeshRenderer';
 
 /**
  * @author RkEclair / https://github.com/RkEclair
@@ -9,27 +7,25 @@ import {MeshExports} from '../../meshes/MeshUtils';
 export default class WebGLDrawCallFactory {
   constructor(private gl: WebGL2RenderingContext) {}
 
-  makeDrawCall({transform, mesh, material}: {
-    transform: Transform;
-    mesh?: MeshExports;
-    material?: MaterialExports;
-  }) {
-    console.log(mesh, material);
+  makeDrawCall({matrix, mesh, material}: meshAndShader) {
     if (mesh === undefined || material === undefined) {
       return () => {
         console.warn('The mesh or material are missing.');
       };
     }
+    const vao = this.gl.createVertexArray();
+    if (vao === null) throw new Error('Fail to create vertex array.');
+    this.gl.bindVertexArray(vao);
     const shader = material.shader(this.gl);
     material.uniforms(shader.uniforms)(this.gl);
+    const call = mesh(shader.attributes)(this.gl);
+    this.gl.bindVertexArray(null);
+
     return () => {
-      const {start, count} = mesh(shader.attributes)(this.gl);
-      shader.use();
+      shader.use(vao);
       this.gl.uniformMatrix4fv(
-          shader.uniforms['modelViewProjection'], false,
-          transform.matrix.toArray());
-      material.renderer(
-          this.gl, (mode: number) => {this.gl.drawArrays(mode, start, count)});
+          shader.uniforms['modelViewProjection'], false, matrix.toArray());
+      material.renderer(this.gl, call);
     };
   }
 }

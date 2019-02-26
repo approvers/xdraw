@@ -96,6 +96,11 @@ export default class Euler {
     return Euler.fromRotationMatrix(m, order);
   }
 
+  static fromDegressRotations(x: number, y: number, z: number) {
+    const DEG2RAD = Math.PI / 180;
+    return new Euler(x * DEG2RAD, y * DEG2RAD, z * DEG2RAD);
+  }
+
   clone() {
     return new Euler(this.x, this.y, this.z, this.order);
   }
