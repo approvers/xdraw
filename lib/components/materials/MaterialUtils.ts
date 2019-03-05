@@ -1,5 +1,5 @@
 import Color from '../../basis/Color';
-import {XBind, XStore} from '../../basis/Components';
+import {XBind, XBindMap, XComponent, XStore} from '../../basis/Components';
 import Transform from '../../basis/Transform';
 
 /**
@@ -101,17 +101,16 @@ const packMaterial =
      renderer: (gl: WebGL2RenderingContext, drawCall: (mode: number) => void) =>
          void,
      shaders: ShaderProgramSet,
-     uniforms: {[locationName: string]: UniformUpdater;}) => {
+     uniforms: {[locationName: string]: UniformUpdater;}, binds: XBindMap) => {
       store.set('material', {
-        uniforms:
-            bindWithUniforms(store.getBindsStartsWith('material.'), uniforms),
+        uniforms: bindWithUniforms(binds, uniforms),
         renderer,
         shader: makeShader(shaders)
       });
     };
 
 const MaterialBase =
-    (body: (store: XStore, transform: Transform) => void,
+    (body: (store: XStore, transform: Transform) => void, binds: XBindMap,
      uniforms: {[locationName: string]: UniformUpdater;},
      renderer: (gl: WebGL2RenderingContext, drawCall: (mode: number) => void) =>
          void,
@@ -130,13 +129,15 @@ void main() {
   gl_FragColor = vec4(1, 0, 0.5, 1);
 }
 `
-     }) => (store: XStore, transform: Transform) => {
-      body(store, transform);
-      packMaterial(store, renderer, shaders, uniforms);
-      return store;
-    };
+     }) => class implements XComponent {
+  binds: XBindMap = binds;
 
-
+  update(store: XStore, transform: Transform) {
+    body(store, transform);
+    packMaterial(store, renderer, shaders, uniforms, this.binds);
+    return store;
+  };
+}
 export default MaterialBase;
 
 export type MaterialExports = {

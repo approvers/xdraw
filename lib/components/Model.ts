@@ -16,14 +16,14 @@ export function BackgroundPlane(width = 1, height = 1) {
   t.recieveRaycast = false;
   t.recieveShadow = false;
   t.castShadow = false;
-  t.comps.add(PlaneMesh(width, height));
-  t.comps.add(Unlit());
+  t.addComponent(new PlaneMesh(width, height));
+  t.addComponent(new (Unlit()));
   return t;
 }
 
 export function BackgroundBox(width = 1, height = 1, depth = 1) {
   const t = new Transform;
-  t.comps.add(BoxMesh(width, height, depth));
-  t.comps.add(Unlit());
+  t.addComponent(new BoxMesh(width, height, depth));
+  t.addComponent(new (Unlit()));
   return t;
 }

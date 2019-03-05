@@ -6,10 +6,12 @@ import EventSource from './EventSource';
 import Transform from './Transform';
 
 export class XBind<T> {
-  private dispatcher = new EventSource;
-  constructor(private value: T, private clamper: (newValue: T) => T) {}
+  private dispatcher = new EventSource<T>();
+  constructor(
+      private value: T,
+      private clamper: (newValue: T) => T = (newValue) => newValue) {}
 
-  addListener(func: (v: T) => void) {
+  addListener(func: (newValue: T) => void) {
     this.dispatcher.addEventListener(func);
   }
 
@@ -19,6 +21,7 @@ export class XBind<T> {
 
   set(newValue: T) {
     this.value = this.clamper(newValue);
+    this.dispatcher.dispatchEvent({newValue});
   }
 }
 
@@ -33,38 +36,17 @@ export function selectClamper(selects: string[]) {
   };
 }
 
+export type XBindMap = {
+  [key: string]: XBind<any>
+};
+
 export class XStore {
   constructor(private props: {[key: string]: any} = {}) {}
 
-  private binds: {[key: string]: XBind<any>} = {};
+  private binds: {[kind: string]: XBindMap} = {};
 
-  getBindValues(key: string): any {
-    return Object.keys(this.binds)
-        .filter((e) => e.startsWith(key))
-        .reduce((prev, e) => {
-          prev[e.slice(key.length)] = {};
-          prev[e.slice(key.length)] = this.binds[e].get();
-          return prev;
-        }, {});
-  }
-
-  getBindsStartsWith(key: string): any {
-    return Object.keys(this.binds)
-        .filter((e) => e.startsWith(key))
-        .reduce((prev, e) => {
-          prev[e.slice(key.length)] = {};
-          prev[e.slice(key.length)] = this.binds[e];
-          return prev;
-        }, {});
-  }
-
-  hasBind(key: string) {
-    return this.binds[key] !== undefined;
-  }
-
-  addBind<T>(
-      key: string, initValue: T, clamper: (newValue: T) => T = (v: T) => v) {
-    this.binds[key] = new XBind<T>(initValue, clamper);
+  addBinds(kind: string, inits: XBindMap) {
+    this.binds[kind] = inits;
     return this;
   }
 
@@ -82,23 +64,19 @@ export class XStore {
   }
 }
 
-export type XComponent = (store: XStore, transform: Transform) => XStore;
+export interface XComponent {
+  binds: XBindMap;
+  update(store: XStore, t: Transform);
+}
 
 class Component {
   enabled = true;
-  readonly id: number;
-  constructor(public func: XComponent, private comps: Component[]) {
-    this.id = comps.length;
-  }
+  constructor(public component: XComponent) {}
 
-  swapComponent(to: Component) {
-    const tmp = this.comps[this.id];
-    this.comps[this.id] = this.comps[to.id];
-    this.comps[to.id] = tmp;
-  }
-
-  removeComponent() {
-    delete this.comps[this.id];
+  clone() {
+    const newC = new Component(this.component);
+    newC.enabled = this.enabled;
+    return newC;
   }
 }
 
@@ -107,18 +85,25 @@ export default class Components {
 
   clone() {
     const newC = new Components();
-    this.componentList.forEach((e) => newC.add(e.func));
+    newC.componentList = this.componentList.map((e) => e.clone());
     return newC;
   }
 
-  add(component: XComponent) {
-    const newC = new Component(component, this.componentList);
+  add(component: XComponent, transform: Transform, store: XStore) {
+    const newC = new Component(component);
     this.componentList.push(newC);
+    Object.entries(newC.component.binds).forEach(e => {
+      e[1].addListener(() => newC.component.update(store, transform));
+    });
     return newC;
   }
 
-  process(transform: Transform, initState: XStore) {
-    return this.componentList.reduce(
-        (prev, current) => current.func(prev, transform), initState);
+  update() {
+    this.componentList.forEach(e => {  // Make binds dirty
+      if (!e.enabled) return;
+      const firstBind = Object.entries(e.component.binds)[0];
+      if (firstBind === undefined) return;
+      firstBind[1].set(firstBind[1].get());
+    });
   }
 }

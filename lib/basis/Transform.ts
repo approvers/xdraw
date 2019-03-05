@@ -2,10 +2,9 @@
  * @author RkEclair / https://github.com/RkEclair
  */
 
-import Components, {XStore} from './Components';
+import Components, {XComponent, XStore} from './Components';
 import Euler from './Euler';
 import EventSource from './EventSource';
-import Matrix3 from './Matrix3';
 import Matrix4 from './Matrix4';
 import Quaternion from './Quaternion';
 import Sphere from './Sphere';
@@ -39,7 +38,7 @@ export default class Transform {
   // lazy boundings
   boundingSphere: Sphere|null = null;
 
-  store = new XStore;
+  store: XStore = new XStore;
 
   readonly willUpdate = new EventSource<Transform>();
   readonly didUpdate = new EventSource<Transform>();
@@ -47,7 +46,7 @@ export default class Transform {
   readonly start = new EventSource<Transform>();
   readonly dispose = new EventSource<Transform>();
 
-  constructor(public readonly comps = new Components()) {
+  constructor(private comps = new Components()) {
     this.id = globalId++;
     this.name = `${this.id}`;
   }
@@ -57,10 +56,14 @@ export default class Transform {
     newChild.parent = this;
   }
 
+  addComponent(component: XComponent) {
+    this.comps.add(component, this, this.store);
+  }
+
   update() {
     const updatePred = (t: Transform) => {
       t.updateMatrix();
-      t.store = t.comps.process(t, t.store);
+      t.comps.update();
     };
     updatePred(this);
     this.traverse(updatePred);
