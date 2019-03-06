@@ -40,6 +40,12 @@ export type XBindMap = {
   [key: string]: XBind<any>
 };
 
+export const unmapBinds = (binds: XBindMap) =>
+    Object.entries(binds).reduce((prev, e) => {
+      prev[e[0]] = e[1].get();
+      return prev;
+    }, {}) as {[key: string]: any};
+
 export class XStore {
   constructor(private props: {[key: string]: any} = {}) {}
 
@@ -71,7 +77,7 @@ export interface XComponent {
 
 class Component {
   enabled = true;
-  constructor(public component: XComponent) {}
+  constructor(public readonly component: () => void) {}
 
   clone() {
     const newC = new Component(this.component);
@@ -90,20 +96,12 @@ export default class Components {
   }
 
   add(component: XComponent, transform: Transform, store: XStore) {
-    const newC = new Component(component);
+    const newC = new Component(() => component.update(store, transform));
     this.componentList.push(newC);
-    Object.entries(newC.component.binds).forEach(e => {
-      e[1].addListener(() => newC.component.update(store, transform));
-    });
     return newC;
   }
 
   update() {
-    this.componentList.forEach(e => {  // Make binds dirty
-      if (!e.enabled) return;
-      const firstBind = Object.entries(e.component.binds)[0];
-      if (firstBind === undefined) return;
-      firstBind[1].set(firstBind[1].get());
-    });
+    this.componentList.forEach(e => e.component());
   }
 }

@@ -25,7 +25,7 @@ export default class WebGLDrawCallFactory {
       shader.use(vao);
       this.gl.uniformMatrix4fv(
           shader.uniforms['modelViewProjection'], false, matrix.toArray());
-      material.renderer(this.gl, call);
+      material.render(this.gl, call);
     };
   }
 }

@@ -10,6 +10,7 @@ import {BackgroundBox} from '../lib/components/Model';
 import Euler from '../lib/basis/Euler';
 import Quaternion from '../lib/basis/Quaternion';
 import Vector3 from '../lib/basis/Vector3';
+import Camera from '../lib/components/cameras/Camera';
 
 export default class Index extends Component {
   scene = null;
@@ -34,8 +35,6 @@ export default class Index extends Component {
     );
     this.box.rotate(Euler.fromDegressRotations(1, 0, 1));
     this.scene.update();
-
-    this.updateFrame();
   }
 
   frameId = 0;
@@ -47,7 +46,7 @@ export default class Index extends Component {
   };
 
   state = {
-    paused: false
+    paused: true
   };
 
   render() {

@@ -4,7 +4,7 @@
  * @author RkEclair / https://github.com/RkEclair
  */
 
-import {XBind, XBindMap, XComponent, XStore} from '../../basis/Components';
+import {unmapBinds, XBind, XBindMap, XComponent, XStore} from '../../basis/Components';
 import Transform from '../../basis/Transform';
 
 import {packMesh} from './MeshUtils';
@@ -20,12 +20,21 @@ export default class BoxMesh implements XComponent {
   }
 
   update(store: XStore, _transform: Transform) {
-    const self = Object.entries(this.binds).reduce((prev, e) => {
-      prev[e[0]] = e[1].get();
-      return prev;
-    }, {}) as {[key: string]: number};
+    /* Faces
+            1_____0_____3
+            | 9   | 7   |
+            |   8 |   6 |
+0_____1_____5_____4_____7
+|  12 |  10 | 2   |
+| 13  | 3&11|   1 |
+3_____2_____6_____7_____4
+            | 4   | 6   |
+            |   5 |   7 |
+            2_____3_____0
+     */
+    const self = unmapBinds(this.binds);
 
-    const indices: number[] = [0, 1, 2, 3, 7, 1, 6, 4, 7, 5, 2, 4, 0, 1];
+    const indices: number[] = [7, 4, 6, 5, 2, 7, 3, 4, 0, 5, 1, 6, 2, 0, 3];
     const vertices: number[] =
         [
           self.width,  self.height,  self.depth,   self.width,  -self.height,

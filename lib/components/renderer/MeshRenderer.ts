@@ -39,11 +39,12 @@ export default class MeshRenderer implements XComponent {
       const camera = store.get('camera');
       transform.traverse(camera.updateProjectionMatrix);
     }
+    (this.lookingTransform || transform).updateWorldMatrix(false, true);
     const drawCalls: (() => void)[] = [];
     (this.lookingTransform || transform).traverse((t) => {
       if (t.store.has('mesh') && t.store.has('material')) {
         drawCalls.push(this.gl.drawCallFactory.makeDrawCall({
-          matrix: t.matrix,
+          matrix: t.matrixWorld,
           mesh: t.store.get('mesh'),
           material: t.store.get('material')
         }));

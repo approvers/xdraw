@@ -1,6 +1,5 @@
 import Color from '../../basis/Color';
-import {XBind, XBindMap, XComponent, XStore} from '../../basis/Components';
-import Transform from '../../basis/Transform';
+import {XBind, XComponent, XStore} from '../../basis/Components';
 
 /**
  * @author RkEclair / https://github.com/RkEclair
@@ -63,6 +62,7 @@ const makeShader =
       gl.linkProgram(program);
       const success = gl.getProgramParameter(program, gl.LINK_STATUS);
       if (success) {
+        gl.useProgram(program);
         return {
           use: (vao: WebGLVertexArrayObject) => {
             gl.useProgram(program);
@@ -87,63 +87,52 @@ const bindWithUniforms =
      uniforms: {[locationName: string]: UniformUpdater}) =>
         (locations: {[locationName: string]: WebGLUniformLocation}) =>
             (gl: WebGL2RenderingContext) => {
-              Object.keys(uniforms).forEach(key => {
-                const bind = binds[key];
+              Object.entries(uniforms).forEach(keyValue => {
+                const bind = binds[keyValue[0]];
                 if (bind === undefined) return;
-                bind.addListener((v) => {
-                  uniforms[key](locations[key], gl, v);
-                });
+                keyValue[1](locations[keyValue[0]], gl, bind.get());
               });
             };
 
-const packMaterial =
-    (store: XStore,
-     renderer: (gl: WebGL2RenderingContext, drawCall: (mode: number) => void) =>
-         void,
-     shaders: ShaderProgramSet,
-     uniforms: {[locationName: string]: UniformUpdater;}, binds: XBindMap) => {
-      store.set('material', {
-        uniforms: bindWithUniforms(binds, uniforms),
-        renderer,
-        shader: makeShader(shaders)
-      });
-    };
+export const packMaterial = (impl: MaterialBase) => {
+  const {binds, render, shaders, uniforms} = impl;
+  const binded = bindWithUniforms(binds, uniforms);
+  const compiled = makeShader(shaders);
+  impl.update = (store: XStore) => store.set('material', {
+    uniforms: binded,
+    render,
+    shader: compiled,
+  });
+};
 
-const MaterialBase =
-    (body: (store: XStore, transform: Transform) => void, binds: XBindMap,
-     uniforms: {[locationName: string]: UniformUpdater;},
-     renderer: (gl: WebGL2RenderingContext, drawCall: (mode: number) => void) =>
-         void,
-     shaders: ShaderProgramSet = {
-       vertexShaderProgram: `
+export const defaultShaderSet: ShaderProgramSet = {
+  vertexShaderProgram: `
 attribute vec4 position;
 uniform mat4 modelViewProjection;
 void main() {
   gl_Position = modelViewProjection * position;
 }
 `,
-       fragmentShaderProgram: `
+  fragmentShaderProgram: `
 precision mediump float;
 
 void main() {
   gl_FragColor = vec4(1, 0, 0.5, 1);
 }
 `
-     }) => class implements XComponent {
-  binds: XBindMap = binds;
+};
 
-  update(store: XStore, transform: Transform) {
-    body(store, transform);
-    packMaterial(store, renderer, shaders, uniforms, this.binds);
-    return store;
-  };
+export interface MaterialBase extends XComponent {
+  uniforms: {[locationName: string]: UniformUpdater;};
+  shaders: ShaderProgramSet;
+
+  render(gl: WebGL2RenderingContext, drawCall: (mode: number) => void);
 }
-export default MaterialBase;
 
 export type MaterialExports = {
   uniforms: (locations: {[locationName: string]: WebGLUniformLocation;}) =>
       (gl: WebGL2RenderingContext) => void
-  renderer: (gl: WebGL2RenderingContext, drawCall: (mode: number) => void) =>
+  render: (gl: WebGL2RenderingContext, drawCall: (mode: number) => void) =>
       void;
   shader: (gl: WebGL2RenderingContext) => {
     use: (vao: WebGLVertexArrayObject) => void;

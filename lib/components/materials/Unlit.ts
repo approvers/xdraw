@@ -1,16 +1,46 @@
 import Color from '../../basis/Color';
-import {XBind} from '../../basis/Components';
+import {XBind, XStore} from '../../basis/Components';
 
-import MaterialBase, {ColorUniform} from './MaterialUtils';
+import {ColorUniform, MaterialBase, packMaterial} from './MaterialUtils';
 
 /**
  * @author RkEclair / https://github.com/RkEclair
  */
 
-const Unlit = (color = new Color(Math.random() * 0xffffff)) => MaterialBase(
-    () => {}, {color: new XBind(color)}, {color: ColorUniform},
-    (gl, drawCall) => {
-      drawCall(gl.TRIANGLE_STRIP);
-    });
+export default class Unlit implements MaterialBase {
+  binds;
+  uniforms;
+  shaders = {
+    vertexShaderProgram: `
+attribute vec4 position;
+uniform mat4 modelViewProjection;
+uniform vec4 color;
 
-export default Unlit;
+varying vec4 var_color;
+
+void main() {
+  var_color = color;
+  gl_Position = modelViewProjection * position;
+}`,
+    fragmentShaderProgram: `
+precision mediump float;
+
+varying vec4 var_color;
+
+void main() {
+  gl_FragColor = var_color;
+}
+`
+  };
+  constructor(color = new Color(Math.random() * 0xffffff)) {
+    this.binds = {color: new XBind(color)};
+    this.uniforms = {color: ColorUniform};
+    packMaterial(this);
+  }
+
+  render(gl: WebGL2RenderingContext, drawCall: (mode: number) => void) {
+    drawCall(gl.TRIANGLE_STRIP);
+  }
+
+  update() {}
+}

@@ -156,6 +156,8 @@ export default class Transform {
       }
     };
 
+    pred(this);
+
     // update children
     if (updateChildren === true) {
       updateParents = false;

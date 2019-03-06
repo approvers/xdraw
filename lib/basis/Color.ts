@@ -28,6 +28,7 @@ export default class Color {
       this.r = ((hex >> 16) & 0xff) / 0xff;
       this.g = ((hex >> 8) & 0xff) / 0xff;
       this.b = (hex & 0xff) / 0xff;
+      this.a = 1;
     }
   }
 
