@@ -12,6 +12,8 @@ import Quaternion from '../lib/basis/Quaternion';
 import Vector3 from '../lib/basis/Vector3';
 import Camera from '../lib/components/cameras/Camera';
 import DirectionalLight from '../lib/components/lights/DirectionalLight';
+import BoxMesh from '../lib/components/meshes/BoxMesh';
+import Lines from '../lib/components/materials/Lines';
 
 export default class Index extends Component {
   scene = null;
@@ -27,7 +29,9 @@ export default class Index extends Component {
     this.canvas.height = 500;
 
     this.scene = new Transform();
-    this.box = SimpleBox();
+    this.box = new Transform();
+    this.box.addComponent(new BoxMesh());
+    this.box.addComponent(new Lines());
     this.scene.add(this.box);
     this.scene.addComponent(new DirectionalLight());
     this.scene.addComponent(

@@ -7,7 +7,7 @@ import {ColorUniform, MaterialBase, packMaterial} from './MaterialUtils';
  * @author RkEclair / https://github.com/RkEclair
  */
 
-export default class Unlit implements MaterialBase {
+export default class Points implements MaterialBase {
   binds;
   uniforms;
   shaders = {
