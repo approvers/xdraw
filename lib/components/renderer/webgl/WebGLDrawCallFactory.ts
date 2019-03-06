@@ -7,7 +7,7 @@ import {meshAndShader} from '../MeshRenderer';
 export default class WebGLDrawCallFactory {
   constructor(private gl: WebGL2RenderingContext) {}
 
-  makeDrawCall({matrix, mesh, material}: meshAndShader) {
+  makeDrawCall({mesh, material}: meshAndShader) {
     if (mesh === undefined || material === undefined) {
       return () => {
         console.warn('The mesh or material are missing.');
@@ -23,8 +23,6 @@ export default class WebGLDrawCallFactory {
 
     return () => {
       shader.use(vao);
-      this.gl.uniformMatrix4fv(
-          shader.uniforms['modelViewProjection'], false, matrix.toArray());
       material.render(this.gl, call);
     };
   }

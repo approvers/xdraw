@@ -7,27 +7,38 @@ import {ColorUniform, MaterialBase, packMaterial} from './MaterialUtils';
  * @author RkEclair / https://github.com/RkEclair
  */
 
-export default class Unlit implements MaterialBase {
+export default class Diffuse implements MaterialBase {
   binds;
   uniforms;
   shaders = {
     vertexShaderProgram: `
 attribute vec4 position;
+attribute vec4 normal;
 uniform mat4 modelViewProjection;
 
+varying vec4 var_normal;
+
 void main() {
+  var_normal = modelViewProjection * normal;
   gl_Position = modelViewProjection * position;
 }`,
     fragmentShaderProgram: `
 precision mediump float;
 
 uniform vec4 color;
+uniform vec3 light;
+
+varying vec4 var_normal;
 
 void main() {
+  vec3 normal = normalize(vec3(var_normal));
+  float opac = dot(normal, light);
   gl_FragColor = color;
+  gl_FragColor.rgb *= opac;
 }
 `
   };
+
   constructor(color = new Color(Math.random() * 0xffffff)) {
     this.binds = {color: new XBind(color)};
     this.uniforms = {color: ColorUniform};

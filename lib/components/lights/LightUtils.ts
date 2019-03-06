@@ -1,21 +1,17 @@
 /**
-	* @author RkEclair / https://github.com/RkEclair
-	*/
+ * @author RkEclair / https://github.com/RkEclair
+ */
 
-import { XStore } from "../../basis/Components";
-import Vector2 from "../../basis/Vector2";
-import Matrix4 from "../../basis/Matrix4";
-import Color from "../../basis/Color";
+import {unmapBinds, XBindMap, XStore} from '../../basis/Components';
+import Matrix4 from '../../basis/Matrix4';
+import Vector2 from '../../basis/Vector2';
 
-export function packLight(store: XStore, params: {[key: string]: any} = {}) {
-  store.set('lightShadow', {
-    color: new Color,
-    intensity: 1.0,
-    ...params
-  });
+export function packLight(store: XStore, binds: XBindMap) {
+  store.set('light', unmapBinds(binds));
 }
 
-export function packLightShadow(store: XStore, params: {[key: string]: any} = {}) {
+export function packLightShadow(
+    store: XStore, params: {[key: string]: any} = {}) {
   store.set('lightShadow', {
     bias: 0,
     radius: 1,

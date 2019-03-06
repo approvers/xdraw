@@ -1,9 +1,22 @@
-import {XStore} from '../../basis/Components';
+import Color from '../../basis/Color';
+import {XBind, XComponent, XStore} from '../../basis/Components';
+
+import {packLight} from './LightUtils';
 
 /**
  * @author RkEclair / https://github.com/RkEclair
  */
 
-const DirectionalLight = (store: XStore) => store;
+export default class DirectionalLight implements XComponent {
+  binds;
+  constructor(intensity = 1, color = new Color(0xffffff)) {
+    this.binds = {
+      intensity: new XBind(intensity, (v) => Math.max(v, 0)),
+      color: new XBind(color)
+    };
+  }
 
-export default DirectionalLight;
+  update(store: XStore) {
+    packLight(store, this.binds);
+  }
+}

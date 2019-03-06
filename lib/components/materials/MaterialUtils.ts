@@ -1,5 +1,6 @@
 import Color from '../../basis/Color';
 import {XBind, XComponent, XStore} from '../../basis/Components';
+import Transform from '../../basis/Transform';
 
 /**
  * @author RkEclair / https://github.com/RkEclair
@@ -85,21 +86,27 @@ export type UniformUpdater =
 const bindWithUniforms =
     (binds: {[key: string]: XBind<any>},
      uniforms: {[locationName: string]: UniformUpdater}) =>
-        (locations: {[locationName: string]: WebGLUniformLocation}) =>
-            (gl: WebGL2RenderingContext) => {
-              Object.entries(uniforms).forEach(keyValue => {
-                const bind = binds[keyValue[0]];
-                if (bind === undefined) return;
-                keyValue[1](locations[keyValue[0]], gl, bind.get());
-              });
-            };
+        (transform: Transform) => {
+          binds['modelViewProjection'] = new XBind(transform.matrixWorld);
+          return (locations: {[locationName: string]: WebGLUniformLocation}) =>
+                     (gl: WebGL2RenderingContext) => {
+                       Object.entries(uniforms).forEach(keyValue => {
+                         const bind = binds[keyValue[0]];
+                         if (bind === undefined) return;
+                         keyValue[1](locations[keyValue[0]], gl, bind.get());
+                       });
+                     };
+        };
 
 export const packMaterial = (impl: MaterialBase) => {
   const {binds, render, shaders, uniforms} = impl;
+  uniforms['modelViewProjection'] = (loc, gl, matrix) => {
+    gl.uniformMatrix4fv(loc, false, matrix.toArray());
+  };
   const binded = bindWithUniforms(binds, uniforms);
   const compiled = makeShader(shaders);
-  impl.update = (store: XStore) => store.set('material', {
-    uniforms: binded,
+  impl.update = (store: XStore, transform: Transform) => store.set('material', {
+    uniforms: binded(transform),
     render,
     shader: compiled,
   });

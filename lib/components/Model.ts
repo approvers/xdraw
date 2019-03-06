@@ -10,6 +10,7 @@ import Transform from '../basis/Transform';
 import Unlit from './materials/Unlit';
 import BoxMesh from './meshes/BoxMesh';
 import PlaneMesh from './meshes/PlaneMesh';
+import Diffuse from './materials/Diffuse';
 
 export function BackgroundPlane(width = 1, height = 1) {
   const t = new Transform;
@@ -25,5 +26,12 @@ export function BackgroundBox(width = 1, height = 1, depth = 1) {
   const t = new Transform;
   t.addComponent(new BoxMesh(width, height, depth));
   t.addComponent(new Unlit());
+  return t;
+}
+
+export function SimpleBox(width = 1, height = 1, depth = 1) {
+  const t = new Transform;
+  t.addComponent(new BoxMesh(width, height, depth));
+  t.addComponent(new Diffuse());
   return t;
 }

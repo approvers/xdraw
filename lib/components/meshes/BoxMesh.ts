@@ -43,7 +43,12 @@ export default class BoxMesh implements XComponent {
           self.width,  -self.height, -self.depth,  -self.width, -self.height,
           -self.depth, -self.width,  self.height,  -self.depth,
         ].map(e => e / 2),
-                    normals: number[] = [], uvs: number[] = [];
+                    normals: number[] =
+                        [
+                          1, 1, 1,  1, -1, 1,  -1, -1, 1,  -1, 1, 1,
+                          1, 1, -1, 1, -1, -1, -1, -1, -1, -1, 1, -1
+                        ],
+                    uvs: number[] = [];
 
     packMesh(store, {indices, vertices, normals, uvs});
   }
