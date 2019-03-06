@@ -19,19 +19,19 @@ export default class BoxMesh implements XComponent {
     };
   }
 
-  update(store: XStore, _transform: Transform) {
-    /* Faces
-            1_____0_____3
-            | 9   | 7   |
-            |   8 |   6 |
-0_____1_____5_____4_____7
-|  12 |  10 | 2   |
-| 13  | 3&11|   1 |
-3_____2_____6_____7_____4
-            | 4   | 6   |
-            |   5 |   7 |
-            2_____3_____0
-     */
+  /* Faces
+              1_____0_____3
+              | 9   | 7   |
+              |   8 |   6 |
+  0_____1_____5_____4_____7
+  |  12 |10   | 2   |
+  | 13  | 3&11|   1 |
+  3_____2_____6_____7_____4
+              | 4   | 6   |
+              |   5 |   7 |
+              2_____3_____0
+  */
+  update = [(store: XStore, _transform: Transform) => {
     const self = unmapBinds(this.binds);
 
     const indices: number[] = [7, 4, 6, 5, 2, 7, 3, 4, 0, 5, 1, 6, 2, 0, 3];
@@ -51,5 +51,5 @@ export default class BoxMesh implements XComponent {
                     uvs: number[] = [];
 
     packMesh(store, {indices, vertices, normals, uvs});
-  }
+  }];
 }

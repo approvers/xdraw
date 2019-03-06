@@ -124,21 +124,18 @@ export default class Transform {
   }
 
   updateMatrixWorld(force = false) {
-    const pred = (t: Transform) => {
-      if (t.matrixAutoUpdate) t.updateMatrix();
+    if (this.matrixAutoUpdate) this.updateMatrix();
 
-      if (t.matrixWorldNeedsUpdate || force) {
-        if (t.parent === null) {
-          t.matrixWorld = t.matrix.clone();
-        } else {
-          t.matrixWorld = t.parent.matrixWorld.clone().multiply(t.matrix);
-        }
-        t.matrixWorldNeedsUpdate = false;
-        force = true;
+    if (this.matrixWorldNeedsUpdate || force) {
+      if (this.parent === null) {
+        this.matrixWorld = this.matrix.clone();
+      } else {
+        this.matrixWorld =
+            this.parent.matrixWorld.clone().multiply(this.matrix);
       }
-    };
-    pred(this);
-    this.traverse(pred);
+      this.matrixWorldNeedsUpdate = false;
+      force = true;
+    }
   }
 
   updateWorldMatrix(updateParents: boolean, updateChildren: boolean) {
@@ -147,17 +144,12 @@ export default class Transform {
       if (updateParents === true && parent !== null) {
         parent.updateWorldMatrix(true, false);
       }
-
-      if (t.matrixAutoUpdate) t.updateMatrix();
-      if (parent === null) {
-        t.matrixWorld = t.matrix.clone();
-      } else {
-        t.matrixWorld = parent.matrixWorld.clone().multiply(t.matrix);
-      }
+      t.updateMatrixWorld();
     };
-
-    pred(this);
-
+    if (updateParents === true) {
+      pred(this);
+    }
+    this.updateMatrixWorld();
     // update children
     if (updateChildren === true) {
       updateParents = false;

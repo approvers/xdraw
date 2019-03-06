@@ -1,6 +1,7 @@
 import Color from '../../basis/Color';
 import {XBind, XComponent, XStore} from '../../basis/Components';
 import Transform from '../../basis/Transform';
+import Vector3 from '../../basis/Vector3';
 
 /**
  * @author RkEclair / https://github.com/RkEclair
@@ -105,11 +106,12 @@ export const packMaterial = (impl: MaterialBase) => {
   };
   const binded = bindWithUniforms(binds, uniforms);
   const compiled = makeShader(shaders);
-  impl.update = (store: XStore, transform: Transform) => store.set('material', {
-    uniforms: binded(transform),
-    render,
-    shader: compiled,
-  });
+  impl.update.push(
+      (store: XStore, transform: Transform) => store.set('material', {
+        uniforms: binded(transform),
+        render,
+        shader: compiled,
+      }));
 };
 
 export const defaultShaderSet: ShaderProgramSet = {
@@ -127,6 +129,24 @@ void main() {
   gl_FragColor = vec4(1, 0, 0.5, 1);
 }
 `
+};
+
+export const extractLight = (material: MaterialBase) => {
+  const bind = new XBind<Vector3>(new Vector3);
+  material.update.push((_store: XStore, transform: Transform) => {
+    const lightDirs: Vector3[] = [];
+    let root = transform;
+    while (root.parent) root = root.parent;
+    root.traverse(t => {
+      if (t.store.has('light')) {
+        lightDirs.push(transform.position.sub(t.position));
+      }
+    });
+    const dir =
+        lightDirs.reduce((prev, e) => prev.add(e), new Vector3).normalize();
+    bind.set(dir);
+  });
+  return bind;
 };
 
 export interface MaterialBase extends XComponent {

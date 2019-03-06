@@ -72,12 +72,12 @@ export class XStore {
 
 export interface XComponent {
   binds: XBindMap;
-  update(store: XStore, t: Transform);
+  update: ((store: XStore, t: Transform) => void)[];
 }
 
 class Component {
   enabled = true;
-  constructor(public readonly component: () => void) {}
+  constructor(public readonly component: (() => void)[]) {}
 
   clone() {
     const newC = new Component(this.component);
@@ -96,12 +96,13 @@ export default class Components {
   }
 
   add(component: XComponent, transform: Transform, store: XStore) {
-    const newC = new Component(() => component.update(store, transform));
+    const newC =
+        new Component(component.update.map(e => () => e(store, transform)));
     this.componentList.push(newC);
     return newC;
   }
 
   update() {
-    this.componentList.forEach(e => e.component());
+    this.componentList.forEach(e => e.component.forEach(e => e()));
   }
 }

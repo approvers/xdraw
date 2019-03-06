@@ -14,6 +14,8 @@ import Camera from '../lib/components/cameras/Camera';
 import DirectionalLight from '../lib/components/lights/DirectionalLight';
 import BoxMesh from '../lib/components/meshes/BoxMesh';
 import Lines from '../lib/components/materials/Lines';
+import Diffuse from '../lib/components/materials/Diffuse';
+import {Scene} from '../lib/components/Scene';
 
 export default class Index extends Component {
   scene = null;
@@ -25,28 +27,31 @@ export default class Index extends Component {
   }
 
   componentDidMount() {
+    if (this.scene !== null) return;
     this.canvas.width = 500;
     this.canvas.height = 500;
 
-    this.scene = new Transform();
+    this.scene = Scene();
     this.box = new Transform();
     this.box.addComponent(new BoxMesh());
-    this.box.addComponent(new Lines());
+    this.box.addComponent(new Diffuse());
     this.scene.add(this.box);
-    this.scene.addComponent(new DirectionalLight());
+    const light = new Transform();
+    light.translate(new Vector3(-0.6, -0.6, 0.6));
+    light.addComponent(new DirectionalLight());
+    this.scene.add(light);
     this.scene.addComponent(
       new MeshRenderer(this.canvas, (clears) => {
         clears.color = new Color(0x1a1d1a);
       })
     );
-    this.box.rotate(Euler.fromDegressRotations(1, 0, 1));
     this.scene.update();
   }
 
   frameId = 0;
 
   updateFrame = () => {
-    this.box.rotate(Euler.fromDegressRotations(1, 0, 1));
+    //this.box.rotate(Euler.fromDegressRotations(1, 0, 1));
     this.scene.update();
     this.frameId = requestAnimationFrame(this.updateFrame);
   };
@@ -67,6 +72,14 @@ export default class Index extends Component {
           }}
         >
           {this.state.paused ? 'Push to play' : 'Push to pause'}
+        </button>
+        <button
+          onClick={(e) => {
+            this.updateFrame();
+            cancelAnimationFrame(this.frameId);
+          }}
+        >
+          {'Step play'}
         </button>
         <style jsx>{`
           canvas {

@@ -1,24 +1,18 @@
-/**
-	* @author RkEclair / https://github.com/RkEclair
-	*/
-
-import EventSource from '../basis/EventSource';
-import Transform from '../basis/Transform';
-import Material from '../materials/Material';
 import Color from '../basis/Color';
-import Texture from '../textures/Texture';
-import WebGLRenderTarget from '../cameras/webgl/WebGLRenderTarget';
+import Transform from '../basis/Transform';
 
-export default class Scene extends EventSource {
-  
-  name = '';
-  overrideMaterial?: Material;
-  background?: Color | Texture | WebGLRenderTarget;
+/**
+ * @author RkEclair / https://github.com/RkEclair
+ */
 
-  dispose() {
-    this.dispatchEvent({ type: 'dispose' });
-  }
-}
+export const Scene =
+    () => {
+      const root = new Transform;
+      root.name = 'SceneRoot';
+      const body = new Transform;
+      root.add(body);
+      return body;
+    }
 
 export class Fog {
   name = '';
@@ -31,7 +25,7 @@ export class Fog {
 }
 
 export class FogExp2 extends Fog {
-  constructor(color: number, public density: number){
+  constructor(color: number, public density: number) {
     super(color);
   }
 }

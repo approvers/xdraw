@@ -10,6 +10,7 @@ import {ColorUniform, MaterialBase, packMaterial} from './MaterialUtils';
 export default class Points implements MaterialBase {
   binds;
   uniforms;
+  update = [];
   shaders = {
     vertexShaderProgram: `
 attribute vec4 position;
@@ -37,6 +38,4 @@ void main() {
   render(gl: WebGL2RenderingContext, drawCall: (mode: number) => void) {
     drawCall(gl.POINTS);
   }
-
-  update() {}
 }

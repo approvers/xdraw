@@ -4,16 +4,10 @@
 
 import {XComponent, XStore} from '../../basis/Components';
 import Transform from '../../basis/Transform';
-import {MaterialExports} from '../materials/MaterialUtils';
-import {MeshExports} from '../meshes/MeshUtils';
 
 import ConceptualizatedWebGL from './webgl/ConceptualizatedWebGL';
 import WebGLClears from './webgl/WebGLClears';
 import WebGLDrawCallFactory from './webgl/WebGLDrawCallFactory';
-
-export type meshAndShader = {
-  mesh: MeshExports; material: MaterialExports;
-};
 
 export default class MeshRenderer implements XComponent {
   ctx: WebGL2RenderingContext;
@@ -33,7 +27,7 @@ export default class MeshRenderer implements XComponent {
     this.backgroundSetter(this.gl.clear);
   }
 
-  update(store: XStore, transform: Transform) {
+  update = [(store: XStore, transform: Transform) => {
     if (store.has('camera')) {
       const camera = store.get('camera');
       transform.traverse(camera.updateProjectionMatrix);
@@ -41,14 +35,11 @@ export default class MeshRenderer implements XComponent {
     const looking = this.lookingTransform || transform;
     looking.updateWorldMatrix(false, true);
     const drawCalls: (() => void)[] = [];
-    (looking).traverse((t) => {
-      if (t.store.has('mesh') && t.store.has('material')) {
-        drawCalls.push(this.gl.drawCallFactory.makeDrawCall(
-            {mesh: t.store.get('mesh'), material: t.store.get('material')}));
-      }
-    });
+    looking.traverse(
+        (t) => drawCalls.push(this.gl.drawCallFactory.makeDrawCall(
+            {mesh: t.store.get('mesh'), material: t.store.get('material')})));
 
     this.gl.clear.clear();
     drawCalls.forEach(e => e());
-  }
+  }];
 }

@@ -1,17 +1,21 @@
-import {meshAndShader} from '../MeshRenderer';
+import {MaterialExports} from '../../materials/MaterialUtils';
+import {MeshExports} from '../../meshes/MeshUtils';
 
 /**
  * @author RkEclair / https://github.com/RkEclair
  */
+
+export type meshAndShader = {
+  mesh?: MeshExports;
+  material?: MaterialExports;
+};
 
 export default class WebGLDrawCallFactory {
   constructor(private gl: WebGL2RenderingContext) {}
 
   makeDrawCall({mesh, material}: meshAndShader) {
     if (mesh === undefined || material === undefined) {
-      return () => {
-        console.warn('The mesh or material are missing.');
-      };
+      return () => {};
     }
     const vao = this.gl.createVertexArray();
     if (vao === null) throw new Error('Fail to create vertex array.');

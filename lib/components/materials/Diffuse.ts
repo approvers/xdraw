@@ -1,7 +1,7 @@
 import Color from '../../basis/Color';
 import {XBind} from '../../basis/Components';
 
-import {ColorUniform, MaterialBase, packMaterial} from './MaterialUtils';
+import {ColorUniform, extractLight, MaterialBase, packMaterial} from './MaterialUtils';
 
 /**
  * @author RkEclair / https://github.com/RkEclair
@@ -10,6 +10,7 @@ import {ColorUniform, MaterialBase, packMaterial} from './MaterialUtils';
 export default class Diffuse implements MaterialBase {
   binds;
   uniforms;
+  update = [];
   shaders = {
     vertexShaderProgram: `
 attribute vec4 position;
@@ -40,14 +41,15 @@ void main() {
   };
 
   constructor(color = new Color(Math.random() * 0xffffff)) {
-    this.binds = {color: new XBind(color)};
-    this.uniforms = {color: ColorUniform};
+    this.binds = {color: new XBind(color), light: extractLight(this)};
+    this.uniforms = {
+      color: ColorUniform,
+      light: (loc, gl, vec) => gl.uniform3f(loc, vec.x, vec.y, vec.z)
+    };
     packMaterial(this);
   }
 
   render(gl: WebGL2RenderingContext, drawCall: (mode: number) => void) {
     drawCall(gl.TRIANGLE_STRIP);
   }
-
-  update() {}
 }
