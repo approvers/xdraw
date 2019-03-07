@@ -79,8 +79,8 @@ export default class Ray {
   }
 
   intersectedPointWithTriangle(f: Triangle, cullBackface = false) {
-    const edge1 = f.b.clone().sub(f.a);
-    const edge2 = f.c.clone().sub(f.a);
+    const edge1 = f.b.sub(f.a);
+    const edge2 = f.c.sub(f.a);
     const normal = edge1.clone().cross(edge2);
 
     // Solve Q + t*D = b1*E1 + b2*E2 (Q = kDiff, D = ray direction,
@@ -98,7 +98,7 @@ export default class Ray {
       return null;
     }
 
-    const diff = this.origin.clone().sub(f.a);
+    const diff = this.origin.sub(f.a);
     const DdQxE2 = sign * this.direction.dot(diff.clone().cross(edge2));
 
     // b1 < 0, no intersection
@@ -143,7 +143,7 @@ export default class Ray {
   }
 
   distanceSqToPoint(p: Vector3) {
-    const dist = p.clone().sub(this.origin).dot(this.direction);
+    const dist = p.sub(this.origin).dot(this.direction);
     if (dist < 0) {
       return this.origin.distanceToSquared(p);
     }
@@ -168,9 +168,9 @@ export default class Ray {
     // - The closest point on the ray
     // - The closest point on the segment
 
-    this.segCenter = vStart.clone().add(vEnd).multiplyScalar(0.5);
-    this.segDir = vEnd.clone().sub(vStart).normalize();
-    this.diff = this.origin.clone().sub(this.segCenter);
+    this.segCenter = vStart.add(vEnd).multiplyScalar(0.5);
+    this.segDir = vEnd.sub(vStart).normalize();
+    this.diff = this.origin.sub(this.segCenter);
 
     const segExtent = vStart.distanceTo(vEnd) * 0.5;
     const a01 = -this.direction.dot(this.segDir);

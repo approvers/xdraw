@@ -11,7 +11,7 @@ export default class Triangle {
       public c = new Vector3()) {}
 
   normal() {
-    const calced = this.c.clone().sub(this.b), v0 = this.a.clone().sub(this.b);
+    const calced = this.c.sub(this.b), v0 = this.a.sub(this.b);
     calced.cross(v0);
     const len = calced.lengthSq();
     if (0 < len) {
@@ -21,9 +21,9 @@ export default class Triangle {
   }
 
   barycoord(point: Vector3) {
-    const v0 = this.c.clone().sub(this.a);
-    const v1 = this.b.clone().sub(this.a);
-    const v2 = point.clone().sub(this.a);
+    const v0 = this.c.sub(this.a);
+    const v1 = this.b.sub(this.a);
+    const v2 = point.sub(this.a);
 
     const dot00 = v0.dot(v0);
     const dot01 = v0.dot(v1);

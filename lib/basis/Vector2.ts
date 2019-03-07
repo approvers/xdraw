@@ -207,7 +207,7 @@ export default class Vector2 {
     return Math.sqrt(this.distanceToSquared(v));
   }
   distanceToSquared(v: Vector2) {
-    const d = this.clone().sub(v);
+    const d = this.sub(v);
     return d.lengthSq();
   }
 

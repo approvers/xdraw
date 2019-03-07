@@ -15,6 +15,8 @@ import DirectionalLight from '../lib/components/lights/DirectionalLight';
 import BoxMesh from '../lib/components/meshes/BoxMesh';
 import Lines from '../lib/components/materials/Lines';
 import Diffuse from '../lib/components/materials/Diffuse';
+import SphereMesh from '../lib/components/meshes/SphereMesh';
+import Unlit from '../lib/components/materials/Unlit';
 
 export default class Index extends Component {
   box = null;
@@ -31,14 +33,19 @@ export default class Index extends Component {
     const scene = Transform.newScene();
 
     this.box = new Transform();
-    this.box.addComponent(new BoxMesh());
-    this.box.addComponent(new Diffuse());
+    this.box.addComponent(new SphereMesh(0.5, 5, 5));
+    this.box.addComponent(new Unlit());
     scene.add(this.box);
 
     const light = new Transform();
     light.translate(new Vector3(-2, 2, -2));
-    light.addComponent(new DirectionalLight());
+    light.addComponent(new DirectionalLight(0.5));
     scene.add(light);
+
+    const light2 = new Transform();
+    light2.translate(new Vector3(0, 0, -4));
+    light2.addComponent(new DirectionalLight(0.2));
+    scene.add(light2);
 
     scene.addComponent(
       new MeshRenderer(this.canvas, (clears) => {

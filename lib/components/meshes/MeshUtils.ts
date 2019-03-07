@@ -40,7 +40,12 @@ const MeshUpdater = (data: {[name: string]: BufferAttribute}) => (
   return (mode: number) => gl.drawArrays(mode, 0, count);
 };
 
-export function packMesh(store: XStore, nums: {[key: string]: number[]}) {
+export function packMesh(store: XStore, nums: {
+  indices: number[],
+  vertices: number[],
+  normals: number[],
+  uvs: number[]
+}) {
   const attributes = {
     index: (nums['indices'] && nums['indices'].some((v) => v > 65535)) ?
         BufferAttribute.fromArray(Uint32Array, nums['indices'], 1) :

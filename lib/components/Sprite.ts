@@ -2,7 +2,6 @@
 	* @author RkEclair / https://github.com/RkEclair
 	*/
 
-import Transform, { XObject } from '../basis/Transform';
 import Vector2 from '../basis/Vector2';
 import Raycaster, { RaycastIntersection } from '../basis/Raycaster';
 import Vector3 from '../basis/Vector3';
@@ -21,7 +20,7 @@ export class Sprite  {
 
     function transformVertex(vertexPosition: Vector3, mvPosition: Vector3, center: Vector3, scale: Vector3, sin?: number, cos?: number) {
       // compute position in camera space
-      const alignedPosition = vertexPosition.clone().sub(center).addScalar(0.5).multiply(scale);
+      const alignedPosition = vertexPosition.sub(center).addScalar(0.5).multiply(scale);
       const rotatedPosition = alignedPosition.clone();
       // to check if rotation is not zero
       if (sin !== undefined && cos !== undefined) {

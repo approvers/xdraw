@@ -320,7 +320,7 @@ export default class Matrix4 {
 
   static lookAt(eye: Vector3, target: Vector3, up: Vector3) {
     const newM = new Matrix4(), te = newM.elements;
-    const z = eye.clone().sub(target);
+    const z = eye.sub(target);
 
     if (z.lengthSq() === 0) {
       // eye and target are in the same position

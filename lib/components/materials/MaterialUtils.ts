@@ -137,7 +137,9 @@ export const extractLight = (material: MaterialBase) => {
     const lightDirs: Vector3[] = [];
     transform.root.traverse(t => {
       if (t.store.has('light')) {
-        lightDirs.push(transform.position.sub(t.position));
+        const {intensity}: {intensity: number} = t.store.get('light');
+        lightDirs.push(
+            transform.position.sub(t.position).multiplyScalar(intensity));
       }
     });
     const dir = lightDirs.reduce((prev, e) => prev.add(e), new Vector3)

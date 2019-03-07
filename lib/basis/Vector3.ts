@@ -322,6 +322,11 @@ export default class Vector3 {
     return this.divideScalar(this.length() || 1);
   }
 
+  posNeg() {
+    const sign = (v) => (v < 0 ? -1 : (v > 0 ? 1 : 0));
+    return new Vector3(sign(this.x), sign(this.y), sign(this.z));
+  }
+
   setLength(length: number) {
     return this.normalize().multiplyScalar(length);
   }
