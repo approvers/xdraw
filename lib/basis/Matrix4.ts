@@ -93,7 +93,8 @@ export default class Matrix4 {
   }
 
   multiply(m: Matrix4) {
-    const ae = this.elements;
+    const newM = this.clone();
+    const ae = newM.elements;
     const be = m.elements;
 
     const a11 = ae[0], a12 = ae[4], a13 = ae[8], a14 = ae[12];
@@ -125,7 +126,7 @@ export default class Matrix4 {
     ae[7] = a41 * b12 + a42 * b22 + a43 * b32 + a44 * b42;
     ae[11] = a41 * b13 + a42 * b23 + a43 * b33 + a44 * b43;
     ae[15] = a41 * b14 + a42 * b24 + a43 * b34 + a44 * b44;
-    return this;
+    return newM;
   }
 
   maxScaleOnAxis() {

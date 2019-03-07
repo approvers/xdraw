@@ -1,7 +1,7 @@
 import Color from '../../basis/Color';
 import {XBind} from '../../basis/Components';
 
-import {ColorUniform, extractLight, MaterialBase, packMaterial} from './MaterialUtils';
+import {ColorUniform, extractLight, MaterialBase, packMaterial, Vector3Uniform} from './MaterialUtils';
 
 /**
  * @author RkEclair / https://github.com/RkEclair
@@ -42,10 +42,7 @@ void main() {
 
   constructor(color = new Color(Math.random() * 0xffffff)) {
     this.binds = {color: new XBind(color), light: extractLight(this)};
-    this.uniforms = {
-      color: ColorUniform,
-      light: (loc, gl, vec) => gl.uniform3f(loc, vec.x, vec.y, vec.z)
-    };
+    this.uniforms = {color: ColorUniform, light: Vector3Uniform};
     packMaterial(this);
   }
 

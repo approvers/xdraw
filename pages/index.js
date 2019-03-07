@@ -15,10 +15,8 @@ import DirectionalLight from '../lib/components/lights/DirectionalLight';
 import BoxMesh from '../lib/components/meshes/BoxMesh';
 import Lines from '../lib/components/materials/Lines';
 import Diffuse from '../lib/components/materials/Diffuse';
-import {Scene} from '../lib/components/Scene';
 
 export default class Index extends Component {
-  scene = null;
   box = null;
   canvas = null;
 
@@ -27,32 +25,35 @@ export default class Index extends Component {
   }
 
   componentDidMount() {
-    if (this.scene !== null) return;
-    this.canvas.width = 500;
-    this.canvas.height = 500;
+    this.canvas.width = 600;
+    this.canvas.height = 600;
 
-    this.scene = Scene();
+    const scene = Transform.newScene();
+
     this.box = new Transform();
     this.box.addComponent(new BoxMesh());
     this.box.addComponent(new Diffuse());
-    this.scene.add(this.box);
+    scene.add(this.box);
+
     const light = new Transform();
     light.translate(new Vector3(-0.6, -0.6, 0.6));
     light.addComponent(new DirectionalLight());
-    this.scene.add(light);
-    this.scene.addComponent(
+    scene.add(light);
+
+    scene.addComponent(
       new MeshRenderer(this.canvas, (clears) => {
         clears.color = new Color(0x1a1d1a);
       })
     );
-    this.scene.update();
+
+    scene.update();
   }
 
   frameId = 0;
 
   updateFrame = () => {
     //this.box.rotate(Euler.fromDegressRotations(1, 0, 1));
-    this.scene.update();
+    this.box.root.update();
     this.frameId = requestAnimationFrame(this.updateFrame);
   };
 
@@ -83,8 +84,8 @@ export default class Index extends Component {
         </button>
         <style jsx>{`
           canvas {
-            width: 100;
-            height: 100;
+            width: 300;
+            height: 300;
           }
         `}</style>
       </div>

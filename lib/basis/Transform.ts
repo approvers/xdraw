@@ -17,8 +17,20 @@ export default class Transform {
   name: string;
   parent: Transform|null = null;
   children: Transform[] = [];
+  get root() {
+    let root: Transform = this;
+    while (root.parent) root = root.parent;
+    return root;
+  }
 
-  position = new Vector3();
+  private _position = new Vector3();
+  public get position() {
+    return this._position;
+  }
+  public set position(value) {
+    this._position = value;
+    console.trace();
+  }
   quaternion = new Quaternion();
   scale = new Vector3(1, 1, 1);
   visible = true;
@@ -42,6 +54,8 @@ export default class Transform {
 
   readonly willUpdate = new EventSource<Transform>();
   readonly didUpdate = new EventSource<Transform>();
+  readonly willUpdateMatrix = new EventSource<Transform>();
+  readonly didUpdateMatrix = new EventSource<Transform>();
   readonly awake = new EventSource<Transform>();
   readonly start = new EventSource<Transform>();
   readonly dispose = new EventSource<Transform>();
@@ -60,13 +74,24 @@ export default class Transform {
     this.comps.add(component, this, this.store);
   }
 
-  update() {
-    const updatePred = (t: Transform) => {
-      t.updateMatrix();
-      t.comps.update();
+  private update() {
+    this.willUpdate.dispatchEvent(this);
+    this.comps.update();
+    this.didUpdate.dispatchEvent(this);
+  }
+
+  static newScene() {
+    const root = new Transform;
+    root.name = 'SceneRoot';
+    root.update = () => {
+      root.traverse((t) => {
+        if (t.name !== root.name) {
+          t.update();
+          t.updateMatrix();
+        }
+      }, (t) => (t.name !== root.name) && t.updateMatrixWorld());
     };
-    updatePred(this);
-    this.traverse(updatePred);
+    return root;
   }
 
   static get up() {
@@ -117,44 +142,25 @@ export default class Transform {
     return this.boundingSphere = Sphere.fromPoints(vertices);
   }
 
-  updateMatrix() {
+  private updateMatrix() {
+    this.willUpdateMatrix.dispatchEvent(this);
     this.matrix = Matrix4.compose(this.position, this.quaternion, this.scale);
 
     this.matrixWorldNeedsUpdate = true;
+    this.didUpdateMatrix.dispatchEvent(this);
   }
 
-  updateMatrixWorld(force = false) {
+  private updateMatrixWorld(force = false) {
     if (this.matrixAutoUpdate) this.updateMatrix();
 
     if (this.matrixWorldNeedsUpdate || force) {
       if (this.parent === null) {
         this.matrixWorld = this.matrix.clone();
       } else {
-        this.matrixWorld =
-            this.parent.matrixWorld.clone().multiply(this.matrix);
+        this.parent.updateMatrixWorld();
+        this.matrixWorld = this.parent.matrixWorld.multiply(this.matrix);
       }
       this.matrixWorldNeedsUpdate = false;
-      force = true;
-    }
-  }
-
-  updateWorldMatrix(updateParents: boolean, updateChildren: boolean) {
-    const pred = (t: Transform) => {
-      const parent = t.parent;
-      if (updateParents === true && parent !== null) {
-        parent.updateWorldMatrix(true, false);
-      }
-      t.updateMatrixWorld();
-    };
-    if (updateParents === true) {
-      pred(this);
-    }
-    this.updateMatrixWorld();
-    // update children
-    if (updateChildren === true) {
-      updateParents = false;
-      updateChildren = true;
-      this.traverse(pred);
     }
   }
 
@@ -169,7 +175,7 @@ export default class Transform {
 
   lookAt(target: Vector3) {  // This method does not support objects having
                              // non-uniformly-scaled parent(s)
-    this.updateWorldMatrix(true, false);
+    this.updateMatrix();
 
     const position = Vector3.fromMatrixPosition(this.matrixWorld);
 
@@ -184,20 +190,21 @@ export default class Transform {
   }
 
   private traverseRecursive(
-      func: (transform: Transform) => void, traversed: Transform[]) {
-    if (traversed.some(e => e === this)) return;
+      traversed: Transform[], capture?: (transform: Transform) => void,
+      bubble?: (transform: Transform) => void) {
+    if (traversed.some(e => e.id === this.id)) return;
     traversed.push(this);
+    if (capture) capture(this);
     this.children.forEach(e => {
-      e.traverseRecursive(func, traversed);
-      func(e);
+      e.traverseRecursive(traversed, capture, bubble);
     });
+    if (bubble) bubble(this);
   }
 
-  traverse(func: (transform: Transform) => void) {
+  traverse(
+      capture?: (transform: Transform) => void,
+      bubble?: (transform: Transform) => void) {
     const traversed: Transform[] = [];
-    this.children.forEach(e => {
-      e.traverseRecursive(func, traversed);
-      func(e);
-    });
+    this.traverseRecursive(traversed, capture, bubble);
   }
 }

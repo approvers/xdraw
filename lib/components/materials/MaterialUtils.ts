@@ -135,9 +135,7 @@ export const extractLight = (material: MaterialBase) => {
   const bind = new XBind<Vector3>(new Vector3);
   material.update.push((_store: XStore, transform: Transform) => {
     const lightDirs: Vector3[] = [];
-    let root = transform;
-    while (root.parent) root = root.parent;
-    root.traverse(t => {
+    transform.root.traverse(t => {
       if (t.store.has('light')) {
         lightDirs.push(transform.position.sub(t.position));
       }
@@ -169,6 +167,10 @@ export type MaterialExports = {
 };
 
 export const ColorUniform =
-    (loc: WebGLUniformLocation, gl: WebGL2RenderingContext, color: Color) => {
-      gl.uniform4f(loc, color.r, color.g, color.b, color.a);
-    }
+    (loc: WebGLUniformLocation, gl: WebGL2RenderingContext, color: Color) =>
+        gl.uniform4f(loc, color.r, color.g, color.b, color.a);
+
+
+export const Vector3Uniform =
+    (loc: WebGLUniformLocation, gl: WebGL2RenderingContext, vec: Vector3) =>
+        gl.uniform3f(loc, vec.x, vec.y, vec.z);

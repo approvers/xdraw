@@ -116,49 +116,48 @@ export default class Vector3 {
   }
 
   add(v: Vector3) {
-    this.x += v.x;
-    this.y += v.y;
-    this.z += v.z;
-    return this;
+    const newV = this.clone();
+    newV.x += v.x;
+    newV.y += v.y;
+    newV.z += v.z;
+    return newV;
   }
   addScalar(s: number) {
-    this.x += s;
-    this.y += s;
-    this.z += s;
-    return this;
+    const newV = this.clone();
+    newV.x += s;
+    newV.y += s;
+    newV.z += s;
+    return newV;
   }
 
   sub(v: Vector3) {
-    this.x -= v.x;
-    this.y -= v.y;
-    this.z -= v.z;
-    return this;
+    const newV = this.clone();
+    newV.x -= v.x;
+    newV.y -= v.y;
+    newV.z -= v.z;
+    return newV;
   }
   subScalar(s: number) {
-    this.x -= s;
-    this.y -= s;
-    return this;
+    const newV = this.clone();
+    newV.x -= s;
+    newV.y -= s;
+    newV.z -= s;
+    return newV;
   }
 
   multiply(v: Vector3) {
-    this.x *= v.x;
-    this.y *= v.y;
-    this.z *= v.z;
-    return this;
+    const newV = this.clone();
+    newV.x *= v.x;
+    newV.y *= v.y;
+    newV.z *= v.z;
+    return newV;
   }
   multiplyScalar(s: number) {
-    this.x *= s;
-    this.y *= s;
-    this.z *= s;
-    return this;
-  }
-
-  applyEuler(euler: Euler) {
-    return this.applyQuaternion(Quaternion.fromEuler(euler));
-  }
-
-  applyAxisAngle(axis: Vector3, angle: number) {
-    return this.applyQuaternion(Quaternion.fromAxisAngle(axis, angle));
+    const newV = this.clone();
+    newV.x *= s;
+    newV.y *= s;
+    newV.z *= s;
+    return newV;
   }
 
   applyMatrix3(m: Matrix3) {
@@ -183,7 +182,16 @@ export default class Vector3 {
     return this;
   }
 
-  applyQuaternion(q: Quaternion) {
+
+  fromEuler(euler: Euler) {
+    return this.fromQuaternion(Quaternion.fromEuler(euler));
+  }
+
+  fromAxisAngle(axis: Vector3, angle: number) {
+    return this.fromQuaternion(Quaternion.fromAxisAngle(axis, angle));
+  }
+
+  fromQuaternion(q: Quaternion) {
     const {x, y, z} = this;
 
     const ix = q.w * x + q.y * z - q.z * y;
@@ -198,13 +206,14 @@ export default class Vector3 {
     return this;
   }
 
-  project(t: Transform) {
-    return this.applyMatrix4(t.matrixWorldInverse)
-        .applyMatrix4(t.projectionMatrix);
+
+  project(t: Transform, projectionMatrix: Matrix4) {
+    return this.applyMatrix4(t.matrixWorld.inverse())
+        .applyMatrix4(projectionMatrix);
   }
 
-  unproject(t: Transform) {
-    return this.applyMatrix4(new Matrix4().inverse(t.projectionMatrix))
+  unproject(t: Transform, projectionMatrix: Matrix4) {
+    return this.applyMatrix4(new Matrix4().inverse(projectionMatrix))
         .applyMatrix4(t.matrixWorld);
   }
 

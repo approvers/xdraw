@@ -33,7 +33,6 @@ export default class MeshRenderer implements XComponent {
       transform.traverse(camera.updateProjectionMatrix);
     }
     const looking = this.lookingTransform || transform;
-    looking.updateWorldMatrix(false, true);
     const drawCalls: (() => void)[] = [];
     looking.traverse(
         (t) => drawCalls.push(this.gl.drawCallFactory.makeDrawCall(

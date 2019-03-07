@@ -1,18 +1,7 @@
 import Color from '../basis/Color';
-import Transform from '../basis/Transform';
-
 /**
  * @author RkEclair / https://github.com/RkEclair
  */
-
-export const Scene =
-    () => {
-      const root = new Transform;
-      root.name = 'SceneRoot';
-      const body = new Transform;
-      root.add(body);
-      return body;
-    }
 
 export class Fog {
   name = '';

@@ -21,7 +21,7 @@ export class XBind<T> {
 
   set(newValue: T) {
     this.value = this.clamper(newValue);
-    this.dispatcher.dispatchEvent({newValue});
+    this.dispatcher.dispatchEvent(newValue);
   }
 }
 

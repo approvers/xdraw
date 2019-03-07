@@ -3,7 +3,7 @@
  */
 
 export default class EventSource<T> {
-  private listeners = new Array<(newValue: T) => void>();
+  private listeners: ((newValue: T) => void)[] = [];
 
   addEventListener(listener: (newValue: T) => void) {
     if (this.hasEventListener(listener)) {
@@ -13,14 +13,14 @@ export default class EventSource<T> {
   }
 
   hasEventListener(listener: (newValue: T) => void) {
-    return this.listeners.indexOf(listener) !== undefined;
+    return 0 <= this.listeners.indexOf(listener);
   }
 
   removeEventListener(listener: (newValue: T) => void) {
     this.listeners = this.listeners.filter(e => e !== listener);
   }
 
-  dispatchEvent(event: {newValue: T; [key: string]: any;}) {
-    this.listeners.forEach((e) => e.call(null, event));
+  dispatchEvent(newValue: T) {
+    this.listeners.forEach((e) => e(newValue));
   }
 }
