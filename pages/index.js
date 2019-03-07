@@ -36,24 +36,25 @@ export default class Index extends Component {
     scene.add(this.box);
 
     const light = new Transform();
-    light.translate(new Vector3(-0.6, -0.6, 0.6));
+    light.translate(new Vector3(1, 1, 1));
     light.addComponent(new DirectionalLight());
     scene.add(light);
 
     scene.addComponent(
       new MeshRenderer(this.canvas, (clears) => {
         clears.color = new Color(0x1a1d1a);
+        clears.depth = 0;
       })
     );
 
-    scene.update();
+    scene.flush();
   }
 
   frameId = 0;
 
   updateFrame = () => {
-    //this.box.rotate(Euler.fromDegressRotations(1, 0, 1));
-    this.box.root.update();
+    this.box.rotate(Euler.fromDegressRotations(1, 0, 1));
+    this.box.root.flush();
     this.frameId = requestAnimationFrame(this.updateFrame);
   };
 
@@ -76,6 +77,7 @@ export default class Index extends Component {
         </button>
         <button
           onClick={(e) => {
+            if (!this.state.paused) cancelAnimationFrame(this.frameId);
             this.updateFrame();
             cancelAnimationFrame(this.frameId);
           }}

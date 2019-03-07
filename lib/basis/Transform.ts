@@ -23,14 +23,7 @@ export default class Transform {
     return root;
   }
 
-  private _position = new Vector3();
-  public get position() {
-    return this._position;
-  }
-  public set position(value) {
-    this._position = value;
-    console.trace();
-  }
+  position = new Vector3();
   quaternion = new Quaternion();
   scale = new Vector3(1, 1, 1);
   visible = true;
@@ -71,8 +64,10 @@ export default class Transform {
   }
 
   addComponent(component: XComponent) {
-    this.comps.add(component, this, this.store);
+    return this.comps.add(component, this, this.store);
   }
+
+  flush() {}
 
   private update() {
     this.willUpdate.dispatchEvent(this);
@@ -83,12 +78,10 @@ export default class Transform {
   static newScene() {
     const root = new Transform;
     root.name = 'SceneRoot';
-    root.update = () => {
+    root.flush = () => {
       root.traverse((t) => {
-        if (t.name !== root.name) {
-          t.update();
-          t.updateMatrix();
-        }
+        t.update();
+        t.updateMatrix();
       }, (t) => (t.name !== root.name) && t.updateMatrixWorld());
     };
     return root;

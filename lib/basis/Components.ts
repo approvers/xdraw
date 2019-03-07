@@ -61,7 +61,7 @@ export class XStore {
   }
 
   has(key: string) {
-    return this.props[key] !== undefined;
+    return this.get(key) !== undefined;
   }
 
   set(key: string, obj: any) {
@@ -77,12 +77,16 @@ export interface XComponent {
 
 class Component {
   enabled = true;
-  constructor(public readonly component: (() => void)[]) {}
+  constructor(private component: (() => void)[]) {}
 
   clone() {
     const newC = new Component(this.component);
     newC.enabled = this.enabled;
     return newC;
+  }
+
+  run() {
+    if (this.enabled) this.component.forEach(e => e());
   }
 }
 
@@ -97,12 +101,12 @@ export default class Components {
 
   add(component: XComponent, transform: Transform, store: XStore) {
     const newC =
-        new Component(component.update.map(e => () => e(store, transform)));
+        new Component(component.update.map(e => (() => e(store, transform))));
     this.componentList.push(newC);
     return newC;
   }
 
   update() {
-    this.componentList.forEach(e => e.component.forEach(e => e()));
+    this.componentList.forEach(e => e.run());
   }
 }
