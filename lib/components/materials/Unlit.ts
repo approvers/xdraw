@@ -36,6 +36,6 @@ void main() {
   }
 
   render(gl: WebGL2RenderingContext, drawCall: (mode: number) => void) {
-    drawCall(gl.TRIANGLE_STRIP);
+    drawCall(gl.TRIANGLES);
   }
 }

@@ -36,7 +36,7 @@ export default class Index extends Component {
     scene.add(this.box);
 
     const light = new Transform();
-    light.translate(new Vector3(1, 1, 1));
+    light.translate(new Vector3(-2, 2, -2));
     light.addComponent(new DirectionalLight());
     scene.add(light);
 
@@ -46,7 +46,6 @@ export default class Index extends Component {
         clears.depth = 0;
       })
     );
-
     scene.flush();
   }
 
@@ -80,6 +79,7 @@ export default class Index extends Component {
             if (!this.state.paused) cancelAnimationFrame(this.frameId);
             this.updateFrame();
             cancelAnimationFrame(this.frameId);
+            this.setState({paused: true});
           }}
         >
           {'Step play'}

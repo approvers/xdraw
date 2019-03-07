@@ -140,8 +140,9 @@ export const extractLight = (material: MaterialBase) => {
         lightDirs.push(transform.position.sub(t.position));
       }
     });
-    const dir =
-        lightDirs.reduce((prev, e) => prev.add(e), new Vector3).normalize();
+    const dir = lightDirs.reduce((prev, e) => prev.add(e), new Vector3)
+                    .multiplyScalar(-1)
+                    .normalize();
     bind.set(dir);
   });
   return bind;

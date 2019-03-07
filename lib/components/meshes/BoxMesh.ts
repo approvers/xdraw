@@ -19,22 +19,25 @@ export default class BoxMesh implements XComponent {
     };
   }
 
-  /* Faces
-              1_____0_____3
-              | 9   | 7   |
-              |   8 |   6 |
-  0_____1_____5_____4_____7
-  |  12 |10   | 2   |
-  | 13  | 3&11|   1 |
-  3_____2_____6_____7_____4
-              | 4   | 6   |
-              |   5 |   7 |
+  /* Face
               2_____3_____0
+              |     |     |
+              |     |     |
+  3_____2_____6_____7_____4
+  |     |     |     |
+  |     |     |     |
+  0_____1_____5_____4
+              |     |
+              |     |
+              1_____0
   */
   update = [(store: XStore, _transform: Transform) => {
     const self = unmapBinds(this.binds);
 
-    const indices: number[] = [7, 4, 6, 5, 2, 7, 3, 4, 0, 5, 1, 6, 2, 0, 3];
+    const indices: number[] = [
+      3, 0, 2, 2, 0, 1, 2, 1, 6, 6, 1, 5, 5, 1, 4, 4, 1, 0,
+      6, 5, 7, 7, 5, 4, 2, 6, 3, 3, 6, 7, 3, 7, 0, 0, 7, 4
+    ];
     const vertices: number[] =
         [
           self.width,  self.height,  self.depth,   self.width,  -self.height,
