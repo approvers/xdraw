@@ -21,7 +21,7 @@ export default class PlaneMesh {
     const index: number[] = [0, 2, 1, 1, 2, 3];
     const vertex: number[] =
         [0.5, -0.5, 0, 0.5, 0.5, 0, -0.5, -0.5, 0, -0.5, 0.5, 0];
-    const normal: number[] = [0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0, -1];
+    const normal: number[] = [0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1];
     const uv: number[] = [1, 0, 1, 1, 0, 0, 0, 1];
 
     packMesh(

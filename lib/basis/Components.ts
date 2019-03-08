@@ -61,7 +61,7 @@ export class XStore {
   }
 
   has(key: string) {
-    return this.get(key) !== undefined;
+    return this.props[key] !== undefined;
   }
 
   set(key: string, obj: any) {

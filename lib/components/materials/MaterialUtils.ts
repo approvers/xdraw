@@ -88,7 +88,6 @@ const bindWithUniforms =
     (binds: {[key: string]: XBind<any>},
      uniforms: {[locationName: string]: UniformUpdater}) =>
         (transform: Transform) => {
-          binds['modelViewProjection'] = new XBind(transform.matrixWorld);
           return (locations: {[locationName: string]: WebGLUniformLocation}) =>
                      (gl: WebGL2RenderingContext) => {
                        Object.entries(uniforms).forEach(keyValue => {
@@ -96,14 +95,16 @@ const bindWithUniforms =
                          if (bind === undefined) return;
                          keyValue[1](locations[keyValue[0]], gl, bind.get());
                        });
+
+                       // Default uniforms
+                       gl.uniformMatrix4fv(
+                           locations['modelViewProjection'], false,
+                           transform.matrixWorld.toArray());
                      };
         };
 
 export const packMaterial = (impl: MaterialBase) => {
   const {binds, render, shaders, uniforms} = impl;
-  uniforms['modelViewProjection'] = (loc, gl, matrix) => {
-    gl.uniformMatrix4fv(loc, false, matrix.toArray());
-  };
   const binded = bindWithUniforms(binds, uniforms);
   const compiled = makeShader(shaders);
   impl.update.push(

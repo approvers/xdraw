@@ -37,12 +37,6 @@ export default class Index extends Component {
     this.box.addComponent(new PlaneMesh());
     this.box.addComponent(new Unlit());
     scene.add(this.box);
-    this.box.willUpdateMatrix.addEventListener((t) =>
-      console.log(t.quaternion, t.matrix.decompose().quaternion)
-    );
-    this.box.didUpdateMatrix.addEventListener((t) =>
-      console.log(t.quaternion, t.matrix.decompose().quaternion)
-    );
 
     const light = new Transform();
     light.translate(new Vector3(-2, 2, -2));

@@ -78,10 +78,14 @@ export default class Transform {
     const root = new Transform;
     root.name += 'SceneRoot';
     root.flush = () => {
-      root.traverse((t) => {
-        t.updateMatrix();
-      });
-      root.traverse((t) => t.updateMatrixWorld(), (t) => t.update());
+      root.traverse(
+          (t) => {
+            t.updateMatrix();
+          },
+          (t) => {
+            t.updateMatrixWorld();
+            t.update();
+          });
     };
     return root;
   }

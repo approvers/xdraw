@@ -219,7 +219,7 @@ export default class Matrix4 {
   }
 
   static compose(position: Vector3, quaternion: Quaternion, scale: Vector3) {
-    const newM = new Matrix4(), te = newM.elements;
+    const te: number[] = [];
     const {x: sx, y: sy, z: sz} = scale;
     const {x, y, z, w} = quaternion;
     const x2 = x + x, y2 = y + y, z2 = z + z;
@@ -247,7 +247,7 @@ export default class Matrix4 {
     te[14] = position.z;
     te[15] = 1;
 
-    return newM;
+    return new Matrix4(te);
   }
 
   decompose(): {position: Vector3, quaternion: Quaternion, scale: Vector3} {
