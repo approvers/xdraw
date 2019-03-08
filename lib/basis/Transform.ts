@@ -79,10 +79,9 @@ export default class Transform {
     root.name += 'SceneRoot';
     root.flush = () => {
       root.traverse((t) => {
-        t.update();
         t.updateMatrix();
       });
-      root.traverse((t) => t.updateMatrixWorld());
+      root.traverse((t) => t.updateMatrixWorld(), (t) => t.update());
     };
     return root;
   }
@@ -144,14 +143,12 @@ export default class Transform {
 
   private updateMatrixWorld(force = false) {
     if (this.matrixWorldNeedsUpdate || force) {
-      console.log('Before', this.name, this.matrixWorld.elements);
       this.matrixWorldNeedsUpdate = false;
       if (this.parent === null) {
         this.matrixWorld = this.matrix.clone();
       } else {
         this.matrixWorld = this.parent.matrixWorld.multiply(this.matrix);
       }
-      console.log('After', this.name, this.matrixWorld.elements);
     }
   }
 
