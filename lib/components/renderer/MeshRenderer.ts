@@ -28,6 +28,7 @@ export default class MeshRenderer implements XComponent {
   }
 
   update = [(store: XStore, transform: Transform) => {
+    console.log('Rendered');
     if (store.has('camera')) {
       const camera = store.get('camera');
       transform.traverse(camera.updateProjectionMatrix);

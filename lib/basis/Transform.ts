@@ -32,7 +32,6 @@ export default class Transform {
 
   matrix = new Matrix4();
   matrixWorld = new Matrix4();
-  matrixAutoUpdate = true;
   matrixWorldNeedsUpdate = true;
 
   renderOrder: number = 0;
@@ -67,22 +66,22 @@ export default class Transform {
     return this.comps.add(component, this, this.store);
   }
 
-  flush() {}
-
   private update() {
     this.willUpdate.dispatchEvent(this);
     this.comps.update();
     this.didUpdate.dispatchEvent(this);
   }
 
+  flush() {}  // injected from newScene
+
   static newScene() {
     const root = new Transform;
-    root.name = 'SceneRoot';
+    root.name += 'SceneRoot';
     root.flush = () => {
       root.traverse((t) => {
         t.update();
         t.updateMatrix();
-      }, (t) => (t.name !== root.name) && t.updateMatrixWorld());
+      }, (t) => t.updateMatrixWorld());
     };
     return root;
   }
@@ -120,7 +119,6 @@ export default class Transform {
 
     newT.matrix = this.matrix.clone();
     newT.matrixWorld = this.matrixWorld.clone();
-    newT.matrixAutoUpdate = this.matrixAutoUpdate;
 
     newT.renderOrder = this.renderOrder;
 
@@ -144,16 +142,14 @@ export default class Transform {
   }
 
   private updateMatrixWorld(force = false) {
-    if (this.matrixAutoUpdate) this.updateMatrix();
-
     if (this.matrixWorldNeedsUpdate || force) {
+      this.matrixWorldNeedsUpdate = false;
+      console.log('Updated');
       if (this.parent === null) {
         this.matrixWorld = this.matrix.clone();
       } else {
-        this.parent.updateMatrixWorld();
         this.matrixWorld = this.parent.matrixWorld.multiply(this.matrix);
       }
-      this.matrixWorldNeedsUpdate = false;
     }
   }
 
@@ -162,8 +158,7 @@ export default class Transform {
   }
 
   rotate(amount: Euler) {
-    const v = Euler.fromQuaternion(this.quaternion, amount.order);
-    this.quaternion = Quaternion.fromEuler(v.add(amount));
+    this.quaternion = Quaternion.fromEuler(amount).multiply(this.quaternion);
   }
 
   lookAt(target: Vector3) {  // This method does not support objects having
@@ -178,7 +173,7 @@ export default class Transform {
     if (this.parent) {
       const m1 = Matrix4.extractRotation(this.parent.matrixWorld);
       const q1 = Quaternion.fromRotationMatrix(m1);
-      this.quaternion.premultiply(q1.inverse());
+      this.quaternion = this.quaternion.premultiply(q1.inverse());
     }
   }
 

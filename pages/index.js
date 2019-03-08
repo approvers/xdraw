@@ -17,6 +17,7 @@ import Lines from '../lib/components/materials/Lines';
 import Diffuse from '../lib/components/materials/Diffuse';
 import SphereMesh from '../lib/components/meshes/SphereMesh';
 import Unlit from '../lib/components/materials/Unlit';
+import PlaneMesh from '../lib/components/meshes/PlaneMesh';
 
 export default class Index extends Component {
   box = null;
@@ -33,9 +34,12 @@ export default class Index extends Component {
     const scene = Transform.newScene();
 
     this.box = new Transform();
-    this.box.addComponent(new SphereMesh(0.5, 5, 5));
+    this.box.addComponent(new PlaneMesh());
     this.box.addComponent(new Unlit());
     scene.add(this.box);
+    this.box.didUpdateMatrix.addEventListener((t) =>
+      console.log(t.quaternion, t.matrixWorld.decompose().quaternion)
+    );
 
     const light = new Transform();
     light.translate(new Vector3(-2, 2, -2));

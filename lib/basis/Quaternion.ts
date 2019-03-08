@@ -11,49 +11,11 @@ import Matrix4 from './Matrix4';
 import Vector3 from './Vector3';
 
 export default class Quaternion {
-  private onChange: Function = () => {};
-
   constructor(
-      private _x: number = 0, private _y: number = 0, private _z: number = 0,
-      private _w: number = 1) {}
+      public x: number = 0, public y: number = 0, public z: number = 0,
+      public w: number = 1) {}
 
-  get x() {
-    return this._x;
-  }
-  set x(v) {
-    this._x = v;
-    this.onChange();
-  }
-
-  get y() {
-    return this._y;
-  }
-  set y(v) {
-    this._y = v;
-    this.onChange();
-  }
-
-  get z() {
-    return this._z;
-  }
-  set z(v) {
-    this._z = v;
-    this.onChange();
-  }
-
-  get w() {
-    return this._w;
-  }
-  set w(v) {
-    this._w = v;
-    this.onChange();
-  }
-
-  static fromEuler(euler: Euler, update = false) {
-    if (!(euler instanceof Euler)) {
-      throw new Error('ArgumentError: Expected the instance of Euler.');
-    }
-
+  static fromEuler(euler: Euler) {
     const {x, y, z, order} = euler, newQ = new Quaternion();
     var c1 = Math.cos(x / 2);
     var c2 = Math.cos(y / 2);
@@ -65,46 +27,44 @@ export default class Quaternion {
 
     switch (order) {
       case 'XYZ':
-        newQ._x = s1 * c2 * c3 + c1 * s2 * s3;
-        newQ._y = c1 * s2 * c3 - s1 * c2 * s3;
-        newQ._z = c1 * c2 * s3 + s1 * s2 * c3;
-        newQ._w = c1 * c2 * c3 - s1 * s2 * s3;
+        newQ.x = s1 * c2 * c3 + c1 * s2 * s3;
+        newQ.y = c1 * s2 * c3 - s1 * c2 * s3;
+        newQ.z = c1 * c2 * s3 + s1 * s2 * c3;
+        newQ.w = c1 * c2 * c3 - s1 * s2 * s3;
         break;
       case 'YXZ':
-        newQ._x = s1 * c2 * c3 + c1 * s2 * s3;
-        newQ._y = c1 * s2 * c3 - s1 * c2 * s3;
-        newQ._z = c1 * c2 * s3 - s1 * s2 * c3;
-        newQ._w = c1 * c2 * c3 + s1 * s2 * s3;
+        newQ.x = s1 * c2 * c3 + c1 * s2 * s3;
+        newQ.y = c1 * s2 * c3 - s1 * c2 * s3;
+        newQ.z = c1 * c2 * s3 - s1 * s2 * c3;
+        newQ.w = c1 * c2 * c3 + s1 * s2 * s3;
         break;
       case 'ZXY':
-        newQ._x = s1 * c2 * c3 - c1 * s2 * s3;
-        newQ._y = c1 * s2 * c3 + s1 * c2 * s3;
-        newQ._z = c1 * c2 * s3 + s1 * s2 * c3;
-        newQ._w = c1 * c2 * c3 - s1 * s2 * s3;
+        newQ.x = s1 * c2 * c3 - c1 * s2 * s3;
+        newQ.y = c1 * s2 * c3 + s1 * c2 * s3;
+        newQ.z = c1 * c2 * s3 + s1 * s2 * c3;
+        newQ.w = c1 * c2 * c3 - s1 * s2 * s3;
         break;
       case 'ZYX':
-        newQ._x = s1 * c2 * c3 - c1 * s2 * s3;
-        newQ._y = c1 * s2 * c3 + s1 * c2 * s3;
-        newQ._z = c1 * c2 * s3 - s1 * s2 * c3;
-        newQ._w = c1 * c2 * c3 + s1 * s2 * s3;
+        newQ.x = s1 * c2 * c3 - c1 * s2 * s3;
+        newQ.y = c1 * s2 * c3 + s1 * c2 * s3;
+        newQ.z = c1 * c2 * s3 - s1 * s2 * c3;
+        newQ.w = c1 * c2 * c3 + s1 * s2 * s3;
         break;
       case 'YZX':
-        newQ._x = s1 * c2 * c3 + c1 * s2 * s3;
-        newQ._y = c1 * s2 * c3 + s1 * c2 * s3;
-        newQ._z = c1 * c2 * s3 - s1 * s2 * c3;
-        newQ._w = c1 * c2 * c3 - s1 * s2 * s3;
+        newQ.x = s1 * c2 * c3 + c1 * s2 * s3;
+        newQ.y = c1 * s2 * c3 + s1 * c2 * s3;
+        newQ.z = c1 * c2 * s3 - s1 * s2 * c3;
+        newQ.w = c1 * c2 * c3 - s1 * s2 * s3;
         break;
       case 'XZY':
-        newQ._x = s1 * c2 * c3 - c1 * s2 * s3;
-        newQ._y = c1 * s2 * c3 - s1 * c2 * s3;
-        newQ._z = c1 * c2 * s3 + s1 * s2 * c3;
-        newQ._w = c1 * c2 * c3 + s1 * s2 * s3;
+        newQ.x = s1 * c2 * c3 - c1 * s2 * s3;
+        newQ.y = c1 * s2 * c3 - s1 * c2 * s3;
+        newQ.z = c1 * c2 * s3 + s1 * s2 * c3;
+        newQ.w = c1 * c2 * c3 + s1 * s2 * s3;
         break;
       default:
         throw new Error('ArgumentError: Illegal rotation order on Euler.');
     }
-
-    if (update) newQ.onChange();
 
     return newQ;
   }
@@ -113,12 +73,10 @@ export default class Quaternion {
     const halfAngle = angle / 2, s = Math.sin(halfAngle),
           newQ = new Quaternion();
 
-    newQ._x = axis.x * s;
-    newQ._y = axis.y * s;
-    newQ._z = axis.z * s;
-    newQ._w = Math.cos(halfAngle);
-
-    newQ.onChange();
+    newQ.x = axis.x * s;
+    newQ.y = axis.y * s;
+    newQ.z = axis.z * s;
+    newQ.w = Math.cos(halfAngle);
 
     return newQ;
   }
@@ -132,34 +90,32 @@ export default class Quaternion {
     if (trace > 0) {
       s = 0.5 / Math.sqrt(trace + 1.0);
 
-      newQ._w = 0.25 / s;
-      newQ._x = (m32 - m23) * s;
-      newQ._y = (m13 - m31) * s;
-      newQ._z = (m21 - m12) * s;
+      newQ.w = 0.25 / s;
+      newQ.x = (m32 - m23) * s;
+      newQ.y = (m13 - m31) * s;
+      newQ.z = (m21 - m12) * s;
     } else if (m11 > m22 && m11 > m33) {
       s = 2.0 * Math.sqrt(1.0 + m11 - m22 - m33);
 
-      newQ._w = (m32 - m23) / s;
-      newQ._x = 0.25 * s;
-      newQ._y = (m12 + m21) / s;
-      newQ._z = (m13 + m31) / s;
+      newQ.w = (m32 - m23) / s;
+      newQ.x = 0.25 * s;
+      newQ.y = (m12 + m21) / s;
+      newQ.z = (m13 + m31) / s;
     } else if (m22 > m33) {
       s = 2.0 * Math.sqrt(1.0 + m22 - m11 - m33);
 
-      newQ._w = (m13 - m31) / s;
-      newQ._x = (m12 + m21) / s;
-      newQ._y = 0.25 * s;
-      newQ._z = (m23 + m32) / s;
+      newQ.w = (m13 - m31) / s;
+      newQ.x = (m12 + m21) / s;
+      newQ.y = 0.25 * s;
+      newQ.z = (m23 + m32) / s;
     } else {
       s = 2.0 * Math.sqrt(1.0 + m33 - m11 - m22);
 
-      newQ._w = (m21 - m12) / s;
-      newQ._x = (m13 + m31) / s;
-      newQ._y = (m23 + m32) / s;
-      newQ._z = 0.25 * s;
+      newQ.w = (m21 - m12) / s;
+      newQ.x = (m13 + m31) / s;
+      newQ.y = (m23 + m32) / s;
+      newQ.z = 0.25 * s;
     }
-
-    newQ.onChange();
 
     return newQ;
   }
@@ -180,7 +136,47 @@ export default class Quaternion {
   }
 
   static slerp(qa: Quaternion, qb: Quaternion, t: number) {
-    return qa.clone().slerp(qb, t);
+    if (t === 0) return qa.clone();
+    if (t === 1) return qb.clone();
+    const {x: x, y: y, z: z, w: w} = qa;
+    let cosHalfTheta = qa.dot(qb);
+
+    if (cosHalfTheta < 0) {
+      qa = qb.multiplyScalar(-1);
+      cosHalfTheta *= -1;
+    } else {
+      qa = qb.clone();
+    }
+
+    if (cosHalfTheta >= 1.0) {
+      return qa.clone();
+    }
+
+    const sqrSinHalfTheta = 1.0 - cosHalfTheta * cosHalfTheta;
+
+    if (sqrSinHalfTheta <= Number.EPSILON) {
+      const newQ = new Quaternion;
+      const s = 1 - t;
+      newQ.w = s * w + t * qa.w;
+      newQ.x = s * x + t * qa.x;
+      newQ.y = s * y + t * qa.y;
+      newQ.z = s * z + t * qa.z;
+
+      return newQ.normalize();
+    }
+
+    const sinHalfTheta = Math.sqrt(sqrSinHalfTheta);
+    const halfTheta = Math.atan2(sinHalfTheta, cosHalfTheta);
+    const ratioA = Math.sin((1 - t) * halfTheta) / sinHalfTheta,
+          ratioB = Math.sin(t * halfTheta) / sinHalfTheta;
+    const newQ = new Quaternion;
+
+    newQ.w = w * ratioA + qa.w * ratioB;
+    newQ.x = x * ratioA + qa.x * ratioB;
+    newQ.y = y * ratioA + qa.y * ratioB;
+    newQ.z = z * ratioA + qa.z * ratioB;
+
+    return newQ;
   }
 
   static slerpFlat(
@@ -236,26 +232,8 @@ export default class Quaternion {
     return new Quaternion(x, y, z, w);
   }
 
-  set(x: number, y: number, z: number, w: number) {
-    this._x = x;
-    this._y = y;
-    this._z = z;
-    this._w = w;
-    this.onChange();
-    return this;
-  }
-
   clone() {
-    return new Quaternion(this._x, this._y, this._z, this._w);
-  }
-
-  copy(q: Quaternion) {
-    this._x = q.x;
-    this._y = q.y;
-    this._z = q.z;
-    this._w = q.w;
-    this.onChange();
-    return this;
+    return new Quaternion(this.x, this.y, this.z, this.w);
   }
 
   angleTo(q: Quaternion) {
@@ -279,131 +257,82 @@ export default class Quaternion {
   }
 
   conjugate() {
-    this._x *= -1;
-    this._y *= -1;
-    this._z *= -1;
-    this.onChange();
-    return this;
+    const newQ = this.clone();
+    newQ.x *= -1;
+    newQ.y *= -1;
+    newQ.z *= -1;
+    return newQ;
   }
 
   dot(v: Quaternion) {
-    return this._x * v.x + this._y * v.y + this._z * v.z + this._w * v.w;
+    const newQ = this.clone();
+    return newQ.x * v.x + newQ.y * v.y + newQ.z * v.z + newQ.w * v.w;
   }
 
   lengthSq() {
     return (
-        this._x * this._x + this._y * this._y + this._z * this._z +
-        this._w * this._w);
+        this.x * this.x + this.y * this.y + this.z * this.z + this.w * this.w);
   }
+
   length() {
     return Math.sqrt(this.lengthSq());
   }
 
   normalize() {
     let l = this.length();
+    const newQ = this.clone();
 
     if (l === 0) {
-      this._x = 0;
-      this._y = 0;
-      this._z = 0;
-      this._w = 1;
+      newQ.x = 0;
+      newQ.y = 0;
+      newQ.z = 0;
+      newQ.w = 1;
     } else {
       l = 1 / l;
-      this._x = this._x * l;
-      this._y = this._y * l;
-      this._z = this._z * l;
-      this._w = this._w * l;
+      newQ.x = this.x * l;
+      newQ.y = this.y * l;
+      newQ.z = this.z * l;
+      newQ.w = this.w * l;
     }
-    this.onChange();
-    return this;
+    return newQ;
+  }
+
+  multiplyScalar(a: number) {
+    const newQ = this.clone();
+    newQ.x *= a;
+    newQ.y *= a;
+    newQ.z *= a;
+    newQ.w *= a;
+    return newQ;
   }
 
   multiply(q: Quaternion) {
-    const {_x: qax, _y: qay, _z: qaz, _w: qaw} = this;
-    const {_x: qbx, _y: qby, _z: qbz, _w: qbw} = q;
+    const newQ = this.clone();
+    const {x: qax, y: qay, z: qaz, w: qaw} = newQ;
+    const {x: qbx, y: qby, z: qbz, w: qbw} = q;
 
-    this._x = qax * qbw + qaw * qbx + qay * qbz - qaz * qby;
-    this._y = qay * qbw + qaw * qby + qaz * qbx - qax * qbz;
-    this._z = qaz * qbw + qaw * qbz + qax * qby - qay * qbx;
-    this._w = qaw * qbw - qax * qbx - qay * qby - qaz * qbz;
+    newQ.x = qax * qbw + qaw * qbx + qay * qbz - qaz * qby;
+    newQ.y = qay * qbw + qaw * qby + qaz * qbx - qax * qbz;
+    newQ.z = qaz * qbw + qaw * qbz + qax * qby - qay * qbx;
+    newQ.w = qaw * qbw - qax * qbx - qay * qby - qaz * qbz;
 
-    this.onChange();
-    return this;
+    return newQ;
   }
 
   premultiply(q: Quaternion) {
     return q.multiply(this);
   }
 
-  slerp(q: Quaternion, t: number) {
-    if (t === 0) return this;
-    if (t === 1) return q.clone();
-    const {_x: x, _y: y, _z: z, _w: w} = this;
-    let cosHalfTheta = this.dot(q);
-
-    if (cosHalfTheta < 0) {
-      this._w = -q._w;
-      this._x = -q._x;
-      this._y = -q._y;
-      this._z = -q._z;
-
-      cosHalfTheta = -cosHalfTheta;
-    } else {
-      this.copy(q);
-    }
-
-    if (cosHalfTheta >= 1.0) {
-      this._w = w;
-      this._x = x;
-      this._y = y;
-      this._z = z;
-
-      return this;
-    }
-
-    const sqrSinHalfTheta = 1.0 - cosHalfTheta * cosHalfTheta;
-
-    if (sqrSinHalfTheta <= 0.000001) {
-      const s = 1 - t;
-      this._w = s * w + t * this._w;
-      this._x = s * x + t * this._x;
-      this._y = s * y + t * this._y;
-      this._z = s * z + t * this._z;
-
-      return this.normalize();
-    }
-
-    const sinHalfTheta = Math.sqrt(sqrSinHalfTheta);
-    const halfTheta = Math.atan2(sinHalfTheta, cosHalfTheta);
-    const ratioA = Math.sin((1 - t) * halfTheta) / sinHalfTheta,
-          ratioB = Math.sin(t * halfTheta) / sinHalfTheta;
-
-    this._w = w * ratioA + this._w * ratioB;
-    this._x = x * ratioA + this._x * ratioB;
-    this._y = y * ratioA + this._y * ratioB;
-    this._z = z * ratioA + this._z * ratioB;
-
-    this.onChange();
-
-    return this;
-  }
-
   equals(q: Quaternion) {
     return (
-        this._x === q.x && this._y === q.y && this._z === q.z &&
-        this._w === q.w);
+        this.x === q.x && this.y === q.y && this.z === q.z && this.w === q.w);
   }
 
   toArray(array: number[] = [], offset: number = 0) {
-    array[offset] = this._x;
-    array[offset + 1] = this._y;
-    array[offset + 2] = this._z;
-    array[offset + 3] = this._w;
+    array[offset] = this.x;
+    array[offset + 1] = this.y;
+    array[offset + 2] = this.z;
+    array[offset + 3] = this.w;
     return array;
-  }
-
-  setOnChange(callback: Function) {
-    this.onChange = callback;
-    return this;
   }
 }

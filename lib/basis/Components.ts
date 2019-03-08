@@ -77,6 +77,8 @@ export interface XComponent {
 
 class Component {
   enabled = true;
+  dirty = true;
+  frequentUpdate = false;
   constructor(private component: (() => void)[]) {}
 
   clone() {
@@ -86,7 +88,8 @@ class Component {
   }
 
   run() {
-    if (this.enabled) this.component.forEach(e => e());
+    if (this.enabled && this.dirty) this.component.forEach(e => e());
+    this.dirty = this.frequentUpdate;
   }
 }
 
@@ -102,6 +105,11 @@ export default class Components {
   add(component: XComponent, transform: Transform, store: XStore) {
     const newC =
         new Component(component.update.map(e => (() => e(store, transform))));
+    const binds = Object.values(component.binds);
+    if (0 < binds.length)
+      binds.forEach(e => e.addListener(() => newC.dirty = true));
+    else
+      newC.frequentUpdate = true;
     this.componentList.push(newC);
     return newC;
   }
