@@ -31,17 +31,17 @@ export default class Index extends Component {
     const scene = Transform.newScene();
 
     this.box = new Transform();
-    this.box.addComponent(new SphereMesh(0.5));
+    this.box.addComponent(new SphereMesh(1, 16, 12));
     this.box.addComponent(new Diffuse());
     scene.add(this.box);
 
     const light = new Transform();
-    light.translate(new Vector3(-2, 2, -2));
+    light.translate(new Vector3(-2, 2, 2));
     light.addComponent(new DirectionalLight(0.5));
     scene.add(light);
 
     const light2 = new Transform();
-    light2.translate(new Vector3(0, 0, -4));
+    light2.translate(new Vector3(0, 0, 4));
     light2.addComponent(new DirectionalLight(0.2));
     scene.add(light2);
 

@@ -31,7 +31,7 @@ export default class SphereMesh implements XComponent {
 
   update = [(store: XStore, _transform: Transform) => {
     const self = unmapBinds(this.binds);
-
+    let indexCount = 0;
     const grid: number[][] = [];
 
     // buffers
@@ -63,7 +63,7 @@ export default class SphereMesh implements XComponent {
 
         // uv
         uv.push(u, 1 - v);
-        verticesRow.push(ix * self.heightSegments + iy);
+        verticesRow.push(indexCount++);
       }
       grid.push(verticesRow);
     }
@@ -77,7 +77,7 @@ export default class SphereMesh implements XComponent {
         const d = grid[iy + 1][ix + 1];
 
         if (iy !== 0 || self.thetaOffset > 0) index.push(a, b, d);
-        if (iy !== self.heightSegments - 1 || self.thetaEnd < Math.PI)
+        if (iy !== self.heightSegments - 1 || self.thetaLength < Math.PI)
           index.push(b, c, d);
       }
     }
