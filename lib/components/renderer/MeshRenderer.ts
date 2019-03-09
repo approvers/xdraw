@@ -33,11 +33,7 @@ export default class MeshRenderer implements XComponent {
     this.backgroundSetter(this.gl.clear);
   }
 
-  update = [(store: XStore, transform: Transform) => {
-    if (store.has('camera')) {
-      const camera = store.get('camera');
-      transform.traverse(camera.updateProjectionMatrix);
-    }
+  update = [(_store: XStore, transform: Transform) => {
     const looking = this.lookingTransform || transform;
     const drawCalls: (() => void)[] = [];
     looking.traverse(

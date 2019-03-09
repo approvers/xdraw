@@ -31,7 +31,7 @@ export default class Index extends Component {
     const scene = Transform.newScene();
 
     this.box = new Transform();
-    this.box.addComponent(new SphereMesh(1, 16, 12));
+    this.box.addComponent(new PlaneMesh());
     this.box.addComponent(new Diffuse());
     scene.add(this.box);
 
@@ -47,7 +47,7 @@ export default class Index extends Component {
 
     scene.addComponent(
       new MeshRenderer(this.canvas, 600, 600, (clears) => {
-        clears.color = new Color(0x1a1d1a);
+        clears.color = new Color(0xcacdca);
         clears.depth = 0;
       })
     );
