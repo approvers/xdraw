@@ -5,13 +5,13 @@
  * @author RkEclair / htpps://github.com/RkEclair
  */
 
-import {rangeClamper, unmapBinds, XBind, XStore} from '../../basis/Components';
+import {rangeClamper, unmapBinds, XBind, XComponent, XStore} from '../../basis/Components';
 import Transform from '../../basis/Transform';
 import Vector3 from '../../basis/Vector3';
 
 import {packMesh} from './MeshUtils';
 
-export default class SphereMesh {
+export default class SphereMesh implements XComponent {
   binds;
 
   constructor(
@@ -19,8 +19,9 @@ export default class SphereMesh {
       phiLength = Math.PI * 2, thetaOffset = 0, thetaLength = Math.PI) {
     this.binds = {
       radius: new XBind(radius, v => Math.max(v, 0)),
-      widthSegments: new XBind(widthSegments, v => Math.max(v, 3)),
-      heightSegments: new XBind(heightSegments, v => Math.max(v, 2)),
+      widthSegments: new XBind(widthSegments, v => Math.max(Math.floor(v), 3)),
+      heightSegments:
+          new XBind(heightSegments, v => Math.max(Math.floor(v), 2)),
       phiOffset: new XBind(phiOffset, rangeClamper(0, 2 * Math.PI)),
       phiLength: new XBind(phiLength, rangeClamper(0, 2 * Math.PI)),
       thetaOffset: new XBind(thetaOffset, rangeClamper(0, Math.PI)),
@@ -57,12 +58,12 @@ export default class SphereMesh {
         vertex.push(x, y, z);
 
         // normal
-        const normalV = new Vector3(x, y, z).posNeg();
+        const normalV = new Vector3(x, y, z).normalize();
         normal.push(normalV.x, normalV.y, normalV.z);
 
         // uv
         uv.push(u, 1 - v);
-        verticesRow.push(ix + iy);
+        verticesRow.push(ix * self.heightSegments + iy);
       }
       grid.push(verticesRow);
     }

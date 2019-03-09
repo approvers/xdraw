@@ -28,13 +28,10 @@ export default class Index extends Component {
   }
 
   componentDidMount() {
-    this.canvas.width = 600;
-    this.canvas.height = 600;
-
     const scene = Transform.newScene();
 
     this.box = new Transform();
-    this.box.addComponent(new BoxMesh());
+    this.box.addComponent(new SphereMesh(0.5));
     this.box.addComponent(new Diffuse());
     scene.add(this.box);
 
@@ -49,7 +46,7 @@ export default class Index extends Component {
     scene.add(light2);
 
     scene.addComponent(
-      new MeshRenderer(this.canvas, (clears) => {
+      new MeshRenderer(this.canvas, 600, 600, (clears) => {
         clears.color = new Color(0x1a1d1a);
         clears.depth = 0;
       })
@@ -94,8 +91,8 @@ export default class Index extends Component {
         </button>
         <style jsx>{`
           canvas {
-            width: 300;
-            height: 300;
+            width: 600;
+            height: 600;
           }
         `}</style>
       </div>

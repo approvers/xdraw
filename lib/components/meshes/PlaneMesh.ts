@@ -4,12 +4,12 @@
  * @author RkEclair / https://github.com/RkEclair
  */
 
-import {XBind, XStore} from '../../basis/Components';
+import {XBind, XComponent, XStore} from '../../basis/Components';
 import Transform from '../../basis/Transform';
 
 import {packMesh} from './MeshUtils';
 
-export default class PlaneMesh {
+export default class PlaneMesh implements XComponent {
   binds;
   constructor() {
     this.binds = {

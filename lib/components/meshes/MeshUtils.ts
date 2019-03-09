@@ -10,6 +10,7 @@ const MeshUpdater = (data: {[name: string]: BufferAttribute}) => (
         {[name: string]: number}) => (gl: WebGL2RenderingContext) => {
   // Add VBO
   Object.keys(attributeLocations).forEach((key) => {
+    if (key === 'index') return;
     const attributeLocation = attributeLocations[key];
     if (attributeLocation === undefined || attributeLocation === null) return;
     const buf = gl.createBuffer();

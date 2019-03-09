@@ -16,9 +16,14 @@ export default class MeshRenderer implements XComponent {
   order = 2000;
 
   constructor(
-      private canvas: HTMLCanvasElement,
+      private canvas: HTMLCanvasElement, width: number, height: number,
       private backgroundSetter: (clears: WebGLClears) => void = () => {},
       private lookingTransform?: Transform) {
+    canvas.style.width = width + 'px';
+    canvas.style.height = height + 'px';
+    const ratio = window.devicePixelRatio;
+    canvas.width = width * ratio;
+    canvas.height = height * ratio;
     const ctx = this.canvas.getContext('webgl2');
     if (ctx === null) {
       throw new Error('The browser is not supported webgl 2.0.');
