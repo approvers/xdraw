@@ -67,9 +67,15 @@ export default class Transform {
   }
 
   private update() {
-    this.willUpdate.dispatchEvent(this);
-    this.comps.update();
-    this.didUpdate.dispatchEvent(this);
+    return this.comps.getComponents().map(
+        e => ({
+          order: e.order,
+          run: () => {
+            this.willUpdate.dispatchEvent(this);
+            e.run();
+            this.didUpdate.dispatchEvent(this);
+          }
+        }));
   }
 
   flush() {}  // injected from newScene
@@ -78,14 +84,17 @@ export default class Transform {
     const root = new Transform;
     root.name += 'SceneRoot';
     root.flush = () => {
+      const components: {order: number; run: () => void;}[] = [];
       root.traverse(
           (t) => {
             t.updateMatrix();
           },
           (t) => {
             t.updateMatrixWorld();
-            t.update();
+            components.push(...t.update());
           });
+      components.sort((a, b) => a.order - b.order);
+      components.forEach(e => e.run());
     };
     return root;
   }

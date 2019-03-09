@@ -34,8 +34,8 @@ export default class Index extends Component {
     const scene = Transform.newScene();
 
     this.box = new Transform();
-    this.box.addComponent(new PlaneMesh());
-    this.box.addComponent(new Unlit());
+    this.box.addComponent(new BoxMesh());
+    this.box.addComponent(new Diffuse());
     scene.add(this.box);
 
     const light = new Transform();

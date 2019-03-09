@@ -13,6 +13,7 @@ export default class MeshRenderer implements XComponent {
   ctx: WebGL2RenderingContext;
   gl: {clear: WebGLClears, drawCallFactory: WebGLDrawCallFactory};
   binds = {};
+  order = 2000;
 
   constructor(
       private canvas: HTMLCanvasElement,

@@ -71,15 +71,17 @@ export class XStore {
 }
 
 export interface XComponent {
+  order?: number;  // Defaults to 1000, Higher is later, lower is earlier
   binds: XBindMap;
   update: ((store: XStore, t: Transform) => void)[];
 }
 
-class Component {
+export class Component {
   enabled = true;
   dirty = true;
   frequentUpdate = false;
-  constructor(private component: (() => void)[]) {}
+  constructor(private component: (() => void)[], public readonly order = 1000) {
+  }
 
   clone() {
     const newC = new Component(this.component);
@@ -103,8 +105,9 @@ export default class Components {
   }
 
   add(component: XComponent, transform: Transform, store: XStore) {
-    const newC =
-        new Component(component.update.map(e => (() => e(store, transform))));
+    const newC = new Component(
+        component.update.map(e => (() => e(store, transform))),
+        component.order);
     const binds = Object.values(component.binds);
     if (0 < binds.length)
       binds.forEach(e => e.addListener(() => newC.dirty = true));
@@ -114,7 +117,7 @@ export default class Components {
     return newC;
   }
 
-  update() {
-    this.componentList.forEach(e => e.run());
+  getComponents() {
+    return this.componentList;
   }
 }

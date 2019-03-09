@@ -148,6 +148,7 @@ export const extractLight = (material: MaterialBase) => {
                     .normalize();
     bind.set(dir);
   });
+  material.order = 1500;
   return bind;
 };
 
