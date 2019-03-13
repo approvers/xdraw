@@ -13,7 +13,7 @@ import Vector3 from './Vector3';
 let globalId = 0;
 
 export default class Transform {
-  id: number;
+  readonly id: number;
   name: string;
   parent: Transform|null = null;
   children: Transform[] = [];
@@ -32,6 +32,7 @@ export default class Transform {
 
   matrix = new Matrix4();
   matrixWorld = new Matrix4();
+  matrixWorldProjection = new Matrix4();
   matrixWorldNeedsUpdate = true;
 
   renderOrder: number = 0;
@@ -120,8 +121,7 @@ export default class Transform {
 
   clone() {
     const newT = new Transform(this.comps.clone());
-    newT.id = this.id;
-    newT.name = this.name;
+    newT.name = this.name + '(Clone)';
     newT.parent = this.parent;
 
     newT.position = this.position.clone();

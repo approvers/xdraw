@@ -31,23 +31,24 @@ export default class Index extends Component {
     const scene = Transform.newScene();
 
     this.box = new Transform();
-    this.box.addComponent(new PlaneMesh());
-    this.box.addComponent(new Diffuse());
+    this.box.addComponent(new BoxMesh());
+    this.box.addComponent(new Lines());
+    this.box.translate(new Vector3(0.5, 0, 0));
     scene.add(this.box);
 
     const light = new Transform();
-    light.translate(new Vector3(-2, 2, 2));
+    light.translate(new Vector3(2, -2, 2));
     light.addComponent(new DirectionalLight(0.5));
     scene.add(light);
 
-    const light2 = new Transform();
-    light2.translate(new Vector3(0, 0, 4));
-    light2.addComponent(new DirectionalLight(0.2));
-    scene.add(light2);
+    const camera = new Transform();
+    camera.translate(new Vector3(0, 0, 3));
+    camera.addComponent(new Camera());
+    scene.add(camera);
 
     scene.addComponent(
       new MeshRenderer(this.canvas, 600, 600, (clears) => {
-        clears.color = new Color(0xcacdca);
+        clears.color = new Color(0x0a0d0a);
         clears.depth = 0;
       })
     );

@@ -13,11 +13,12 @@ export default class MeshRenderer implements XComponent {
   ctx: WebGL2RenderingContext;
   gl: {clear: WebGLClears, drawCallFactory: WebGLDrawCallFactory};
   binds = {};
+  frequentUpdate = true;
   order = 2000;
 
   constructor(
       private canvas: HTMLCanvasElement, width: number, height: number,
-      private backgroundSetter: (clears: WebGLClears) => void = () => {},
+      backgroundSetter: (clears: WebGLClears) => void = () => {},
       private lookingTransform?: Transform) {
     canvas.style.width = width + 'px';
     canvas.style.height = height + 'px';
@@ -30,7 +31,7 @@ export default class MeshRenderer implements XComponent {
     }
     this.ctx = ctx;
     this.gl = ConceptualizatedWebGL(ctx);
-    this.backgroundSetter(this.gl.clear);
+    backgroundSetter(this.gl.clear);
   }
 
   update = [(_store: XStore, transform: Transform) => {

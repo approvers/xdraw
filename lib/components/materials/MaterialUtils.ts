@@ -99,7 +99,7 @@ const bindWithUniforms =
                        // Default uniforms
                        gl.uniformMatrix4fv(
                            locations['modelViewProjection'], false,
-                           transform.matrixWorld.toArray());
+                           transform.matrixWorldProjection.toArray());
                      };
         };
 
@@ -113,6 +113,7 @@ export const packMaterial = (impl: MaterialBase) => {
         render,
         shader: compiled,
       }));
+  impl.order = 1900;
 };
 
 export const defaultShaderSet: ShaderProgramSet = {

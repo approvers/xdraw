@@ -72,6 +72,7 @@ export class XStore {
 
 export interface XComponent {
   order?: number;  // Defaults to 1000, Higher is later, lower is earlier
+  frequentUpdate?: boolean;
   binds: XBindMap;
   update: ((store: XStore, t: Transform) => void)[];
 }
@@ -79,9 +80,9 @@ export interface XComponent {
 export class Component {
   enabled = true;
   dirty = true;
-  frequentUpdate = false;
-  constructor(private component: (() => void)[], public readonly order = 1000) {
-  }
+  constructor(
+      private component: (() => void)[], public readonly order = 1000,
+      private frequentUpdate = false) {}
 
   clone() {
     const newC = new Component(this.component);
@@ -90,8 +91,10 @@ export class Component {
   }
 
   run() {
-    if (this.enabled && this.dirty) this.component.forEach(e => e());
-    this.dirty = this.frequentUpdate;
+    if (this.enabled && this.dirty) {
+      this.component.forEach(e => e());
+      this.dirty = this.frequentUpdate;
+    }
   }
 }
 
@@ -106,13 +109,10 @@ export default class Components {
 
   add(component: XComponent, transform: Transform, store: XStore) {
     const newC = new Component(
-        component.update.map(e => (() => e(store, transform))),
-        component.order);
+        component.update.map(e => (() => e(store, transform))), component.order,
+        component.frequentUpdate);
     const binds = Object.values(component.binds);
-    if (0 < binds.length)
-      binds.forEach(e => e.addListener(() => newC.dirty = true));
-    else
-      newC.frequentUpdate = true;
+    binds.forEach(e => e.addListener(() => newC.dirty = true));
     this.componentList.push(newC);
     return newC;
   }

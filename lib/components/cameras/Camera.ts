@@ -6,30 +6,28 @@
  * @author RkEclair / https://github.com/RkEclair
  */
 
-import {selectClamper, unmapBinds, XBind, XComponent, XStore} from '../../basis/Components';
+import {rangeClamper, selectClamper, unmapBinds, XBind, XComponent, XStore} from '../../basis/Components';
+import Matrix4 from '../../basis/Matrix4';
 import Transform from '../../basis/Transform';
 
 export default class Camera implements XComponent {
   order = 1200;
+  frequentUpdate = true;
   binds;
   constructor(
       mode: 'Perspective'|'Orthographic' = 'Perspective', fov = 45, zoom = 1,
       near = 0.01, far = 2000, focus = 10, aspect = 1, filmGauge = 35,
-      filmOffset = 0, private view?: {
-        width: number; height: number; offsetX: number; offsetY: number;
-        fullWidth: number;
-        fullHeight: number;
-      }) {
+      filmOffset = 0) {
     this.binds = {
       mode: new XBind(mode, selectClamper(['Perspective', 'Orthographic'])),
-      fov: new XBind(fov),
+      fov: new XBind(fov, rangeClamper(0, 180)),
       zoom: new XBind(zoom),
       near: new XBind(near),
       far: new XBind(far),
       focus: new XBind(focus),
-      aspect: new XBind(aspect),
+      aspect: new XBind(aspect, rangeClamper(0, 1)),
       filmGauge: new XBind(filmGauge),
-      filmOffset: new XBind(filmOffset),
+      filmOffset: new XBind(filmOffset)
     };
   }
 
@@ -45,25 +43,21 @@ export default class Camera implements XComponent {
   update = [(_store: XStore, transform: Transform) => {
     const self = unmapBinds(this.binds);
 
-    if (self.mode === 'Orthographic') return;
-    let top = self.near * Math.tan(Math.PI / 180 * 0.5 * self.fov) / self.zoom,
-        height = 2 * top, width = self.aspect * height, left = -0.5 * width;
+    if (self.mode === 'Orthographic') {
+      transform.root.traverse((t) => {
+        if (t.id === transform.id) return;
+        t.matrixWorldProjection =
+            transform.matrixWorld.inverse().multiply(t.matrixWorld);
+      });
+      return;
+    };
 
-    if (this.view !== undefined) {
-      const fullWidth = this.view.fullWidth, fullHeight = this.view.fullHeight;
-
-      left += this.view.offsetX * width / fullWidth;
-      top -= this.view.offsetY * height / fullHeight;
-      width *= this.view.width / fullWidth;
-      height *= this.view.height / fullHeight;
-    }
-
-    const skew = self.filmOffset;
-    if (skew !== 0) left += self.near * skew / this.filmWidth();
-
-    transform.traverse((t) => {
-      t.matrix = t.matrix.makePerspective(
-          left, left + width, top, top - height, self.near, self.far);
+    const fudge =
+        Matrix4.perspective(self.fov, self.aspect, self.near, self.far)
+            .multiply(transform.matrix.inverse());
+    transform.root.traverse((t) => {
+      if (t.id === transform.id) return;
+      t.matrixWorldProjection = fudge.multiply(t.matrixWorld);
     });
   }];
 }
