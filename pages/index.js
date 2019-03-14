@@ -32,7 +32,7 @@ export default class Index extends Component {
 
     this.box = new Transform();
     this.box.addComponent(new BoxMesh());
-    this.box.addComponent(new Lines());
+    this.box.addComponent(new Diffuse());
     this.box.translate(new Vector3(0.5, 0, 0));
     scene.add(this.box);
 

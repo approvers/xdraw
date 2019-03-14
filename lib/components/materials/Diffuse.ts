@@ -48,6 +48,7 @@ void main() {
 
   render(gl: WebGL2RenderingContext, drawCall: (mode: number) => void) {
     gl.enable(gl.CULL_FACE);
+    // gl.enable(gl.DEPTH_TEST);
     drawCall(gl.TRIANGLES);
   }
 }
