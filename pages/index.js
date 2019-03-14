@@ -36,14 +36,22 @@ export default class Index extends Component {
     this.box.translate(new Vector3(0.5, 0, 0));
     scene.add(this.box);
 
+    const ground = new Transform();
+    ground.addComponent(new PlaneMesh());
+    ground.addComponent(new Diffuse(new Color(0xaaaaaa)));
+    ground.scale = new Vector3(10, 10, 1);
+    ground.rotate(Euler.fromDegressRotations(-90, 0, 0));
+    ground.translate(new Vector3(0, -1.5, 0));
+    scene.add(ground);
+
     const light = new Transform();
-    light.translate(new Vector3(2, -2, 2));
+    light.translate(new Vector3(0, 2, 2));
     light.addComponent(new DirectionalLight(0.5));
     scene.add(light);
 
     const camera = new Transform();
-    camera.translate(new Vector3(0, 0, 3));
-    camera.addComponent(new Camera());
+    camera.translate(new Vector3(0, 0, 1.3));
+    camera.addComponent(new Camera('Perspective', 40));
     scene.add(camera);
 
     scene.addComponent(
