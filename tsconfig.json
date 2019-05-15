@@ -1,37 +1,26 @@
 {
-	"compilerOptions": {
-		"typeRoots": [
-			"./node_modules/@types",
-			"./index.d.ts"
-		],
-		"lib": [
-			"es2017",
-			"es2016",
-			"es2015",
-			"dom"
-		],
-		"target": "es2017",
-		"module": "esnext",
-		"moduleResolution": "node",
-		"noImplicitAny": false,
-		"declaration": false,
-		"allowSyntheticDefaultImports": true,
-		"allowJs": true,
-		"strictNullChecks": true,
-		"emitDecoratorMetadata": true,
-		"experimentalDecorators": true,
-		"noEmit": true,
-		"noUnusedLocals": true,
-		"noUnusedParameters": true,
-		"preserveConstEnums": true,
-		"removeComments": false,
-		"skipLibCheck": true,
-		"sourceMap": true,
-		"strict": true,
-		"outDir": "./dist/"
-	},
-	"exclude": [
-		"./node_modules",
-		"./cache"
-	]
+  "compilerOptions": {
+    "typeRoots": ["./node_modules/@types", "./index.d.ts"],
+    "lib": ["es2017", "es2016", "es2015", "dom"],
+    "target": "es2017",
+    "module": "esnext",
+    "moduleResolution": "node",
+    "noImplicitAny": true,
+    "declaration": false,
+    "allowSyntheticDefaultImports": true,
+    "allowJs": true,
+    "strictNullChecks": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "noEmit": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "preserveConstEnums": true,
+    "removeComments": true,
+    "skipLibCheck": true,
+    "sourceMap": true,
+    "strict": true,
+    "outDir": "./dist/"
+  },
+  "exclude": ["./node_modules", "./cache"]
 }

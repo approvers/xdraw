@@ -17,17 +17,18 @@ export default class WebGLDrawCallFactory {
     if (mesh === undefined || material === undefined) {
       return () => {};
     }
+    const appliedMat = material(this.gl);
     const vao = this.gl.createVertexArray();
     if (vao === null) throw new Error('Fail to create vertex array.');
+    const shader = appliedMat.shader;
     this.gl.bindVertexArray(vao);
-    const shader = material.shader(this.gl);
-    material.uniforms(shader.uniforms)(this.gl);
+    appliedMat.uniforms(shader.uniforms);
     const call = mesh(shader.attributes)(this.gl);
     this.gl.bindVertexArray(null);
 
     return () => {
       shader.use(vao);
-      material.render(this.gl, call);
+      appliedMat.render(this.gl, call);
     };
   }
 }

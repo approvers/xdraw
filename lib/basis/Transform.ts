@@ -53,7 +53,7 @@ export default class Transform {
   readonly start = new EventSource<Transform>();
   readonly dispose = new EventSource<Transform>();
 
-  constructor(private comps = new Components()) {
+  constructor(public readonly comps = new Components()) {
     this.id = globalId++;
     this.name = `${this.id}`;
   }

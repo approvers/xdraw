@@ -87,32 +87,41 @@ export type UniformUpdater =
 const bindWithUniforms =
     (binds: {[key: string]: XBind<any>},
      uniforms: {[locationName: string]: UniformUpdater}) =>
-        (transform: Transform) => {
-          return (locations: {[locationName: string]: WebGLUniformLocation}) =>
-                     (gl: WebGL2RenderingContext) => {
-                       Object.entries(uniforms).forEach(keyValue => {
-                         const bind = binds[keyValue[0]];
-                         if (bind === undefined) return;
-                         keyValue[1](locations[keyValue[0]], gl, bind.get());
-                       });
+        (gl: WebGL2RenderingContext, transform: Transform) => {
+          return (locations:
+                      {[locationName: string]: WebGLUniformLocation}) => {
+            Object.entries(uniforms).forEach(keyValue => {
+              const bind = binds[keyValue[0]];
+              if (bind === undefined) return;
+              keyValue[1](locations[keyValue[0]], gl, bind.get());
+            });
 
-                       // Default uniforms
-                       gl.uniformMatrix4fv(
-                           locations['modelViewProjection'], false,
-                           transform.matrixWorldProjection.toArray());
-                     };
+            // Default uniforms
+            gl.uniformMatrix4fv(
+                locations['modelViewProjection'], false,
+                transform.matrixWorldProjection.toArray());
+          };
         };
 
 export const packMaterial = (impl: MaterialBase) => {
   const {binds, render, shaders, uniforms} = impl;
-  const binded = bindWithUniforms(binds, uniforms);
-  const compiled = makeShader(shaders);
+  let bindsCache:
+      (locations: {[locationName: string]:
+                       WebGLUniformLocation;}) => void = () => {},
+                       shaderCache: {
+                         use: (vao: WebGLVertexArrayObject) => void;
+                         uniforms: {[name: string]: WebGLUniformLocation;};
+                         attributes: {[name: string]: number;};
+                       }|null = null;
   impl.update.push(
-      (store: XStore, transform: Transform) => store.set('material', {
-        uniforms: binded(transform),
-        render,
-        shader: compiled,
-      }));
+      (store: XStore, transform: Transform) => store.set(
+          'material',
+          (gl: WebGL2RenderingContext) => ({
+            uniforms: bindsCache ||
+                (bindsCache = bindWithUniforms(binds, uniforms)(gl, transform)),
+            render,
+            shader: shaderCache || (shaderCache = makeShader(shaders)(gl))
+          })));
   impl.order = 1900;
 };
 
@@ -160,12 +169,11 @@ export interface MaterialBase extends XComponent {
   render(gl: WebGL2RenderingContext, drawCall: (mode: number) => void);
 }
 
-export type MaterialExports = {
+export type MaterialExports = (gl: WebGL2RenderingContext) => {
   uniforms: (locations: {[locationName: string]: WebGLUniformLocation;}) =>
-      (gl: WebGL2RenderingContext) => void
-  render: (gl: WebGL2RenderingContext, drawCall: (mode: number) => void) =>
       void;
-  shader: (gl: WebGL2RenderingContext) => {
+  render: (gl: WebGL2RenderingContext, call: (mode: number) => void) => void;
+  shader: {
     use: (vao: WebGLVertexArrayObject) => void;
     uniforms: {[name: string]: WebGLUniformLocation;};
     attributes: {[name: string]: number;};

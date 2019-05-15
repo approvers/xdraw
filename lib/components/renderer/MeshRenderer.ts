@@ -13,7 +13,6 @@ export default class MeshRenderer implements XComponent {
   ctx: WebGL2RenderingContext;
   gl: {clear: WebGLClears, drawCallFactory: WebGLDrawCallFactory};
   binds = {};
-  frequentUpdate = true;
   order = 2000;
 
   constructor(
@@ -34,14 +33,16 @@ export default class MeshRenderer implements XComponent {
     backgroundSetter(this.gl.clear);
   }
 
+  private drawCalls: (() => void)[] = [];
   update = [(_store: XStore, transform: Transform) => {
     const looking = this.lookingTransform || transform;
-    const drawCalls: (() => void)[] = [];
     looking.traverse(
-        (t) => drawCalls.push(this.gl.drawCallFactory.makeDrawCall(
+        (t) => this.drawCalls.push(this.gl.drawCallFactory.makeDrawCall(
             {mesh: t.store.get('mesh'), material: t.store.get('material')})));
+  }];
 
+  frequentUpdate = [(_store: XStore, _transform: Transform) => {
     this.gl.clear.clear();
-    drawCalls.forEach(e => e());
+    this.drawCalls.forEach(e => e());
   }];
 }

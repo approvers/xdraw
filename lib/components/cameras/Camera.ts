@@ -6,14 +6,13 @@
  * @author RkEclair / https://github.com/RkEclair
  */
 
-import {rangeClamper, selectClamper, unmapBinds, XBind, XComponent, XStore} from '../../basis/Components';
+import {rangeClamper, selectClamper, unmapBinds, XBind, XBindMap, XComponent, XStore} from '../../basis/Components';
 import Matrix4 from '../../basis/Matrix4';
 import Transform from '../../basis/Transform';
 
 export default class Camera implements XComponent {
   order = 1200;
-  frequentUpdate = true;
-  binds;
+  binds: XBindMap;
   constructor(
       mode: 'Perspective'|'Orthographic' = 'Perspective', fov = 45, zoom = 1,
       near = 0.01, far = 2000, focus = 10, aspect = 1, filmGauge = 35,
@@ -40,7 +39,9 @@ export default class Camera implements XComponent {
     return this.binds.filmGauge.get() / Math.max(this.binds.aspect.get(), 1);
   }
 
-  update = [(_store: XStore, transform: Transform) => {
+  update = [];
+
+  frequentUpdate = [(_store: XStore, transform: Transform) => {
     const self = unmapBinds(this.binds);
 
     if (self.mode === 'Orthographic') {

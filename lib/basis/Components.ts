@@ -40,11 +40,12 @@ export type XBindMap = {
   [key: string]: XBind<any>
 };
 
-export const unmapBinds = (binds: XBindMap) =>
-    Object.entries(binds).reduce((prev, e) => {
-      prev[e[0]] = e[1].get();
-      return prev;
-    }, {}) as {[key: string]: any};
+export function unmapBinds<T extends Map>(binds: XBindMap): T {
+  return Object.entries(binds).reduce((prev: T, e) => {
+    prev[e[0]] = e[1].get();
+    return prev;
+  }, new T);
+}
 
 export class XStore {
   constructor(private props: {[key: string]: any} = {}) {}
@@ -72,9 +73,9 @@ export class XStore {
 
 export interface XComponent {
   order?: number;  // Defaults to 1000, Higher is later, lower is earlier
-  frequentUpdate?: boolean;
   binds: XBindMap;
   update: ((store: XStore, t: Transform) => void)[];
+  frequentUpdate?: ((store: XStore, t: Transform) => void)[];
 }
 
 export class Component {
@@ -82,7 +83,7 @@ export class Component {
   dirty = true;
   constructor(
       private component: (() => void)[], public readonly order = 1000,
-      private frequentUpdate = false) {}
+      private frequentUpdate: (() => void)[] = []) {}
 
   clone() {
     const newC = new Component(this.component);
@@ -93,8 +94,9 @@ export class Component {
   run() {
     if (this.enabled && this.dirty) {
       this.component.forEach(e => e());
-      this.dirty = this.frequentUpdate;
+      this.dirty = false;
     }
+    this.frequentUpdate.forEach(e => e());
   }
 }
 
@@ -110,9 +112,13 @@ export default class Components {
   add(component: XComponent, transform: Transform, store: XStore) {
     const newC = new Component(
         component.update.map(e => (() => e(store, transform))), component.order,
-        component.frequentUpdate);
+        (component.frequentUpdate &&
+         component.frequentUpdate.map(e => (() => e(store, transform)))));
     const binds = Object.values(component.binds);
-    binds.forEach(e => e.addListener(() => newC.dirty = true));
+    binds.forEach(
+        e => e.addListener(
+            () => transform.traverse(
+                t => t.comps.componentList.forEach(e => e.dirty = true))));
     this.componentList.push(newC);
     return newC;
   }
