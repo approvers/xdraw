@@ -1,14 +1,75 @@
 /**
- * @author RkEclair / https://github.com/RkEclair
+ * @author MikuroXina / https://github.com/MikuroXina
  */
 
-import Components, {XComponent, XStore} from './Components';
 import Euler from './Euler';
 import EventSource from './EventSource';
 import Matrix4 from './Matrix4';
 import Quaternion from './Quaternion';
 import Sphere from './Sphere';
 import Vector3 from './Vector3';
+
+export class Store {
+  private prop: {[key: string]: any} = {};
+
+  addProp<T>(name: string, initValue: T): T {
+    if (this.prop[name] === undefined) {
+      this.prop[name] = initValue;
+    }
+
+    return this.prop[name];
+  }
+
+  get props() {
+    return this.prop;
+  }
+
+  private state: any[] = [];
+  private currState = 0;
+
+  addState<T>(initValue: T): [() => T, (newValue: T) => void] {
+    if (this.state[this.currState] === undefined) {
+      this.state[this.currState] = initValue;
+    }
+
+    const thisState: number = this.currState;
+    ++this.currState;
+
+    return [
+      (): T => this.state[thisState],
+      (newValue: T) => {
+        this.state[thisState] = newValue;
+      }
+    ];
+  }
+
+  reset() {
+    this.currState = 0;
+  }
+
+  addEvent(...dependencies: any[]): Promise<void> {
+    const currentEvent = this.state[this.currState];
+    const wasChanged = currentEvent !== undefined &&
+        dependencies.some((e, i) => e !== currentEvent[i]);
+
+    const currEvent = this.currState;
+    ++this.currState;
+    if (dependencies.length === 0 || wasChanged) {
+      return Promise.resolve().then(() => {
+        this.state[currEvent] = dependencies;
+      });
+    }
+    return Promise.reject();
+  }
+}
+
+export class Component<Props = {}> {
+  protected store = new Store();
+  static defaultProps: Props = {};
+
+  start?(transform: Transform, props: Props): void;
+  run?(transform: Transform, props: Props): void;
+}
 
 let globalId = 0;
 
@@ -43,8 +104,6 @@ export default class Transform {
   // lazy boundings
   boundingSphere: Sphere|null = null;
 
-  store: XStore = new XStore;
-
   readonly willUpdate = new EventSource<Transform>();
   readonly didUpdate = new EventSource<Transform>();
   readonly willUpdateMatrix = new EventSource<Transform>();
@@ -53,7 +112,7 @@ export default class Transform {
   readonly start = new EventSource<Transform>();
   readonly dispose = new EventSource<Transform>();
 
-  constructor(public readonly comps = new Components()) {
+  constructor(public readonly comps: Component[] = []) {
     this.id = globalId++;
     this.name = `${this.id}`;
   }
@@ -63,20 +122,14 @@ export default class Transform {
     newChild.parent = this;
   }
 
-  addComponent(component: XComponent) {
-    return this.comps.add(component, this, this.store);
+  addComponent(component: Component) {
+    return this.comps.push(component);
   }
 
   private update() {
-    return this.comps.getComponents().map(
-        e => ({
-          order: e.order,
-          run: () => {
-            this.willUpdate.dispatchEvent(this);
-            e.run();
-            this.didUpdate.dispatchEvent(this);
-          }
-        }));
+    for (const component of this.comps) {
+      component.run(this, {});
+    }
   }
 
   flush() {}  // injected from newScene
@@ -92,7 +145,6 @@ export default class Transform {
           },
           (t) => {
             t.updateMatrixWorld();
-            components.push(...t.update());
           });
       components.sort((a, b) => a.order - b.order);
       components.forEach(e => e.run());
@@ -120,7 +172,7 @@ export default class Transform {
   }
 
   clone() {
-    const newT = new Transform(this.comps.clone());
+    const newT = new Transform([...this.comps]);
     newT.name = this.name + '(Clone)';
     newT.parent = this.parent;
 

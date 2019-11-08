@@ -1,18 +1,23 @@
 /**
  * @author mrdoob / http://mrdoob.com/
  * @author Mugen87 / https://github.com/Mugen87
- * @author RkEclair / https://github.com/RkEclair
+ * @author MikuroXina / https://github.com/MikuroXina
  */
 
-import {unmapBinds, XBind, XComponent, XStore} from '../../basis/Components';
+import {Component} from '../../basis/Components';
 import Transform from '../../basis/Transform';
 
 import {packMesh} from './MeshUtils';
 
-export default class PlaneMesh implements XComponent {
-  binds;
+type PlaneMeshProps = {
+  width: number; height: number;
+}
+
+export default class PlaneMesh implements Component<PlaneMeshProps> {
+  defaultProps: PlaneMeshProps;
+
   constructor(width = 1, height = 1) {
-    this.binds = {width: new XBind(width), height: new XBind(height)};
+    this.defaultProps = {width, height};
   }
   /* Faces
   3_____0
@@ -20,18 +25,16 @@ export default class PlaneMesh implements XComponent {
   |     |
   2_____1
   */
-  update = [(store: XStore, _transform: Transform) => {
-    const self = unmapBinds(this.binds);
-
+  run(_transform: Transform, props: PlaneMeshProps) {
     const index: number[] = [3, 2, 0, 0, 2, 1];
     const vertex: number[] = [
-      self.width, self.height, 0, self.width, -self.height, 0, -self.width,
-      -self.height, 0, -self.width, self.height, 0
+      props.width, props.height, 0, props.width, -props.height, 0, -props.width,
+      -props.height, 0, -props.width, props.height, 0
     ].map(e => e / 2);
     const normal: number[] = [0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1];
     const uv: number[] = [1, 0, 1, 1, 0, 0, 0, 1];
 
     packMesh(
-        store, {indices: index, vertices: vertex, normals: normal, uvs: uv});
-  }];
+        this, {indices: index, vertices: vertex, normals: normal, uvs: uv});
+  }
 }

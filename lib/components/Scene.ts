@@ -1,6 +1,6 @@
 import Color from '../basis/Color';
 /**
- * @author RkEclair / https://github.com/RkEclair
+ * @author MikuroXina / https://github.com/MikuroXina
  */
 
 export class Fog {

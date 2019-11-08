@@ -9,7 +9,7 @@
  * @author timknip / http://www.floorplanner.com/
  * @author bhouston / http://clara.io
  * @author WestLangley / http://github.com/WestLangley
- * @author RkEclair / https://github.com/RkEclair
+ * @author MikuroXina / https://github.com/MikuroXina
  */
 
 import Quaternion from './Quaternion';

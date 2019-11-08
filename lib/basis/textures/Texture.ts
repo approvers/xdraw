@@ -2,7 +2,7 @@
  * @author mrdoob / http://mrdoob.com/
  * @author alteredq / http://alteredqualia.com/
  * @author szimek / https://github.com/szimek/
- * @author RkEclair / https://github.com/RkEclair
+ * @author MikuroXina / https://github.com/MikuroXina
  */
 
 import {TextureDataType, TextureEncoding, TextureFilter, TextureFormat, TextureMapping, TextureWrapping} from '../../components/renderer/DrawTypes';

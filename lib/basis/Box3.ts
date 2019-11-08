@@ -1,5 +1,5 @@
 /**
- * @author RkEclait / https://RkEclair
+ * @author RkEclait / https://MikuroXina
  */
 
 import Vector3 from './Vector3';

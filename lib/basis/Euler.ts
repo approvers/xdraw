@@ -2,7 +2,7 @@ import Matrix4 from './Matrix4';
 import Quaternion from './Quaternion';
 
 /**
- * @author RkEclair / https://github.com/RkEclair
+ * @author MikuroXina / https://github.com/MikuroXina
  */
 
 type RotationOrder = 'XYZ'|'YZX'|'ZXY'|'XZY'|'YXZ'|'ZYX';

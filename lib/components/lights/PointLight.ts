@@ -1,7 +1,7 @@
 import {XStore} from '../../basis/Components';
 
 /**
- * @author RkEclair / https://github.com/RkEclair
+ * @author MikuroXina / https://github.com/MikuroXina
  */
 
 const PointLight = (store: XStore) => store;

@@ -5,7 +5,7 @@ import {RaycastIntersection} from '../physics/PhysicsUtils';
 
 /**
  * @author mrdoob / http://mrdoob.com/
- * @author RkEclair / https://github.com/RkEclair
+ * @author MikuroXina / https://github.com/MikuroXina
  */
 
 const raycast = (ray: Ray, intersects: RaycastIntersection[]) => (

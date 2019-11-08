@@ -2,7 +2,7 @@ import BufferAttribute from './BufferAttribute';
 import Matrix3 from './Matrix3';
 
 /**
- * @author RkEclair / https://github.com/RkEclair
+ * @author MikuroXina / https://github.com/MikuroXina
  */
 
 export default class Vector2 {

@@ -1,5 +1,5 @@
 /**
- * @author RkEclair / https://github.com/RkEclair
+ * @author MikuroXina / https://github.com/MikuroXina
  */
 
 import Box3 from './Box3';

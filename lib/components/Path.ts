@@ -1,6 +1,6 @@
 /**
  * @author mrdoob / http://mrdoob.com/
- * @author RkEclair / https://github.com/RkEclair
+ * @author MikuroXina / https://github.com/MikuroXina
  */
 
 import BufferMesh from './BufferMesh';

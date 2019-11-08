@@ -1,6 +1,6 @@
 /**
  * @author benaadams / https://twitter.com/ben_a_adams
- * @author RkEclair / https://github.com/RkEclair
+ * @author MikuroXina / https://github.com/MikuroXina
  */
 
 import {TypedArray} from './BufferAttribute';

@@ -4,7 +4,7 @@ import {XBind} from '../../basis/Components';
 import {ColorUniform, MaterialBase, packMaterial} from './MaterialUtils';
 
 /**
- * @author RkEclair / https://github.com/RkEclair
+ * @author MikuroXina / https://github.com/MikuroXina
  */
 
 export default class Points implements MaterialBase {

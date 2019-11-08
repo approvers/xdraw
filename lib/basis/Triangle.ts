@@ -2,7 +2,7 @@ import Vector2 from './Vector2';
 import Vector3 from './Vector3';
 
 /**
- * @author RkEclair / https://github.com/RkEclair
+ * @author MikuroXina / https://github.com/MikuroXina
  */
 
 export default class Triangle {

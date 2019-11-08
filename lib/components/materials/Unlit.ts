@@ -1,16 +1,19 @@
 import Color from '../../basis/Color';
-import {XBind} from '../../basis/Components';
 
 import {ColorUniform, MaterialBase, packMaterial} from './MaterialUtils';
 
 /**
- * @author RkEclair / https://github.com/RkEclair
+ * @author MikuroXina / https://github.com/MikuroXina
  */
 
-export default class Unlit implements MaterialBase {
-  binds;
-  uniforms;
-  update = [];
+export type UnlitProps = {
+  color: Color,
+};
+
+export default class Unlit implements MaterialBase<UnlitProps> {
+  defaultProps: UnlitProps;
+
+  uniforms: {color: typeof ColorUniform};
   shaders = {
     vertexShaderProgram: `
 attribute vec4 position;
@@ -30,7 +33,7 @@ void main() {
 `
   };
   constructor(color = new Color(Math.random() * 0xffffff)) {
-    this.binds = {color: new XBind(color)};
+    this.defaultProps = {color};
     this.uniforms = {color: ColorUniform};
     packMaterial(this);
   }

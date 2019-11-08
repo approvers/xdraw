@@ -4,7 +4,7 @@ import Vector3 from './Vector3';
 import Vector4 from './Vector4';
 
 /**
- * @author RkEclair / https://github.com/RkEclair
+ * @author MikuroXina / https://github.com/MikuroXina
  */
 
 export type TypedArray =|Int8Array|Uint8Array|Int16Array|Uint16Array|Int32Array|

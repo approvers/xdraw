@@ -1,15 +1,18 @@
 import Color from '../../basis/Color';
-import {XBind} from '../../basis/Components';
 
 import {ColorUniform, MaterialBase, packMaterial} from './MaterialUtils';
 
 /**
- * @author RkEclair / https://github.com/RkEclair
+ * @author MikuroXina / https://github.com/MikuroXina
  */
 
-export default class Lines implements MaterialBase {
-  binds;
-  uniforms;
+type LinesProps = {
+  color: Color,
+};
+
+export default class Lines implements MaterialBase<LinesProps> {
+  defaultProps: LinesProps;
+  uniforms: {color: typeof ColorUniform};
   update = [];
   shaders = {
     vertexShaderProgram: `
@@ -30,7 +33,7 @@ void main() {
 `
   };
   constructor(color = new Color(Math.random() * 0xffffff)) {
-    this.binds = {color: new XBind(color)};
+    this.defaultProps = {color};
     this.uniforms = {color: ColorUniform};
     packMaterial(this);
   }

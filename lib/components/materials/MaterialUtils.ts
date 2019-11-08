@@ -1,10 +1,12 @@
+import {Property} from '@babel/types';
+
 import Color from '../../basis/Color';
-import {XBind, XComponent, XStore} from '../../basis/Components';
+import {Component, PropsBase} from '../../basis/Components';
 import Transform from '../../basis/Transform';
 import Vector3 from '../../basis/Vector3';
 
 /**
- * @author RkEclair / https://github.com/RkEclair
+ * @author MikuroXina / https://github.com/MikuroXina
  */
 
 function extractAttributes(gl: WebGL2RenderingContext, program: WebGLProgram) {
@@ -84,46 +86,8 @@ export type UniformUpdater =
     (location: WebGLUniformLocation, gl: WebGL2RenderingContext, newV: any) =>
         void;
 
-const bindWithUniforms =
-    (binds: {[key: string]: XBind<any>},
-     uniforms: {[locationName: string]: UniformUpdater}) =>
-        (gl: WebGL2RenderingContext, transform: Transform) => {
-          return (locations:
-                      {[locationName: string]: WebGLUniformLocation}) => {
-            Object.entries(uniforms).forEach(keyValue => {
-              const bind = binds[keyValue[0]];
-              if (bind === undefined) return;
-              keyValue[1](locations[keyValue[0]], gl, bind.get());
-            });
-
-            // Default uniforms
-            gl.uniformMatrix4fv(
-                locations['modelViewProjection'], false,
-                transform.matrixWorldProjection.toArray());
-          };
-        };
-
-export const packMaterial = (impl: MaterialBase) => {
-  const {binds, render, shaders, uniforms} = impl;
-  let bindsCache:
-      (locations: {[locationName: string]:
-                       WebGLUniformLocation;}) => void = () => {},
-                       shaderCache: {
-                         use: (vao: WebGLVertexArrayObject) => void;
-                         uniforms: {[name: string]: WebGLUniformLocation;};
-                         attributes: {[name: string]: number;};
-                       }|null = null;
-  impl.update.push(
-      (store: XStore, transform: Transform) => store.set(
-          'material',
-          (gl: WebGL2RenderingContext) => ({
-            uniforms: bindsCache ||
-                (bindsCache = bindWithUniforms(binds, uniforms)(gl, transform)),
-            render,
-            shader: shaderCache || (shaderCache = makeShader(shaders)(gl))
-          })));
-  impl.order = 1900;
-};
+export function packMaterial<Props extends PropsBase>(
+    impl: MaterialBase<Props>) {}
 
 export const defaultShaderSet: ShaderProgramSet = {
   vertexShaderProgram: `
@@ -142,31 +106,18 @@ void main() {
 `
 };
 
-export const extractLight = (material: MaterialBase) => {
-  const bind = new XBind<Vector3>(new Vector3);
-  material.update.push((_store: XStore, transform: Transform) => {
-    const lightDirs: Vector3[] = [];
-    transform.root.traverse(t => {
-      if (t.store.has('light')) {
-        const {intensity}: {intensity: number} = t.store.get('light');
-        lightDirs.push(
-            transform.position.sub(t.position).multiplyScalar(intensity));
-      }
-    });
-    const dir = lightDirs.reduce((prev, e) => prev.add(e), new Vector3)
-                    .multiplyScalar(-1)
-                    .normalize();
-    bind.set(dir);
-  });
-  material.order = 1500;
-  return bind;
-};
 
-export interface MaterialBase extends XComponent {
-  uniforms: {[locationName: string]: UniformUpdater;};
+
+function isNumber(value: any): value is number {
+  return ((value != null) && !isNaN(Number(value.toString())));
+}
+
+export interface MaterialBase<Props extends PropsBase> extends
+    Component<Props> {
+  uniforms: {[locationName: string]: UniformUpdater};
   shaders: ShaderProgramSet;
 
-  render(gl: WebGL2RenderingContext, drawCall: (mode: number) => void);
+  render(gl: WebGL2RenderingContext, drawCall: (mode: number) => void): void;
 }
 
 export type MaterialExports = (gl: WebGL2RenderingContext) => {
@@ -177,7 +128,7 @@ export type MaterialExports = (gl: WebGL2RenderingContext) => {
     use: (vao: WebGLVertexArrayObject) => void;
     uniforms: {[name: string]: WebGLUniformLocation;};
     attributes: {[name: string]: number;};
-  };
+  }
 };
 
 export const ColorUniform =

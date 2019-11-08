@@ -1,6 +1,6 @@
 /**
  * @author simonThiele / https://github.com/simonThiele
- * @author RkEclair / https://github.com/RkEclair
+ * @author MikuroXina / https://github.com/MikuroXina
  */
 
 import BufferAttribute from './BufferAttribute';

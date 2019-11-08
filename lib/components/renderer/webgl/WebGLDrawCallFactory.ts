@@ -2,7 +2,7 @@ import {MaterialExports} from '../../materials/MaterialUtils';
 import {MeshExports} from '../../meshes/MeshUtils';
 
 /**
- * @author RkEclair / https://github.com/RkEclair
+ * @author MikuroXina / https://github.com/MikuroXina
  */
 
 export type meshAndShader = {

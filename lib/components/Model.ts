@@ -3,7 +3,7 @@
  * @author alteredq / http://alteredqualia.com/
  * @author mikael emtinger / http://gomo.se/
  * @author jonobr1 / http://jonobr1.com/
- * @author RkEclair / https://github.com/RkEclair
+ * @author MikuroXina / https://github.com/MikuroXina
  */
 
 import Transform from '../basis/Transform';

@@ -2,7 +2,7 @@ import Color from './Color';
 import Vector3 from './Vector3';
 
 /**
- * @author RkEclair / https://github.com/RkEclair
+ * @author MikuroXina / https://github.com/MikuroXina
  */
 
 
