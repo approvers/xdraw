@@ -5,8 +5,8 @@
  * @author MikuroXina / htpps://github.com/MikuroXina
  */
 
-import {Component, rangeClamper} from '../../basis/Components';
-import Transform from '../../basis/Transform';
+import {rangeClamper} from '../../basis/Clampers';
+import Transform, {Component} from '../../basis/Component';
 import Vector3 from '../../basis/Vector3';
 
 import {packMesh} from './MeshUtils';
@@ -31,12 +31,14 @@ const clampers = {
   thetaLength: rangeClamper(0, Math.PI)
 };
 
-export default class SphereMesh implements Component<SphereMeshProps> {
+export default class SphereMesh extends Component {
   defaultProps: SphereMeshProps;
 
   constructor(
       radius = 1, widthSegments = 8, heightSegments = 6, phiOffset = 0,
       phiLength = Math.PI * 2, thetaOffset = 0, thetaLength = Math.PI) {
+    super();
+
     this.defaultProps = {
       radius,
       widthSegments,
@@ -48,7 +50,7 @@ export default class SphereMesh implements Component<SphereMeshProps> {
     };
   }
 
-  run(_transform: Transform, props: SphereMeshProps) {
+  run(_transform: Transform) {
     let indexCount = 0;
     const grid: number[][] = [];
 

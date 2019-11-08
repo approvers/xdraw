@@ -2,7 +2,7 @@ import {Property} from '@babel/types';
 
 import Color from '../../basis/Color';
 import {Component, PropsBase} from '../../basis/Components';
-import Transform from '../../basis/Transform';
+import Transform from '../../basis/Component';
 import Vector3 from '../../basis/Vector3';
 
 /**

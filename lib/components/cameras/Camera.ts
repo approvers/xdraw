@@ -6,36 +6,26 @@
  * @author MikuroXina / https://github.com/MikuroXina
  */
 
-import {Component, rangeClamper, selectClamper} from '../../basis/Components';
+import {rangeClamper, selectClamper} from '../../basis/Clampers';
+import {Component} from '../../basis/Component';
 import Matrix4 from '../../basis/Matrix4';
-import Transform from '../../basis/Transform';
+import Vector3 from '../../basis/Vector3';
+import Transform from '../Transform';
 
-type CameraProps = {
-  mode: string; fov: number; zoom: number; near: number; far: number;
-  focus: number;
-  aspect: number;
-  filmGauge: number;
-  filmOffset: number;
-}
+export default class Camera extends Component {
+  private transform = new Transform;
 
-const CameraClampers = {
-  mode: selectClamper(['Perspective', 'Orthographic']),
-  fov: rangeClamper(0, 180),
-  aspect: rangeClamper(0, 1),
-};
-
-export default class Camera implements Component<CameraProps> {
-  defaultProps: CameraProps = {
-    mode: 'Perspective',
-    fov: 45,
-    zoom: 1,
-    near: 0.01,
-    far: 2000,
-    focus: 10,
-    aspect: 1,
-    filmGauge: 35,
-    filmOffset: 0,
-  };
+  constructor(
+      mode: 'Perspective'|'Orthographic' = 'Perspective', fov: number = 45) {
+    super({
+      'Mode': {
+        initValue: mode,
+        clamper: selectClamper(['Perspective', 'Orthographic'])
+      },
+      'Field of View': {initValue: fov, clamper: rangeClamper(0, 180)},
+      'Aspect Ratio': {initValue: 1, clamper: rangeClamper(0, 1)}
+    });
+  }
 
   /*
   filmWidth() {
@@ -48,22 +38,36 @@ export default class Camera implements Component<CameraProps> {
   }
   */
 
-  run(transform: Transform, props: CameraProps) {
-    if (props.mode === 'Orthographic') {
-      transform.root.traverse((t) => {
-        if (t.id === transform.id) return;
+  run() {
+    const mode =
+        this.store.addProp<'Perspective'|'Orthographic'>('Mode', 'Perspective');
+    const fov = this.store.addProp('Field of View', 45);
+    const zoom = this.store.addProp('Zoom', 1);
+    const near = this.store.addProp('Near', 0.01);
+    const far = this.store.addProp('Far', 2000);
+    const focus = this.store.addProp('Focus', 10);
+    const aspect = this.store.addProp('Asoect Ratio', 1);
+    const filmGauge = this.store.addProp('Film Gauge', 35);
+    const filmOffset = this.store.addProp('Field Offset', 0);
+
+    if (mode === 'Orthographic') {
+      this.transform.root.traverse((t) => {
+        if (t.id === this.transform.id) return;
         t.matrixWorldProjection =
-            transform.matrixWorld.inverse().multiply(t.matrixWorld);
+            this.transform.matrixWorld.inverse().multiply(t.matrixWorld);
       });
       return;
     };
 
-    const fudge =
-        Matrix4.perspective(props.fov, props.aspect, props.near, props.far)
-            .multiply(transform.matrix.inverse());
-    transform.root.traverse((t) => {
-      if (t.id === transform.id) return;
+    const fudge = Matrix4.perspective(fov, aspect, near, far)
+                      .multiply(this.transform.matrix.inverse());
+    this.transform.root.traverse((t) => {
+      if (t.id === this.transform.id) return;
       t.matrixWorldProjection = fudge.multiply(t.matrixWorld);
     });
+  }
+
+  translate(amount: Vector3): void {
+    this.transform.translate(amount);
   }
 }

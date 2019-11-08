@@ -2,23 +2,25 @@
  * @author MikuroXina / https://github.com/MikuroXina
  */
 
-import {XComponent, XStore} from '../../basis/Components';
-import Transform from '../../basis/Transform';
+import {Scene} from '../Scene';
 
+import Renderer from './Renderer';
 import ConceptualizatedWebGL from './webgl/ConceptualizatedWebGL';
 import WebGLClears from './webgl/WebGLClears';
 import WebGLDrawCallFactory from './webgl/WebGLDrawCallFactory';
 
-export default class MeshRenderer implements XComponent {
+export default class MeshRenderer extends Renderer {
   ctx: WebGL2RenderingContext;
   gl: {clear: WebGLClears, drawCallFactory: WebGLDrawCallFactory};
   binds = {};
   order = 2000;
 
   constructor(
-      private canvas: HTMLCanvasElement, width: number, height: number,
-      backgroundSetter: (clears: WebGLClears) => void = () => {},
-      private lookingTransform?: Transform) {
+      scene: Scene, private canvas: HTMLCanvasElement, width: number,
+      height: number,
+      backgroundSetter: (clears: WebGLClears) => void = () => {}) {
+    super(scene);
+
     canvas.style.width = width + 'px';
     canvas.style.height = height + 'px';
     const ratio = window.devicePixelRatio;
@@ -33,16 +35,27 @@ export default class MeshRenderer implements XComponent {
     backgroundSetter(this.gl.clear);
   }
 
-  private drawCalls: (() => void)[] = [];
-  update = [(_store: XStore, transform: Transform) => {
-    const looking = this.lookingTransform || transform;
-    looking.traverse(
-        (t) => this.drawCalls.push(this.gl.drawCallFactory.makeDrawCall(
-            {mesh: t.store.get('mesh'), material: t.store.get('material')})));
-  }];
+  animHandle?: number;
+  start() {
+    this.animHandle = requestAnimationFrame(this.animate);
+  }
 
-  frequentUpdate = [(_store: XStore, _transform: Transform) => {
+  private drawCalls: (() => void)[] = [];
+  run() {
+    for (const looking of this.scene.objs) {
+      looking.traverse(
+          (t) => this.drawCalls.push(this.gl.drawCallFactory.makeDrawCall(
+              {mesh: t.store.get('mesh'), material: t.store.get('material')})));
+    }
+  }
+
+  animate = () => {
     this.gl.clear.clear();
     this.drawCalls.forEach(e => e());
-  }];
+    requestAnimationFrame(this.animate);
+  };
+
+  unmount() {
+    if (this.animHandle) cancelAnimationFrame(this.animHandle);
+  }
 }

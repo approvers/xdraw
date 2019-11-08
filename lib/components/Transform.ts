@@ -2,78 +2,17 @@
  * @author MikuroXina / https://github.com/MikuroXina
  */
 
-import Euler from './Euler';
-import EventSource from './EventSource';
-import Matrix4 from './Matrix4';
-import Quaternion from './Quaternion';
-import Sphere from './Sphere';
-import Vector3 from './Vector3';
-
-export class Store {
-  private prop: {[key: string]: any} = {};
-
-  addProp<T>(name: string, initValue: T): T {
-    if (this.prop[name] === undefined) {
-      this.prop[name] = initValue;
-    }
-
-    return this.prop[name];
-  }
-
-  get props() {
-    return this.prop;
-  }
-
-  private state: any[] = [];
-  private currState = 0;
-
-  addState<T>(initValue: T): [() => T, (newValue: T) => void] {
-    if (this.state[this.currState] === undefined) {
-      this.state[this.currState] = initValue;
-    }
-
-    const thisState: number = this.currState;
-    ++this.currState;
-
-    return [
-      (): T => this.state[thisState],
-      (newValue: T) => {
-        this.state[thisState] = newValue;
-      }
-    ];
-  }
-
-  reset() {
-    this.currState = 0;
-  }
-
-  addEvent(...dependencies: any[]): Promise<void> {
-    const currentEvent = this.state[this.currState];
-    const wasChanged = currentEvent !== undefined &&
-        dependencies.some((e, i) => e !== currentEvent[i]);
-
-    const currEvent = this.currState;
-    ++this.currState;
-    if (dependencies.length === 0 || wasChanged) {
-      return Promise.resolve().then(() => {
-        this.state[currEvent] = dependencies;
-      });
-    }
-    return Promise.reject();
-  }
-}
-
-export class Component<Props = {}> {
-  protected store = new Store();
-  static defaultProps: Props = {};
-
-  start?(transform: Transform, props: Props): void;
-  run?(transform: Transform, props: Props): void;
-}
+import {Component} from '../basis/Component';
+import Euler from '../basis/Euler';
+import EventSource from '../basis/EventSource';
+import Matrix4 from '../basis/Matrix4';
+import Quaternion from '../basis/Quaternion';
+import Sphere from '../basis/Sphere';
+import Vector3 from '../basis/Vector3';
 
 let globalId = 0;
 
-export default class Transform {
+export default class Transform extends Component {
   readonly id: number;
   name: string;
   parent: Transform|null = null;
@@ -108,11 +47,10 @@ export default class Transform {
   readonly didUpdate = new EventSource<Transform>();
   readonly willUpdateMatrix = new EventSource<Transform>();
   readonly didUpdateMatrix = new EventSource<Transform>();
-  readonly awake = new EventSource<Transform>();
-  readonly start = new EventSource<Transform>();
-  readonly dispose = new EventSource<Transform>();
 
-  constructor(public readonly comps: Component[] = []) {
+  constructor() {
+    super({});
+
     this.id = globalId++;
     this.name = `${this.id}`;
   }
@@ -122,33 +60,19 @@ export default class Transform {
     newChild.parent = this;
   }
 
-  addComponent(component: Component) {
-    return this.comps.push(component);
+  update() {
+    this.traverse(
+        (t) => {
+          t.updateMatrix();
+        },
+        (t) => {
+          t.updateMatrixWorld();
+        });
   }
-
-  private update() {
-    for (const component of this.comps) {
-      component.run(this, {});
-    }
-  }
-
-  flush() {}  // injected from newScene
 
   static newScene() {
     const root = new Transform;
     root.name += 'SceneRoot';
-    root.flush = () => {
-      const components: {order: number; run: () => void;}[] = [];
-      root.traverse(
-          (t) => {
-            t.updateMatrix();
-          },
-          (t) => {
-            t.updateMatrixWorld();
-          });
-      components.sort((a, b) => a.order - b.order);
-      components.forEach(e => e.run());
-    };
     return root;
   }
 
@@ -172,7 +96,7 @@ export default class Transform {
   }
 
   clone() {
-    const newT = new Transform([...this.comps]);
+    const newT = new Transform();
     newT.name = this.name + '(Clone)';
     newT.parent = this.parent;
 

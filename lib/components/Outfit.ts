@@ -7,7 +7,7 @@
 import {XStore} from '../basis/Components';
 import Matrix4 from '../basis/Matrix4';
 import {DataTexture} from '../basis/textures/Texture';
-import Transform from '../basis/Transform';
+import Transform from '../basis/Component';
 import Vector4 from '../basis/Vector4';
 
 export class Skeleton {

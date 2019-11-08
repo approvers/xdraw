@@ -5,7 +5,7 @@
 
 import BufferMesh from './BufferMesh';
 import Lines from '../materials/Lines';
-import Transform from '../basis/Transform';
+import Transform from '../basis/Component';
 import Vector3 from '../basis/Vector3';
 import BufferAttribute from '../basis/BufferAttribute';
 import Mesh from './Mesh';

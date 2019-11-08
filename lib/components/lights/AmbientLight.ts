@@ -6,7 +6,7 @@ import Color from '../../basis/Color';
 import {rangeClamper, XStore} from '../../basis/Components';
 import Matrix4 from '../../basis/Matrix4';
 import Texture from '../../basis/textures/Texture';
-import Transform from '../../basis/Transform';
+import Transform from '../../basis/Component';
 
 const AmbientLight =
     (color = new Color(0xffffff), intensity = 1.0) => (

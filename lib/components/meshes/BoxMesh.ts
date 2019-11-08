@@ -4,21 +4,30 @@
  * @author MikuroXina / https://github.com/MikuroXina
  */
 
-import {Component} from '../../basis/Components';
-import Transform from '../../basis/Transform';
-
-import {packMesh} from './MeshUtils';
+import Mesh from './Mesh';
 
 type BoxMeshProps = {
   width: number; height: number; depth: number;
 };
 
-export default class BoxMesh implements Component<BoxMeshProps> {
+export default class BoxMesh extends Mesh {
   defaultProps: BoxMeshProps = {
     width: 1,
     height: 1,
     depth: 1,
   };
+
+  constructor(
+      width = 1,
+      height = 1,
+      depth = 1,
+  ) {
+    super({
+      width: {initValue: width},
+      height: {initValue: height},
+      depth: {initValue: depth}
+    });
+  }
 
   /* Face
               1_____0_____3_____2
@@ -32,7 +41,11 @@ v 3_____2_____6_____7
       +z<- | ->-z
   */
 
-  run(_transform: Transform, props: BoxMeshProps) {
+  run() {
+    const width = this.store.addProp('width', 1);
+    const height = this.store.addProp('height', 1);
+    const depth = this.store.addProp('depth', 1);
+
     const indices: number[] = [
       0, 3, 1, 1, 3, 2, 1, 2, 5, 5, 2, 6, 5, 6, 4, 4, 6, 7,
       1, 5, 0, 0, 5, 4, 0, 4, 3, 3, 4, 7, 3, 7, 2, 2, 7, 6
@@ -40,12 +53,9 @@ v 3_____2_____6_____7
     const sqrt3 = 0.5773502691896258;
     const vertices: number[] =
         [
-          props.width,   props.height, props.depth,  props.width,
-          -props.height, props.depth,  -props.width, -props.height,
-          props.depth,   -props.width, props.height, props.depth,
-          props.width,   props.height, -props.depth, props.width,
-          -props.height, -props.depth, -props.width, -props.height,
-          -props.depth,  -props.width, props.height, -props.depth,
+          width,   height, depth,  width,   -height, depth,  -width, -height,
+          depth,   -width, height, depth,   width,   height, -depth, width,
+          -height, -depth, -width, -height, -depth,  -width, height, -depth,
         ].map(e => e / 2),
                     normals: number[] =
                         [
@@ -54,6 +64,6 @@ v 3_____2_____6_____7
                         ].map(e => e * -sqrt3),
                     uvs: number[] = [];
 
-    packMesh(this, {indices, vertices, normals, uvs});
+    this.packMesh({indices, vertices, normals, uvs});
   }
 }

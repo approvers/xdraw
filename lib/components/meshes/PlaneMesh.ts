@@ -5,7 +5,7 @@
  */
 
 import {Component} from '../../basis/Components';
-import Transform from '../../basis/Transform';
+import Transform from '../../basis/Component';
 
 import {packMesh} from './MeshUtils';
 

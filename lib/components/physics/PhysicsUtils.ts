@@ -4,7 +4,7 @@
 
 import Ray from "../../basis/Ray";
 import Vector3 from "../../basis/Vector3";
-import Transform from "../../basis/Transform";
+import Transform from "../../basis/Component";
 import Vector2 from "../../basis/Vector2";
 import Face3 from "../../basis/Face3";
 

@@ -3,7 +3,7 @@
  */
 
 import {XStore} from '../../basis/Components';
-import Transform from '../../basis/Transform';
+import Transform from '../../basis/Component';
 
 import Camera from './Camera';
 

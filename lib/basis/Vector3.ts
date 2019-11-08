@@ -9,7 +9,7 @@ import Matrix3 from './Matrix3';
 import Matrix4 from './Matrix4';
 import Quaternion from './Quaternion';
 import Spherical from './Spherical';
-import Transform from './Transform';
+import Transform from './Component';
 
 export default class Vector3 {
   constructor(

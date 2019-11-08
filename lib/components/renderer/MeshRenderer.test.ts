@@ -3,7 +3,7 @@
  */
 
 import Color from '../../basis/Color';
-import Transform from '../../basis/Transform';
+import Transform from '../../basis/Component';
 
 import MeshRenderer from './MeshRenderer';
 
