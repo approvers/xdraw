@@ -35,11 +35,6 @@ export default class MeshRenderer extends Renderer {
     backgroundSetter(this.gl.clear);
   }
 
-  animHandle?: number;
-  start() {
-    this.animHandle = requestAnimationFrame(this.animate);
-  }
-
   private drawCalls: (() => void)[] = [];
   run() {
     for (const looking of this.scene.models) {
@@ -47,15 +42,7 @@ export default class MeshRenderer extends Renderer {
           () => this.drawCalls.push(this.gl.drawCallFactory.makeDrawCall(
               {mesh: looking.mesh, material: looking.mat})));
     }
-  }
-
-  animate = () => {
     this.gl.clear.clear();
     this.drawCalls.forEach(e => e());
-    requestAnimationFrame(this.animate);
-  };
-
-  unmount() {
-    if (this.animHandle) cancelAnimationFrame(this.animHandle);
   }
 }

@@ -65,7 +65,6 @@ export default class Index extends Component {
         clears.depth = 0;
       }
     );
-    renderer.start();
     this.renderer = renderer;
   }
 
@@ -74,6 +73,7 @@ export default class Index extends Component {
   updateFrame = () => {
     this.box.rotate(Euler.fromDegressRotations(1, 0, 1));
     this.renderer.run();
+    this.frameId = requestAnimationFrame(this.updateFrame);
   };
 
   state = {

@@ -1,17 +1,12 @@
 import Color from '../../basis/Color';
 
-import {ColorUniform, MaterialBase, packMaterial} from './Material';
+import Material, {ColorUniform} from './Material';
 
 /**
  * @author MikuroXina / https://github.com/MikuroXina
  */
 
-type LinesProps = {
-  color: Color,
-};
-
-export default class Lines implements MaterialBase<LinesProps> {
-  defaultProps: LinesProps;
+export default class Lines extends Material {
   uniforms: {color: typeof ColorUniform};
   update = [];
   shaders = {
@@ -33,9 +28,8 @@ void main() {
 `
   };
   constructor(color = new Color(Math.random() * 0xffffff)) {
-    this.defaultProps = {color};
+    super({color: {initValue: color}});
     this.uniforms = {color: ColorUniform};
-    packMaterial(this);
   }
 
   render(gl: WebGL2RenderingContext, drawCall: (mode: number) => void) {

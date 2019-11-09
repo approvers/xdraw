@@ -71,17 +71,6 @@ void main() {
 `
 };
 
-export type MaterialExports = (gl: WebGL2RenderingContext) => {
-  uniforms: (locations: {[locationName: string]: WebGLUniformLocation;}) =>
-      void;
-  render: (gl: WebGL2RenderingContext, call: (mode: number) => void) => void;
-  shader: {
-    use: (vao: WebGLVertexArrayObject) => void;
-    uniforms: {[name: string]: WebGLUniformLocation;};
-    attributes: {[name: string]: number;};
-  }
-};
-
 export const ColorUniform =
     (loc: WebGLUniformLocation, gl: WebGL2RenderingContext, color: Color) =>
         gl.uniform4f(loc, color.r, color.g, color.b, color.a);
@@ -104,9 +93,13 @@ export default class Material extends Component {
 
   render(_gl: WebGL2RenderingContext, _drawCall: (mode: number) => void) {}
 
-  program?: MaterialProgram = undefined;
+  protected program?: MaterialProgram = undefined;
 
   apply(gl: WebGL2RenderingContext) {
+    if (this.program !== undefined) {
+      return this.program;
+    }
+
     const vertexShader =
         compileShader(gl, gl.VERTEX_SHADER, this.shaders.vertexShaderProgram);
     const fragmentShader = compileShader(

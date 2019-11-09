@@ -1,18 +1,12 @@
 import Color from '../../basis/Color';
 
-import {ColorUniform, MaterialBase, packMaterial} from './Material';
+import Material, {ColorUniform} from './Material';
 
 /**
  * @author MikuroXina / https://github.com/MikuroXina
  */
 
-export type UnlitProps = {
-  color: Color,
-};
-
-export default class Unlit implements MaterialBase<UnlitProps> {
-  defaultProps: UnlitProps;
-
+export default class Unlit extends Material {
   uniforms: {color: typeof ColorUniform};
   shaders = {
     vertexShaderProgram: `
@@ -33,9 +27,8 @@ void main() {
 `
   };
   constructor(color = new Color(Math.random() * 0xffffff)) {
-    this.defaultProps = {color};
+    super({color: {initValue: color}});
     this.uniforms = {color: ColorUniform};
-    packMaterial(this);
   }
 
   render(gl: WebGL2RenderingContext, drawCall: (mode: number) => void) {

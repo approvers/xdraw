@@ -6,51 +6,41 @@
  */
 
 import {rangeClamper} from '../../basis/Clampers';
-import Transform, {Component} from '../../basis/Component';
 import Vector3 from '../../basis/Vector3';
+import Mesh from './Mesh';
 
-import {packMesh} from './MeshUtils';
-
-export type SphereMeshProps = {
-  radius: number,
-  widthSegments: number,
-  heightSegments: number,
-  phiOffset: number,
-  phiLength: number,
-  thetaOffset: number,
-  thetaLength: number,
-};
-
-const clampers = {
-  radius: (v: number) => Math.max(v, 0),
-  widthSegments: (v: number) => Math.max(Math.floor(v), 3),
-  heightSegments: (v: number) => Math.max(Math.floor(v), 2),
-  phiOffset: rangeClamper(0, 2 * Math.PI),
-  phiLength: rangeClamper(0, 2 * Math.PI),
-  thetaOffset: rangeClamper(0, Math.PI),
-  thetaLength: rangeClamper(0, Math.PI)
-};
-
-export default class SphereMesh extends Component {
-  defaultProps: SphereMeshProps;
-
+export default class SphereMesh extends Mesh {
   constructor(
       radius = 1, widthSegments = 8, heightSegments = 6, phiOffset = 0,
       phiLength = Math.PI * 2, thetaOffset = 0, thetaLength = Math.PI) {
-    super();
-
-    this.defaultProps = {
-      radius,
-      widthSegments,
-      heightSegments,
-      phiOffset,
-      phiLength,
-      thetaOffset,
-      thetaLength
-    };
+    super({
+      radius: {initValue: radius, clamper: (v: number) => Math.max(v, 0)},
+      widthSegments: {
+        initValue: widthSegments,
+        clamper: (v: number) => Math.max(Math.floor(v), 3)
+      },
+      heightSegments: {
+        initValue: heightSegments,
+        clamper: (v: number) => Math.max(Math.floor(v), 2)
+      },
+      phiOffset: {initValue: phiOffset, clamper: rangeClamper(0, 2 * Math.PI)},
+      phiLength: {initValue: phiLength, clamper: rangeClamper(0, 2 * Math.PI)},
+      thetaOffset:
+          {initValue: thetaOffset, clamper: rangeClamper(0, 2 * Math.PI)},
+      thetaLength:
+          {initValue: thetaLength, clamper: rangeClamper(0, 2 * Math.PI)}
+    });
   }
 
-  run(_transform: Transform) {
+  run() {
+    const radius = this.store.addProp('radius', 1);
+    const widthSegments = this.store.addProp('widthSegments', 1);
+    const heightSegments = this.store.addProp('heightSegments', 1);
+    const phiOffset = this.store.addProp('phiOffset', 1);
+    const phiLength = this.store.addProp('phiLength', 1);
+    const thetaOffset = this.store.addProp('thetaOffset', 1);
+    const thetaLength = this.store.addProp('thetaLength', 1);
+
     let indexCount = 0;
     const grid: number[][] = [];
 
@@ -61,19 +51,19 @@ export default class SphereMesh extends Component {
     const uv: number[] = [];
 
     // generate vertices, normal and uv
-    for (let iy = 0; iy <= props.heightSegments; iy++) {
+    for (let iy = 0; iy <= heightSegments; iy++) {
       const verticesRow: number[] = [];
-      const v = iy / props.heightSegments;
+      const v = iy / heightSegments;
 
-      for (let ix = 0; ix <= props.widthSegments; ix++) {
-        const u = ix / props.widthSegments;
-        const phi = props.phiOffset + u * props.phiLength,
-              theta = props.thetaOffset + v * props.thetaLength;
+      for (let ix = 0; ix <= widthSegments; ix++) {
+        const u = ix / widthSegments;
+        const phi = phiOffset + u * phiLength,
+              theta = thetaOffset + v * thetaLength;
 
         // vertex
-        const x = -props.radius * Math.cos(phi) * Math.sin(theta);
-        const y = props.radius * Math.cos(theta);
-        const z = props.radius * Math.sin(phi) * Math.sin(theta);
+        const x = -radius * Math.cos(phi) * Math.sin(theta);
+        const y = radius * Math.cos(theta);
+        const z = radius * Math.sin(phi) * Math.sin(theta);
 
         vertex.push(x, y, z);
 
@@ -89,20 +79,19 @@ export default class SphereMesh extends Component {
     }
 
     // index
-    for (let iy = 0; iy < props.heightSegments; iy++) {
-      for (let ix = 0; ix < props.widthSegments; ix++) {
+    for (let iy = 0; iy < heightSegments; iy++) {
+      for (let ix = 0; ix < widthSegments; ix++) {
         const a = grid[iy][ix + 1];
         const b = grid[iy][ix];
         const c = grid[iy + 1][ix];
         const d = grid[iy + 1][ix + 1];
 
-        if (iy !== 0 || props.thetaOffset > 0) index.push(a, b, d);
-        if (iy !== props.heightSegments - 1 || props.thetaLength < Math.PI)
+        if (iy !== 0 || thetaOffset > 0) index.push(a, b, d);
+        if (iy !== heightSegments - 1 || thetaLength < Math.PI)
           index.push(b, c, d);
       }
     }
 
-    packMesh(
-        this, {indices: index, vertices: vertex, normals: normal, uvs: uv});
+    this.packMesh({indices: index, vertices: vertex, normals: normal, uvs: uv});
   }
 }
