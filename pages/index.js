@@ -36,11 +36,11 @@ export default class Index extends Component {
       .material(new Diffuse())
       .build();
     this.box.translate(new Vector3(0.5, 0, 0));
-    scene.add(this.box);
+    scene.addModel(this.box);
 
     const light = new DirectionalLight(0.5);
     light.translate(new Vector3(0, 2, 2));
-    scene.add(light);
+    scene.addAnother(light);
 
     const ground = new ModelBuilder()
       .mesh(new PlaneMesh())
@@ -49,11 +49,11 @@ export default class Index extends Component {
     ground.scale(new Vector3(10, 10, 1));
     ground.rotate(Euler.fromDegressRotations(-90, 0, 0));
     ground.translate(new Vector3(0, -1.5, 0));
-    scene.add(ground);
+    scene.addModel(ground);
 
     const camera = new Camera('Perspective', 40);
     camera.translate(new Vector3(0, 0, 1.3));
-    scene.add(camera);
+    scene.addAnother(camera);
 
     const renderer = new MeshRenderer(
       scene,
@@ -65,7 +65,7 @@ export default class Index extends Component {
         clears.depth = 0;
       }
     );
-    renderer.flush();
+    renderer.start();
     this.renderer = renderer;
   }
 
@@ -73,8 +73,7 @@ export default class Index extends Component {
 
   updateFrame = () => {
     this.box.rotate(Euler.fromDegressRotations(1, 0, 1));
-    this.box.root.flush();
-    this.frameId = requestAnimationFrame(this.updateFrame);
+    this.renderer.run();
   };
 
   state = {

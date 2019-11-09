@@ -4,20 +4,11 @@
  * @author MikuroXina / https://github.com/MikuroXina
  */
 
-import {Component} from '../../basis/Components';
-import Transform from '../../basis/Component';
+import Mesh from './Mesh';
 
-import {packMesh} from './MeshUtils';
-
-type PlaneMeshProps = {
-  width: number; height: number;
-}
-
-export default class PlaneMesh implements Component<PlaneMeshProps> {
-  defaultProps: PlaneMeshProps;
-
+export default class PlaneMesh extends Mesh {
   constructor(width = 1, height = 1) {
-    this.defaultProps = {width, height};
+    super({Width: {initValue: width}, Height: {initValue: height}});
   }
   /* Faces
   3_____0
@@ -25,16 +16,16 @@ export default class PlaneMesh implements Component<PlaneMeshProps> {
   |     |
   2_____1
   */
-  run(_transform: Transform, props: PlaneMeshProps) {
+  run() {
+    const width = this.store.addProp('Width', 1);
+    const height = this.store.addProp('Height', 1);
     const index: number[] = [3, 2, 0, 0, 2, 1];
     const vertex: number[] = [
-      props.width, props.height, 0, props.width, -props.height, 0, -props.width,
-      -props.height, 0, -props.width, props.height, 0
+      width, height, 0, width, -height, 0, -width, -height, 0, -width, height, 0
     ].map(e => e / 2);
     const normal: number[] = [0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1];
     const uv: number[] = [1, 0, 1, 1, 0, 0, 0, 1];
 
-    packMesh(
-        this, {indices: index, vertices: vertex, normals: normal, uvs: uv});
+    this.packMesh({indices: index, vertices: vertex, normals: normal, uvs: uv});
   }
 }

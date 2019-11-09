@@ -6,26 +6,16 @@
 
 import Mesh from './Mesh';
 
-type BoxMeshProps = {
-  width: number; height: number; depth: number;
-};
-
 export default class BoxMesh extends Mesh {
-  defaultProps: BoxMeshProps = {
-    width: 1,
-    height: 1,
-    depth: 1,
-  };
-
   constructor(
       width = 1,
       height = 1,
       depth = 1,
   ) {
     super({
-      width: {initValue: width},
-      height: {initValue: height},
-      depth: {initValue: depth}
+      Width: {initValue: width},
+      Height: {initValue: height},
+      Depth: {initValue: depth}
     });
   }
 
@@ -42,9 +32,9 @@ v 3_____2_____6_____7
   */
 
   run() {
-    const width = this.store.addProp('width', 1);
-    const height = this.store.addProp('height', 1);
-    const depth = this.store.addProp('depth', 1);
+    const width = this.store.addProp('Width', 1);
+    const height = this.store.addProp('Height', 1);
+    const depth = this.store.addProp('Depth', 1);
 
     const indices: number[] = [
       0, 3, 1, 1, 3, 2, 1, 2, 5, 5, 2, 6, 5, 6, 4, 4, 6, 7,

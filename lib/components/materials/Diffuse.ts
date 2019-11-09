@@ -1,20 +1,13 @@
-import Color from '../../basis/Color';
-import {XBind} from '../../basis/Components';
-import Vector3 from '../../basis/Vector3';
-
-import {ColorUniform, MaterialBase, Uniforms, Vector3Uniform} from './MaterialUtils';
-
 /**
  * @author MikuroXina / https://github.com/MikuroXina
  */
 
-type DiffuseProps = {
-  color: Color,
-};
+import Color from '../../basis/Color';
 
-export default class Diffuse implements MaterialBase<DiffuseProps> {
-  defaultProps: DiffuseProps;
-  uniforms: {color: typeof ColorUniform, light: typeof Vector3Uniform};
+import Material, {ColorUniform, Vector3Uniform} from './Material';
+
+export default class Diffuse extends Material {
+  uniforms = {color: ColorUniform, light: Vector3Uniform};
 
   shaders = {
     vertexShaderProgram: `
@@ -45,11 +38,8 @@ void main() {
 `
   };
 
-  constructor(
-      private light: {props: {intensity: number}},
-      color = new Color(Math.random() * 0xffffff)) {
-    this.defaultProps = {color};
-    this.uniforms = {color: ColorUniform, light: Vector3Uniform};
+  constructor(color = new Color(Math.random() * 0xffffff)) {
+    super({color: {initValue: color}});
   }
 
   render(gl: WebGL2RenderingContext, drawCall: (mode: number) => void) {

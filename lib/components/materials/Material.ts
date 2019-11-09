@@ -1,8 +1,5 @@
-import {Property} from '@babel/types';
-
 import Color from '../../basis/Color';
-import {Component, PropsBase} from '../../basis/Components';
-import Transform from '../../basis/Component';
+import {Component} from '../../basis/Component';
 import Vector3 from '../../basis/Vector3';
 
 /**
@@ -53,41 +50,9 @@ export type ShaderProgramSet = {
   fragmentShaderProgram: string
 };
 
-const makeShader =
-    (programSet: ShaderProgramSet) => (gl: WebGL2RenderingContext) => {
-      const vertexShader =
-          compileShader(gl, gl.VERTEX_SHADER, programSet.vertexShaderProgram);
-      const fragmentShader = compileShader(
-          gl, gl.FRAGMENT_SHADER, programSet.fragmentShaderProgram);
-      const program = gl.createProgram();
-      if (program === null) throw new Error('Fail to create program.');
-      gl.attachShader(program, vertexShader);
-      gl.attachShader(program, fragmentShader);
-      gl.linkProgram(program);
-      const success = gl.getProgramParameter(program, gl.LINK_STATUS);
-      if (success) {
-        gl.useProgram(program);
-        return {
-          use: (vao: WebGLVertexArrayObject) => {
-            gl.useProgram(program);
-            gl.bindVertexArray(vao);
-          },
-          uniforms: extractUniforms(gl, program),
-          attributes: extractAttributes(gl, program)
-        };
-      }
-
-      console.error(gl.getProgramInfoLog(program));
-      gl.deleteProgram(program);
-      throw new Error('Fail to link shaders.')
-    }
-
 export type UniformUpdater =
     (location: WebGLUniformLocation, gl: WebGL2RenderingContext, newV: any) =>
         void;
-
-export function packMaterial<Props extends PropsBase>(
-    impl: MaterialBase<Props>) {}
 
 export const defaultShaderSet: ShaderProgramSet = {
   vertexShaderProgram: `
@@ -105,20 +70,6 @@ void main() {
 }
 `
 };
-
-
-
-function isNumber(value: any): value is number {
-  return ((value != null) && !isNaN(Number(value.toString())));
-}
-
-export interface MaterialBase<Props extends PropsBase> extends
-    Component<Props> {
-  uniforms: {[locationName: string]: UniformUpdater};
-  shaders: ShaderProgramSet;
-
-  render(gl: WebGL2RenderingContext, drawCall: (mode: number) => void): void;
-}
 
 export type MaterialExports = (gl: WebGL2RenderingContext) => {
   uniforms: (locations: {[locationName: string]: WebGLUniformLocation;}) =>
@@ -139,3 +90,48 @@ export const ColorUniform =
 export const Vector3Uniform =
     (loc: WebGLUniformLocation, gl: WebGL2RenderingContext, vec: Vector3) =>
         gl.uniform3f(loc, vec.x, vec.y, vec.z);
+
+type MaterialProgram = {
+  use: (vao: WebGLVertexArrayObject) => void,
+  uniforms: {[key: string]: WebGLUniformLocation},
+  attributes: {[key: string]: number}
+};
+
+export default class Material extends Component {
+  protected uniforms: {[locationName: string]: UniformUpdater} = {};
+  protected shaders:
+      ShaderProgramSet = {vertexShaderProgram: '', fragmentShaderProgram: ''};
+
+  render(_gl: WebGL2RenderingContext, _drawCall: (mode: number) => void) {}
+
+  program?: MaterialProgram = undefined;
+
+  apply(gl: WebGL2RenderingContext) {
+    const vertexShader =
+        compileShader(gl, gl.VERTEX_SHADER, this.shaders.vertexShaderProgram);
+    const fragmentShader = compileShader(
+        gl, gl.FRAGMENT_SHADER, this.shaders.fragmentShaderProgram);
+    const program = gl.createProgram();
+    if (program === null) throw new Error('Fail to create program.');
+    gl.attachShader(program, vertexShader);
+    gl.attachShader(program, fragmentShader);
+    gl.linkProgram(program);
+    const success = gl.getProgramParameter(program, gl.LINK_STATUS);
+    if (!success) {
+      console.error(gl.getProgramInfoLog(program));
+      gl.deleteProgram(program);
+      throw new Error('Fail to link shaders.')
+    }
+
+    gl.useProgram(program);
+    this.program = {
+      use: (vao: WebGLVertexArrayObject) => {
+        gl.useProgram(program);
+        gl.bindVertexArray(vao);
+      },
+      uniforms: extractUniforms(gl, program),
+      attributes: extractAttributes(gl, program)
+    };
+    return this.program;
+  }
+}

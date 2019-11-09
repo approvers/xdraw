@@ -42,10 +42,10 @@ export default class MeshRenderer extends Renderer {
 
   private drawCalls: (() => void)[] = [];
   run() {
-    for (const looking of this.scene.objs) {
+    for (const looking of this.scene.models) {
       looking.traverse(
-          (t) => this.drawCalls.push(this.gl.drawCallFactory.makeDrawCall(
-              {mesh: t.store.get('mesh'), material: t.store.get('material')})));
+          () => this.drawCalls.push(this.gl.drawCallFactory.makeDrawCall(
+              {mesh: looking.mesh, material: looking.mat})));
     }
   }
 

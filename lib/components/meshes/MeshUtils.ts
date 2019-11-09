@@ -3,7 +3,6 @@
  */
 
 import BufferAttribute from '../../basis/BufferAttribute';
-import {XStore} from '../../basis/Components';
 
 const MeshUpdater = (data: {[name: string]: BufferAttribute}) => (
     attributeLocations:

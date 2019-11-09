@@ -1,6 +1,6 @@
 import Color from '../../basis/Color';
 
-import {ColorUniform, MaterialBase, packMaterial} from './MaterialUtils';
+import {ColorUniform, MaterialBase, packMaterial} from './Material';
 
 /**
  * @author MikuroXina / https://github.com/MikuroXina

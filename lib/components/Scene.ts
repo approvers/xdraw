@@ -1,8 +1,12 @@
-import Color from '../basis/Color';
-import Renderer from './renderer/Renderer';
 /**
  * @author MikuroXina / https://github.com/MikuroXina
  */
+
+import Color from '../basis/Color';
+
+import Model from './Model';
+import Renderer from './renderer/Renderer';
+
 
 export class Fog {
   name = '';
@@ -21,14 +25,19 @@ export class FogExp2 extends Fog {
 }
 
 export class Scene {
-  private _objs: any[] = [];
+  private _models: Model[] = [];
+  private _others: any[] = [];
   private _renderer?: Renderer;
 
-  add(v: any) {
-    this._objs.push(v);
+  addModel(model: Model) {
+    this._models.push(model);
   }
 
-  get objs() {
-    return this._objs;
+  addAnother(other: any) {
+    this._others.push(other);
+  }
+
+  get models() {
+    return this._models;
   }
 }

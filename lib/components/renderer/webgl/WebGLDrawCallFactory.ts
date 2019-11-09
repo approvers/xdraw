@@ -1,13 +1,13 @@
-import {MaterialExports} from '../../materials/MaterialUtils';
-import {MeshExports} from '../../meshes/MeshUtils';
+import Material from '../../materials/Material';
+import Mesh from '../../meshes/Mesh';
 
 /**
  * @author MikuroXina / https://github.com/MikuroXina
  */
 
 export type meshAndShader = {
-  mesh?: MeshExports;
-  material?: MaterialExports;
+  mesh?: Mesh;
+  material?: Material;
 };
 
 export default class WebGLDrawCallFactory {
@@ -17,18 +17,16 @@ export default class WebGLDrawCallFactory {
     if (mesh === undefined || material === undefined) {
       return () => {};
     }
-    const appliedMat = material(this.gl);
+    const program = material.apply(this.gl);
     const vao = this.gl.createVertexArray();
     if (vao === null) throw new Error('Fail to create vertex array.');
-    const shader = appliedMat.shader;
     this.gl.bindVertexArray(vao);
-    appliedMat.uniforms(shader.uniforms);
-    const call = mesh(shader.attributes)(this.gl);
+    const call = mesh.apply(this.gl, program.attributes);
     this.gl.bindVertexArray(null);
 
     return () => {
-      shader.use(vao);
-      appliedMat.render(this.gl, call);
+      program.use(vao);
+      material.render(this.gl, call);
     };
   }
 }

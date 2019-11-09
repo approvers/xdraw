@@ -10,8 +10,10 @@ import Euler from '../basis/Euler';
 import Vector3 from '../basis/Vector3';
 
 import Diffuse from './materials/Diffuse';
+import Material from './materials/Material';
 import Unlit from './materials/Unlit';
 import BoxMesh from './meshes/BoxMesh';
+import Mesh from './meshes/Mesh';
 import PlaneMesh from './meshes/PlaneMesh';
 import Transform from './Transform';
 
@@ -54,14 +56,19 @@ export class ModelBuilder {
   }
 
   build(): Model {
-    return new Model(this.mesh, this.material);
+    if (this._mesh === undefined)
+      throw new Error('the mesh has not registered');
+    if (this._mat === undefined)
+      throw new Error('the material has not registered');
+
+    return new Model(this._mesh, this._mat);
   }
 }
 
-class Model {
+export default class Model {
   private transform = new Transform;
 
-  constructor(mesh: Mesh, mat: Material) {}
+  constructor(public readonly mesh: Mesh, public readonly mat: Material) {}
 
   translate(amount: Vector3): void {
     this.transform.translate(amount);
@@ -73,5 +80,11 @@ class Model {
 
   scale(amount: Vector3) {
     this.transform.scale.multiply(amount);
+  }
+
+  traverse(
+      capture?: (transform: Transform) => void,
+      bubble?: (transform: Transform) => void) {
+    this.transform.traverse(capture, bubble);
   }
 }
