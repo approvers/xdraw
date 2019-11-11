@@ -1,5 +1,7 @@
 import Material from '../../materials/Material';
 import Mesh from '../../meshes/Mesh';
+import {Scene} from '../../Scene';
+import Transform from '../../Transform';
 
 /**
  * @author MikuroXina / https://github.com/MikuroXina
@@ -13,7 +15,7 @@ export type meshAndShader = {
 export default class WebGLDrawCallFactory {
   constructor(private gl: WebGL2RenderingContext) {}
 
-  makeDrawCall({mesh, material}: meshAndShader) {
+  makeDrawCall({mesh, material}: meshAndShader, scene: Scene, t: Transform) {
     if (mesh === undefined || material === undefined) {
       return () => {};
     }
@@ -25,7 +27,7 @@ export default class WebGLDrawCallFactory {
     this.gl.bindVertexArray(null);
 
     return () => {
-      program.use(vao);
+      program.use(vao, scene, t);
       material.render(this.gl, call);
     };
   }

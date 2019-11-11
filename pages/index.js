@@ -40,7 +40,7 @@ export default class Index extends Component {
 
     const light = new DirectionalLight(0.5);
     light.translate(new Vector3(0, 2, 2));
-    scene.addAnother(light);
+    scene.addLight(light);
 
     const ground = new ModelBuilder()
       .mesh(new PlaneMesh())

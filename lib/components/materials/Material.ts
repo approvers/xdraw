@@ -1,6 +1,8 @@
 import Color from '../../basis/Color';
 import {Component} from '../../basis/Component';
 import Vector3 from '../../basis/Vector3';
+import {Scene} from '../Scene';
+import Transform from '../Transform';
 
 /**
  * @author MikuroXina / https://github.com/MikuroXina
@@ -81,8 +83,8 @@ export const Vector3Uniform =
         gl.uniform3f(loc, vec.x, vec.y, vec.z);
 
 type MaterialProgram = {
-  use: (vao: WebGLVertexArrayObject) => void,
-  uniforms: {[key: string]: WebGLUniformLocation},
+  use: (vao: WebGLVertexArrayObject, scene: Scene, t: Transform) => void,
+  uniformLocations: {[key: string]: WebGLUniformLocation},
   attributes: {[key: string]: number}
 };
 
@@ -117,13 +119,32 @@ export default class Material extends Component {
     }
 
     gl.useProgram(program);
+    const uniformLocations = extractUniforms(gl, program);
+    const attributes = extractAttributes(gl, program);
     this.program = {
-      use: (vao: WebGLVertexArrayObject) => {
+      use: (vao: WebGLVertexArrayObject, scene: Scene, t: Transform) => {
         gl.useProgram(program);
+
+        // Set uniforms
+        const lightVec = new Vector3;
+        for (const light of scene.lights) {
+          lightVec.add(light.direction.multiplyScalar(light.intensity(t)));
+        }
+        this.store.addProp('light', lightVec);
+
+        for (const uniformName in this.uniforms) {
+          const location = uniformLocations[uniformName];
+          const uniform = this.store.addProp<any>(uniformName, undefined);
+          if (uniform == undefined) {
+            throw new Error('The uniform is not found in Props');
+          }
+          this.uniforms[uniformName](location, gl, uniform);
+        }
+
         gl.bindVertexArray(vao);
       },
-      uniforms: extractUniforms(gl, program),
-      attributes: extractAttributes(gl, program)
+      uniformLocations,
+      attributes
     };
     return this.program;
   }

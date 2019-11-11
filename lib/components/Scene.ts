@@ -4,6 +4,7 @@
 
 import Color from '../basis/Color';
 
+import Light from './lights/Light';
 import Model from './Model';
 import Renderer from './renderer/Renderer';
 
@@ -26,11 +27,16 @@ export class FogExp2 extends Fog {
 
 export class Scene {
   private _models: Model[] = [];
+  private _lights: Light[] = [];
   private _others: any[] = [];
   private _renderer?: Renderer;
 
   addModel(model: Model) {
     this._models.push(model);
+  }
+
+  addLight(light: Light) {
+    this._lights.push(light);
   }
 
   addAnother(other: any) {
@@ -39,5 +45,9 @@ export class Scene {
 
   get models() {
     return this._models;
+  }
+
+  get lights() {
+    return this._lights;
   }
 }

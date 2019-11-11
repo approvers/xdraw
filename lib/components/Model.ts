@@ -66,7 +66,7 @@ export class ModelBuilder {
 }
 
 export default class Model {
-  private transform = new Transform;
+  readonly transform = new Transform;
 
   constructor(public readonly mesh: Mesh, public readonly mat: Material) {}
 
