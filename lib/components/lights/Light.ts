@@ -8,7 +8,7 @@ import Transform from '../Transform';
 
 
 export default abstract class Light extends Component {
-  private transform = new Transform;
+  readonly transform = new Transform;
 
   translate(amount: Vector3) {
     this.transform.translate(amount);

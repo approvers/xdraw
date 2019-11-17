@@ -39,7 +39,8 @@ export default class MeshRenderer extends Renderer {
   run() {
     for (const looking of this.scene.models) {
       this.drawCalls.push(this.gl.drawCallFactory.makeDrawCall(
-          {mesh: looking.mesh, material: looking.mat}, this.scene, looking.transform));
+          {mesh: looking.mesh, material: looking.mat}, this.scene,
+          looking.transform));
     }
     this.gl.clear.clear();
     this.drawCalls.forEach(e => e());

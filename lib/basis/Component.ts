@@ -78,7 +78,7 @@ export class Component {
     this.store.addProps(props);
   }
 
-  start?(): void;
-  run?(): void;
-  unmount?(): void;
+  start(): void {}
+  run(): void {}
+  unmount(): void {}
 }

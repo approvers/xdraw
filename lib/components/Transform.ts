@@ -30,10 +30,22 @@ export default class Transform extends Component {
   recieveRaycast = true;
   static = false;
 
-  matrix = new Matrix4();
-  matrixWorld = new Matrix4();
-  matrixWorldProjection = new Matrix4();
-  matrixWorldNeedsUpdate = true;
+  private matrix = new Matrix4();
+  get localMatrix(): Matrix4 {
+    return this.matrix.clone();
+  }
+
+  private matrixWorld = new Matrix4();
+  get worldMatrix(): Matrix4 {
+    return this.matrixWorld.clone();
+  }
+
+  private matrixWorldProjection = new Matrix4();
+  get projectionMatrix(): Matrix4 {
+    return this.matrixWorldProjection.clone();
+  }
+
+  private matrixWorldNeedsUpdate = true;
 
   renderOrder: number = 0;
 
@@ -163,6 +175,10 @@ export default class Transform extends Component {
       const q1 = Quaternion.fromRotationMatrix(m1);
       this.quaternion = this.quaternion.premultiply(q1.inverse());
     }
+  }
+
+  applyProjection(matrix: Matrix4) {
+    this.matrixWorldProjection = matrix.multiply(this.matrixWorld);
   }
 
   private traverseRecursive(

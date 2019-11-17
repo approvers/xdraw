@@ -22,14 +22,18 @@ import {Scene} from '../lib/components/Scene';
 export default class Index extends Component {
   box = null;
   canvas = null;
-  renderer = null;
+  scene = null;
 
   componentWillUnmount() {
     cancelAnimationFrame(this.frameId);
   }
 
   componentDidMount() {
-    const scene = new Scene();
+    const scene = new Scene(this.canvas, 600, 600, (clears) => {
+      clears.color = new Color(0x0a0d0a);
+      clears.depth = 0;
+    });
+    this.scene = scene;
 
     this.box = new ModelBuilder()
       .mesh(new BoxMesh())
@@ -53,26 +57,14 @@ export default class Index extends Component {
 
     const camera = new Camera('Perspective', 40);
     camera.translate(new Vector3(0, 0, 1.3));
-    scene.addAnother(camera);
-
-    const renderer = new MeshRenderer(
-      scene,
-      this.canvas,
-      600,
-      600,
-      (clears) => {
-        clears.color = new Color(0x0a0d0a);
-        clears.depth = 0;
-      }
-    );
-    this.renderer = renderer;
+    scene.addCamera(camera);
   }
 
   frameId = 0;
 
   updateFrame = () => {
     this.box.rotate(Euler.fromDegressRotations(1, 0, 1));
-    this.renderer.run();
+    this.scene.update();
     this.frameId = requestAnimationFrame(this.updateFrame);
   };
 

@@ -13,7 +13,7 @@ import Vector3 from '../../basis/Vector3';
 import Transform from '../Transform';
 
 export default class Camera extends Component {
-  private transform = new Transform;
+  public readonly transform = new Transform;
 
   constructor(
       mode: 'Perspective'|'Orthographic' = 'Perspective', fov: number = 45) {
@@ -53,17 +53,16 @@ export default class Camera extends Component {
     if (mode === 'Orthographic') {
       this.transform.root.traverse((t) => {
         if (t.id === this.transform.id) return;
-        t.matrixWorldProjection =
-            this.transform.matrixWorld.inverse().multiply(t.matrixWorld);
+        t.applyProjection(this.transform.worldMatrix.inverse());
       });
       return;
     };
 
     const fudge = Matrix4.perspective(fov, aspect, near, far)
-                      .multiply(this.transform.matrix.inverse());
+                      .multiply(this.transform.localMatrix.inverse());
     this.transform.root.traverse((t) => {
       if (t.id === this.transform.id) return;
-      t.matrixWorldProjection = fudge.multiply(t.matrixWorld);
+      t.applyProjection(fudge);
     });
   }
 

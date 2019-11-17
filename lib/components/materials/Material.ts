@@ -1,5 +1,6 @@
 import Color from '../../basis/Color';
 import {Component} from '../../basis/Component';
+import Matrix4 from '../../basis/Matrix4';
 import Vector3 from '../../basis/Vector3';
 import {Scene} from '../Scene';
 import Transform from '../Transform';
@@ -82,6 +83,10 @@ export const Vector3Uniform =
     (loc: WebGLUniformLocation, gl: WebGL2RenderingContext, vec: Vector3) =>
         gl.uniform3f(loc, vec.x, vec.y, vec.z);
 
+export const Matrix4Uniform =
+    (loc: WebGLUniformLocation, gl: WebGL2RenderingContext, mat: Matrix4) =>
+        gl.uniformMatrix4fv(loc, false, mat.toArray());
+
 type MaterialProgram = {
   use: (vao: WebGLVertexArrayObject, scene: Scene, t: Transform) => void,
   uniformLocations: {[key: string]: WebGLUniformLocation},
@@ -101,6 +106,8 @@ export default class Material extends Component {
     if (this.program !== undefined) {
       return this.program;
     }
+
+    this.uniforms['modelViewProjection'] = Matrix4Uniform;
 
     const vertexShader =
         compileShader(gl, gl.VERTEX_SHADER, this.shaders.vertexShaderProgram);
@@ -126,6 +133,8 @@ export default class Material extends Component {
         gl.useProgram(program);
 
         // Set uniforms
+        this.store.addProp('modelViewProjection', t.projectionMatrix);
+
         const lightVec = new Vector3;
         for (const light of scene.lights) {
           lightVec.add(light.direction.multiplyScalar(light.intensity(t)));
