@@ -40,7 +40,7 @@
     "jest": "^24.1.0",
     "jest-canvas-mock": "^2.0.0-alpha.3",
     "kill-port": "^1.6.0",
-    "next": "^8.0.1",
+    "next": "^9.3.3",
     "react": "^16.8.2",
     "react-dom": "^16.8.2",
     "ts-jest": "^23.10.5",
