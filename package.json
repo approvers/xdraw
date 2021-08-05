@@ -7,7 +7,7 @@
   "scripts": {
     "test": "jest",
     "dev": "NODE_OPTIONS=--inspect next",
-    "lint": "eslint --ext .ts,.tsx --ignore-path .gitignore ./"
+    "lint": "eslint --ext .ts,.tsx --ignore-path .gitignore ./src/"
   },
   "jest": {
     "transform": {
