@@ -23,7 +23,7 @@ export default class Frustum {
   }
 
   clone() {
-    return new (Frustum.apply(null, this.planes))();
+    return new Frustum(...this.planes);
   }
 
   setFromMatrix(m: Matrix4) {
