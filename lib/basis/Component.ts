@@ -2,9 +2,9 @@
  * @author MikuroXina / https://github.com/MikuroXina
  */
 
-type PropsBase = {
+export interface PropsBase {
   [key: string]: {initValue: any, clamper?: (newValue: any) => any}
-};
+}
 
 export class Store {
   private prop:
