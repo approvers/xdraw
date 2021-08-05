@@ -10,7 +10,7 @@
  * z-axiz.
  */
 
-import Vector3 from './Vector3';
+import Vector3 from "./Vector3";
 
 export default class Spherical {
   static fromVector3(v: Vector3) {
@@ -23,8 +23,10 @@ export default class Spherical {
       return new Spherical(0, 0, 0);
     }
     return new Spherical(
-        radius, Math.acos(Math.min(Math.max(y / radius, -1), 1)),
-        Math.atan2(x, z));
+      radius,
+      Math.acos(Math.min(Math.max(y / radius, -1), 1)),
+      Math.atan2(x, z),
+    );
   }
 
   constructor(public radius = 1.0, public phi = 0, public theta = 0) {}
@@ -33,7 +35,7 @@ export default class Spherical {
     return new Spherical(this.radius, this.phi, this.theta);
   }
 
-  // restrict phi to be between EPS and PI-EPS
+  // Restrict phi to be between EPS and PI-EPS
   makeSafe() {
     const EPS = 0.000001;
     this.phi = Math.max(EPS, Math.min(Math.PI - EPS, this.phi));

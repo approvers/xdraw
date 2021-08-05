@@ -2,7 +2,7 @@
  * @author MikuroXina / https://MikuroXina
  */
 
-import Vector3 from './Vector3';
+import Vector3 from "./Vector3";
 
 export default class Plane {
   constructor(private _normal = new Vector3(1, 0, 0), public constant = 0) {}
@@ -10,6 +10,7 @@ export default class Plane {
   set normal(v: Vector3) {
     this._normal = v.clone();
   }
+
   get normal() {
     return this._normal;
   }
@@ -26,8 +27,10 @@ export default class Plane {
 
   normalize() {
     const len = this.normal.length();
-    if (len === 0) return;
-    var inverseNormalLength = 1.0 / len;
+    if (len === 0) {
+      return;
+    }
+    const inverseNormalLength = 1.0 / len;
     this.normal.multiplyScalar(inverseNormalLength);
     this.constant *= inverseNormalLength;
     return this;

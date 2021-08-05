@@ -2,14 +2,17 @@
  * @author MikuroXina / https://github.com/MikuroXina
  */
 
-import BufferAttribute from './BufferAttribute';
-import Matrix4 from './Matrix4';
-import Quaternion from './Quaternion';
+import BufferAttribute from "./BufferAttribute";
+import Matrix4 from "./Matrix4";
+import Quaternion from "./Quaternion";
 
 export default class Vector4 {
   constructor(
-      public x: number = 0, public y: number = 0, public z: number = 0,
-      public w: number = 1) {}
+    public x: number = 0,
+    public y: number = 0,
+    public z: number = 0,
+    public w: number = 1,
+  ) {}
 
   /**
    * @static
@@ -42,30 +45,49 @@ export default class Vector4 {
   static fromRotationMatrixToAxisAngle(m: Matrix4) {
     // http://www.euclideanspace.com/maths/geometry/rotations/conversions/matrixToAngle/index.htm
 
-    // assumes the upper 3x3 of m is a pure rotation matrix (i.e,
-    // unscaled)
+    /*
+     * Assumes the upper 3x3 of m is a pure rotation matrix (i.e,
+     * unscaled)
+     */
 
     let angle: number, x: number, y: number, z: number;
-    const epsilon = 0.01,  // margin to allow for rounding errors
-        epsilon2 = 0.1,    // margin to distinguish between 0 and 180 degrees
-        te = m.elements, m11 = te[0], m12 = te[4], m13 = te[8], m21 = te[1],
-          m22 = te[5], m23 = te[9], m31 = te[2], m32 = te[6], m33 = te[10];
+    const epsilon = 0.01, // Margin to allow for rounding errors
+      epsilon2 = 0.1, // Margin to distinguish between 0 and 180 degrees
+      te = m.elements,
+      m11 = te[0],
+      m12 = te[4],
+      m13 = te[8],
+      m21 = te[1],
+      m22 = te[5],
+      m23 = te[9],
+      m31 = te[2],
+      m32 = te[6],
+      m33 = te[10];
 
-    if (Math.abs(m12 - m21) < epsilon && Math.abs(m13 - m31) < epsilon &&
-        Math.abs(m23 - m32) < epsilon) {
-      // singularity found
-      // first check for identity matrix which must have +1 for all
-      // terms in leading diagonal and zero in other terms
+    if (
+      Math.abs(m12 - m21) < epsilon &&
+      Math.abs(m13 - m31) < epsilon &&
+      Math.abs(m23 - m32) < epsilon
+    ) {
 
-      if (Math.abs(m12 + m21) < epsilon2 && Math.abs(m13 + m31) < epsilon2 &&
-          Math.abs(m23 + m32) < epsilon2 &&
-          Math.abs(m11 + m22 + m33 - 3) < epsilon2) {
-        // this singularity is identity matrix so angle = 0
+      /*
+       * Singularity found
+       * first check for identity matrix which must have +1 for all
+       * terms in leading diagonal and zero in other terms
+       */
 
-        return new Vector4(1, 0, 0, 0);  // zero angle, arbitrary axis
+      if (
+        Math.abs(m12 + m21) < epsilon2 &&
+        Math.abs(m13 + m31) < epsilon2 &&
+        Math.abs(m23 + m32) < epsilon2 &&
+        Math.abs(m11 + m22 + m33 - 3) < epsilon2
+      ) {
+        // This singularity is identity matrix so angle = 0
+
+        return new Vector4(1, 0, 0, 0); // Zero angle, arbitrary axis
       }
 
-      // otherwise this singularity is angle = 180
+      // Otherwise this singularity is angle = 180
 
       angle = Math.PI;
 
@@ -77,7 +99,7 @@ export default class Vector4 {
       const yz = (m23 + m32) / 4;
 
       if (xx > yy && xx > zz) {
-        // m11 is the largest diagonal term
+        // M11 is the largest diagonal term
 
         if (xx < epsilon) {
           x = 0;
@@ -89,7 +111,7 @@ export default class Vector4 {
           z = xz / x;
         }
       } else if (yy > zz) {
-        // m22 is the largest diagonal term
+        // M22 is the largest diagonal term
 
         if (yy < epsilon) {
           x = 0.707106781;
@@ -101,7 +123,7 @@ export default class Vector4 {
           z = yz / y;
         }
       } else {
-        // m33 is the largest diagonal term so base result on this
+        // M33 is the largest diagonal term so base result on this
 
         if (zz < epsilon) {
           x = 0.707106781;
@@ -113,21 +135,29 @@ export default class Vector4 {
           y = yz / z;
         }
       }
-      return new Vector4(x, y, z, angle);  // return 180 deg rotation
+      return new Vector4(x, y, z, angle); // Return 180 deg rotation
     }
 
-    // as we have reached here there are no singularities so we can
-    // handle normally
+    /*
+     * As we have reached here there are no singularities so we can
+     * handle normally
+     */
 
     let s = Math.sqrt(
-        (m32 - m23) * (m32 - m23) + (m13 - m31) * (m13 - m31) +
-        (m21 - m12) * (m21 - m12));  // used to normalize
+      (m32 - m23) * (m32 - m23) +
+        (m13 - m31) * (m13 - m31) +
+        (m21 - m12) * (m21 - m12),
+    ); // Used to normalize
 
-    if (Math.abs(s) < 0.001) s = 1;
+    if (Math.abs(s) < 0.001) {
+      s = 1;
+    }
 
-    // prevent divide by zero, should not happen if matrix is orthogonal
-    // and should be caught by singularity test above, but I've left it
-    // in just in case
+    /*
+     * Prevent divide by zero, should not happen if matrix is orthogonal
+     * and should be caught by singularity test above, but I've left it
+     * in just in case
+     */
 
     x = (m32 - m23) / s;
     y = (m13 - m31) / s;
@@ -246,7 +276,7 @@ export default class Vector4 {
   }
 
   applyMatrix4(m: Matrix4) {
-    const {x, y, z, w} = this;
+    const { x, y, z, w } = this;
     const e = m.elements;
 
     this.x = e[0] * x + e[4] * y + e[8] * z + e[12] * w;
@@ -277,7 +307,7 @@ export default class Vector4 {
   }
 
   clamp(min: Vector4, max: Vector4) {
-    // assumes min < max, componentwise
+    // Assumes min < max, componentwise
 
     this.x = Math.max(min.x, Math.min(max.x, this.x));
     this.y = Math.max(min.y, Math.min(max.y, this.y));
@@ -289,15 +319,17 @@ export default class Vector4 {
 
   clampScalar(minVal: number, maxVal: number) {
     return this.clamp(
-        new Vector4(minVal, minVal, minVal, minVal),
-        new Vector4(maxVal, maxVal, maxVal, maxVal));
+      new Vector4(minVal, minVal, minVal, minVal),
+      new Vector4(maxVal, maxVal, maxVal, maxVal),
+    );
   }
 
   clampLength(min: number, max: number) {
     const length = this.length();
 
-    return this.divideScalar(length || 1)
-        .multiplyScalar(Math.max(min, Math.min(max, length)));
+    return this.divideScalar(length || 1).multiplyScalar(
+      Math.max(min, Math.min(max, length)),
+    );
   }
 
   floor() {
@@ -346,18 +378,20 @@ export default class Vector4 {
 
   lengthSq() {
     return (
-        this.x * this.x + this.y * this.y + this.z * this.z + this.w * this.w);
+      this.x * this.x + this.y * this.y + this.z * this.z + this.w * this.w
+    );
   }
 
   length() {
     return Math.sqrt(
-        this.x * this.x + this.y * this.y + this.z * this.z + this.w * this.w);
+      this.x * this.x + this.y * this.y + this.z * this.z + this.w * this.w,
+    );
   }
 
   manhattanLength() {
     return (
-        Math.abs(this.x) + Math.abs(this.y) + Math.abs(this.z) +
-        Math.abs(this.w));
+      Math.abs(this.x) + Math.abs(this.y) + Math.abs(this.z) + Math.abs(this.w)
+    );
   }
 
   normalize() {

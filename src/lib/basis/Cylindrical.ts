@@ -5,7 +5,7 @@
  *
  */
 
-import Vector3 from './Vector3';
+import Vector3 from "./Vector3";
 
 export default class Cylindrical {
   constructor(public radius = 1.0, public theta = 0, public y = 0) {}

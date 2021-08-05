@@ -1,34 +1,45 @@
-import Color from './Color';
-import Vector2 from './Vector2';
-import Vector3 from './Vector3';
-import Vector4 from './Vector4';
+import Color from "./Color";
+import Vector2 from "./Vector2";
+import Vector3 from "./Vector3";
+import Vector4 from "./Vector4";
 
 /**
  * @author MikuroXina / https://github.com/MikuroXina
  */
 
-export type TypedArray =|Int8Array|Uint8Array|Int16Array|Uint16Array|Int32Array|
-    Uint32Array|Float32Array;
+export type TypedArray =
+  | Int8Array
+  | Uint8Array
+  | Int16Array
+  | Uint16Array
+  | Int32Array
+  | Uint32Array
+  | Float32Array;
 
 export default class BufferAttribute {
   public readonly count: number;
+
   public readonly isFloat: boolean;
 
   set needsUpdate(v: boolean) {
     if (v === true) {
-      ;
     }
   }
 
   static fromArray<T extends TypedArray>(
-      buffer: new(any: any) => T, array: number[], itemSize: number,
-      normalized = false) {
+    buffer: new (any: any) => T,
+    array: number[],
+    itemSize: number,
+    normalized = false,
+  ) {
     return new BufferAttribute(new buffer(array), itemSize, normalized);
   }
 
   constructor(
-      public readonly array: TypedArray, public readonly itemSize: number,
-      private normalized = false) {
+    public readonly array: TypedArray,
+    public readonly itemSize: number,
+    private normalized = false,
+  ) {
     this.count = array.length / itemSize;
     this.isFloat = array instanceof Float32Array;
   }
@@ -38,8 +49,11 @@ export default class BufferAttribute {
   }
 
   clone() {
-    const newB =
-        new BufferAttribute(this.array, this.itemSize, this.normalized);
+    const newB = new BufferAttribute(
+      this.array,
+      this.itemSize,
+      this.normalized,
+    );
     newB.needsUpdate = this.needsUpdate;
     return newB;
   }
@@ -112,7 +126,7 @@ export default class BufferAttribute {
   }
 
   copyColorsArray(colors: Color[]) {
-    const array = this.array;
+    const { array } = this;
     let offset = 0;
 
     for (let color of colors) {
@@ -129,7 +143,7 @@ export default class BufferAttribute {
   }
 
   copyVector2sArray(vectors: Vector2[]) {
-    const array = this.array;
+    const { array } = this;
     let offset = 0;
 
     for (let vector of vectors) {
@@ -145,7 +159,7 @@ export default class BufferAttribute {
   }
 
   copyVector3sArray(vectors: Vector3[]) {
-    const array = this.array;
+    const { array } = this;
     let offset = 0;
 
     for (let vector of vectors) {
@@ -162,7 +176,7 @@ export default class BufferAttribute {
   }
 
   copyVector4sArray(vectors: Vector4[]) {
-    const array = this.array;
+    const { array } = this;
     let offset = 0;
 
     for (let vector of vectors) {

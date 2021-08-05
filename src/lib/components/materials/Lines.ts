@@ -1,14 +1,16 @@
-import Color from '../../basis/Color';
+import Color from "../../basis/Color";
 
-import Material, {ColorUniform} from './Material';
+import Material, { ColorUniform } from "./Material";
 
 /**
  * @author MikuroXina / https://github.com/MikuroXina
  */
 
 export default class Lines extends Material {
-  uniforms: {color: typeof ColorUniform};
+  uniforms: { color: typeof ColorUniform };
+
   update = [];
+
   shaders = {
     vertexShaderProgram: `
 attribute vec4 position;
@@ -25,11 +27,12 @@ uniform vec4 color;
 void main() {
   gl_FragColor = color;
 }
-`
+`,
   };
+
   constructor(color = new Color(Math.random() * 0xffffff)) {
-    super({color: {initValue: color}});
-    this.uniforms = {color: ColorUniform};
+    super({ color: { initValue: color } });
+    this.uniforms = { color: ColorUniform };
   }
 
   render(gl: WebGL2RenderingContext, drawCall: (mode: number) => void) {

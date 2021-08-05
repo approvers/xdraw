@@ -1,4 +1,4 @@
-import {XStore} from '../../basis/Components';
+import { XStore } from "../../basis/Components";
 
 /**
  * @author MikuroXina / https://github.com/MikuroXina

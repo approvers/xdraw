@@ -4,11 +4,14 @@
 
 export default class Color {
   r: number;
+
   g: number;
+
   b: number;
+
   a: number;
 
-  static rgb(r: number, g: number, b: number, a: number = 1) {
+  static rgb(r: number, g: number, b: number, a = 1) {
     const newC = new Color();
     newC.r = Math.max(Math.min(r, 0xff), 0);
     newC.g = Math.max(Math.min(g, 0xff), 0);
@@ -17,7 +20,7 @@ export default class Color {
     return newC;
   }
 
-  constructor(hex: number = 0) {
+  constructor(hex = 0) {
     hex = Math.floor(hex);
     if (hex >= 0x1000000) {
       this.r = ((hex >> 24) & 0xff) / 0xff;

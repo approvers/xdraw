@@ -2,12 +2,13 @@
  * @author MikuroXina / https://github.com/MikuroXina
  */
 
-import Color from '../../basis/Color';
+import Color from "../../basis/Color";
 
-import Material, {ColorUniform, Vector3Uniform} from './Material';
+import Material, { ColorUniform, Vector3Uniform } from "./Material";
 
 export default class Diffuse extends Material {
-  uniforms = {color: ColorUniform, light: Vector3Uniform};
+  uniforms = { color: ColorUniform,
+light: Vector3Uniform };
 
   shaders = {
     vertexShaderProgram: `
@@ -35,19 +36,22 @@ void main() {
   gl_FragColor = color;
   gl_FragColor.rgb *= opac;
 }
-`
+`,
   };
 
   constructor(color = new Color(Math.random() * 0xffffff)) {
-    super({color: {initValue: color}});
+    super({ color: { initValue: color } });
   }
 
   render(gl: WebGL2RenderingContext, drawCall: (mode: number) => void) {
     gl.enable(gl.CULL_FACE);
-    // gl.enable(gl.DEPTH_TEST);
-    // gl.depthFunc(gl.LEQUAL);
+
+    /*
+     * Gl.enable(gl.DEPTH_TEST);
+     * gl.depthFunc(gl.LEQUAL);
+     */
     drawCall(gl.TRIANGLES);
-    // gl.disable(gl.DEPTH_TEST);
+    // Gl.disable(gl.DEPTH_TEST);
     gl.disable(gl.CULL_FACE);
   }
 }

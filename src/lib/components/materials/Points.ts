@@ -1,6 +1,6 @@
-import {PropsBase} from '../../basis/Component';
+import { PropsBase } from "../../basis/Component";
 
-import Material, {ColorUniform} from './Material';
+import Material, { ColorUniform } from "./Material";
 
 /**
  * @author MikuroXina / https://github.com/MikuroXina
@@ -8,6 +8,7 @@ import Material, {ColorUniform} from './Material';
 
 export default class Points extends Material {
   update = [];
+
   shaders = {
     vertexShaderProgram: `
 attribute vec4 position;
@@ -24,8 +25,9 @@ uniform vec4 color;
 void main() {
   gl_FragColor = color;
 }
-`
+`,
   };
+
   constructor(props: PropsBase) {
     super(props);
     this.uniforms.color = ColorUniform;

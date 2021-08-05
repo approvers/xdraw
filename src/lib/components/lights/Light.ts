@@ -2,13 +2,12 @@
  * @author MikuroXina / https://github.com/MikuroXina
  */
 
-import {Component} from '../../basis/Component';
-import Vector3 from '../../basis/Vector3';
-import Transform from '../Transform';
-
+import { Component } from "../../basis/Component";
+import Vector3 from "../../basis/Vector3";
+import Transform from "../Transform";
 
 export default abstract class Light extends Component {
-  readonly transform = new Transform;
+  readonly transform = new Transform();
 
   translate(amount: Vector3) {
     this.transform.translate(amount);

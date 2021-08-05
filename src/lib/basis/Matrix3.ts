@@ -2,9 +2,9 @@
  * @author MikuroXina / https://github.com/MikuroXina
  */
 
-import BufferAttribute from './BufferAttribute';
-import Matrix4 from './Matrix4';
-import Vector3 from './Vector3';
+import BufferAttribute from "./BufferAttribute";
+import Matrix4 from "./Matrix4";
+import Vector3 from "./Vector3";
 
 export default class Matrix3 {
   constructor(public elements = [1, 0, 0, 0, 1, 0, 0, 0, 1]) {}
@@ -14,21 +14,43 @@ export default class Matrix3 {
   }
 
   static fromUvTransform(
-      tx: number, ty: number, sx: number, sy: number, rotation: number,
-      cx: number, cy: number) {
+    tx: number,
+    ty: number,
+    sx: number,
+    sy: number,
+    rotation: number,
+    cx: number,
+    cy: number,
+  ) {
     const c = Math.cos(rotation);
     const s = Math.sin(rotation);
 
     return new Matrix3([
-      sx * c, sx * s, -sx * (c * cx + s * cy) + cx + tx, -sy * s, sy * c,
-      -sy * (-s * cx + c * cy) + cy + ty, 0, 0, 1
+      sx * c,
+      sx * s,
+      -sx * (c * cx + s * cy) + cx + tx,
+      -sy * s,
+      sy * c,
+      -sy * (-s * cx + c * cy) + cy + ty,
+      0,
+      0,
+      1,
     ]);
   }
 
   static fromMatrix4(m: Matrix4) {
     const me = m.elements;
-    return new Matrix3(
-        [me[0], me[4], me[8], me[1], me[5], me[9], me[2], me[6], me[10]]);
+    return new Matrix3([
+      me[0],
+      me[4],
+      me[8],
+      me[1],
+      me[5],
+      me[9],
+      me[2],
+      me[6],
+      me[10],
+    ]);
   }
 
   static multiplyMatrices(a: Matrix3, b: Matrix3) {
@@ -37,13 +59,25 @@ export default class Matrix3 {
     const be = b.elements;
     const te = newM.elements;
 
-    const a11 = ae[0], a12 = ae[3], a13 = ae[6];
-    const a21 = ae[1], a22 = ae[4], a23 = ae[7];
-    const a31 = ae[2], a32 = ae[5], a33 = ae[8];
+    const a11 = ae[0],
+      a12 = ae[3],
+      a13 = ae[6];
+    const a21 = ae[1],
+      a22 = ae[4],
+      a23 = ae[7];
+    const a31 = ae[2],
+      a32 = ae[5],
+      a33 = ae[8];
 
-    const b11 = be[0], b12 = be[3], b13 = be[6];
-    const b21 = be[1], b22 = be[4], b23 = be[7];
-    const b31 = be[2], b32 = be[5], b33 = be[8];
+    const b11 = be[0],
+      b12 = be[3],
+      b13 = be[6];
+    const b21 = be[1],
+      b22 = be[4],
+      b23 = be[7];
+    const b31 = be[2],
+      b32 = be[5],
+      b33 = be[8];
 
     te[0] = a11 * b11 + a12 * b21 + a13 * b31;
     te[3] = a11 * b12 + a12 * b22 + a13 * b32;
@@ -106,13 +140,25 @@ export default class Matrix3 {
     const ae = this.elements;
     const be = m.elements;
 
-    const a11 = ae[0], a12 = ae[3], a13 = ae[6];
-    const a21 = ae[1], a22 = ae[4], a23 = ae[7];
-    const a31 = ae[2], a32 = ae[5], a33 = ae[8];
+    const a11 = ae[0],
+      a12 = ae[3],
+      a13 = ae[6];
+    const a21 = ae[1],
+      a22 = ae[4],
+      a23 = ae[7];
+    const a31 = ae[2],
+      a32 = ae[5],
+      a33 = ae[8];
 
-    const b11 = be[0], b12 = be[3], b13 = be[6];
-    const b21 = be[1], b22 = be[4], b23 = be[7];
-    const b31 = be[2], b32 = be[5], b33 = be[8];
+    const b11 = be[0],
+      b12 = be[3],
+      b13 = be[6];
+    const b21 = be[1],
+      b22 = be[4],
+      b23 = be[7];
+    const b31 = be[2],
+      b32 = be[5],
+      b33 = be[8];
 
     ae[0] = a11 * b11 + a12 * b21 + a13 * b31;
     ae[3] = a11 * b12 + a12 * b22 + a13 * b32;
@@ -150,19 +196,37 @@ export default class Matrix3 {
   determinant() {
     const te = this.elements;
 
-    const a = te[0], b = te[1], c = te[2], d = te[3], e = te[4], f = te[5],
-          g = te[6], h = te[7], i = te[8];
+    const a = te[0],
+      b = te[1],
+      c = te[2],
+      d = te[3],
+      e = te[4],
+      f = te[5],
+      g = te[6],
+      h = te[7],
+      i = te[8];
 
     return (
-        a * e * i - a * f * h - b * d * i + b * f * g + c * d * h - c * e * g);
+      a * e * i - a * f * h - b * d * i + b * f * g + c * d * h - c * e * g
+    );
   }
 
   inverse(m: Matrix3) {
-    const me = m.elements, te = this.elements, n11 = me[0], n21 = me[1],
-          n31 = me[2], n12 = me[3], n22 = me[4], n32 = me[5], n13 = me[6],
-          n23 = me[7], n33 = me[8], t11 = n33 * n22 - n32 * n23,
-          t12 = n32 * n13 - n33 * n12, t13 = n23 * n12 - n22 * n13,
-          det = this.determinant();
+    const me = m.elements,
+      te = this.elements,
+      n11 = me[0],
+      n21 = me[1],
+      n31 = me[2],
+      n12 = me[3],
+      n22 = me[4],
+      n32 = me[5],
+      n13 = me[6],
+      n23 = me[7],
+      n33 = me[8],
+      t11 = n33 * n22 - n32 * n23,
+      t12 = n32 * n13 - n33 * n12,
+      t13 = n23 * n12 - n22 * n13,
+      det = this.determinant();
 
     if (det === 0) {
       console.error(`ArgumentError: The determinant of ${m} is 0.`);
@@ -223,8 +287,12 @@ export default class Matrix3 {
 
     const te = this.elements;
 
-    const a11 = te[0], a12 = te[3], a13 = te[6];
-    const a21 = te[1], a22 = te[4], a23 = te[7];
+    const a11 = te[0],
+      a12 = te[3],
+      a13 = te[6];
+    const a21 = te[1],
+      a22 = te[4],
+      a23 = te[7];
 
     te[0] = c * a11 + s * a21;
     te[3] = c * a12 + s * a22;
@@ -255,7 +323,9 @@ export default class Matrix3 {
     const me = matrix.elements;
 
     for (let i = 0; i < 9; i++) {
-      if (te[i] !== me[i]) return false;
+      if (te[i] !== me[i]) {
+        return false;
+      }
     }
 
     return true;

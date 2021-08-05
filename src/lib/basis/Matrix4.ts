@@ -12,13 +12,13 @@
  * @author MikuroXina / https://github.com/MikuroXina
  */
 
-import Quaternion from './Quaternion';
-import Vector3 from './Vector3';
+import Quaternion from "./Quaternion";
+import Vector3 from "./Vector3";
 
 export default class Matrix4 {
-  constructor(public elements: number[] = [
-    1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1
-  ]) {}
+  constructor(
+    public elements: number[] = [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1,],
+  ) {}
 
   static zero() {
     return new Matrix4([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
@@ -28,9 +28,11 @@ export default class Matrix4 {
     return new Matrix4([1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]);
   }
 
-  static extractRotation(m: Matrix4) {  // does not support reflection matrices
+  static extractRotation(m: Matrix4) {
+    // Does not support reflection matrices
 
-    const newM = new Matrix4(), te = newM.elements;
+    const newM = new Matrix4(),
+      te = newM.elements;
     const me = m.elements;
 
     const scaleX = 1 / Vector3.fromMatrixColumn(m, 0).length();
@@ -62,7 +64,22 @@ export default class Matrix4 {
 
   static projection(width: number, height: number, depth: number) {
     return new Matrix4([
-      2 / width, 0, 0, 0, 0, 2 / height, 0, 0, 0, 0, 2 / depth, 0, -1, 1, 0, 1
+      2 / width,
+      0,
+      0,
+      0,
+      0,
+      2 / height,
+      0,
+      0,
+      0,
+      0,
+      2 / depth,
+      0,
+      -1,
+      1,
+      0,
+      1,
     ]);
   }
 
@@ -71,8 +88,22 @@ export default class Matrix4 {
     const rangeInv = 1.0 / (near - far);
 
     return new Matrix4([
-      f / aspect, 0, 0, 0, 0, f, 0, 0, 0, 0, (near + far) * rangeInv, -1, 0, 0,
-      near * far * rangeInv * 2, 0
+      f / aspect,
+      0,
+      0,
+      0,
+      0,
+      f,
+      0,
+      0,
+      0,
+      0,
+      (near + far) * rangeInv,
+      -1,
+      0,
+      0,
+      near * far * rangeInv * 2,
+      0,
     ]);
   }
 
@@ -84,7 +115,7 @@ export default class Matrix4 {
     return this.elements.every((e, i) => e === m.elements[i]);
   }
 
-  toArray(offset: number = 0) {
+  toArray(offset = 0) {
     const array: number[] = [];
 
     const te = this.elements;
@@ -117,15 +148,39 @@ export default class Matrix4 {
     const ae = newM.elements;
     const be = m.elements;
 
-    const a11 = ae[0], a12 = ae[4], a13 = ae[8], a14 = ae[12];
-    const a21 = ae[1], a22 = ae[5], a23 = ae[9], a24 = ae[13];
-    const a31 = ae[2], a32 = ae[6], a33 = ae[10], a34 = ae[14];
-    const a41 = ae[3], a42 = ae[7], a43 = ae[11], a44 = ae[15];
+    const a11 = ae[0],
+      a12 = ae[4],
+      a13 = ae[8],
+      a14 = ae[12];
+    const a21 = ae[1],
+      a22 = ae[5],
+      a23 = ae[9],
+      a24 = ae[13];
+    const a31 = ae[2],
+      a32 = ae[6],
+      a33 = ae[10],
+      a34 = ae[14];
+    const a41 = ae[3],
+      a42 = ae[7],
+      a43 = ae[11],
+      a44 = ae[15];
 
-    const b11 = be[0], b12 = be[4], b13 = be[8], b14 = be[12];
-    const b21 = be[1], b22 = be[5], b23 = be[9], b24 = be[13];
-    const b31 = be[2], b32 = be[6], b33 = be[10], b34 = be[14];
-    const b41 = be[3], b42 = be[7], b43 = be[11], b44 = be[15];
+    const b11 = be[0],
+      b12 = be[4],
+      b13 = be[8],
+      b14 = be[12];
+    const b21 = be[1],
+      b22 = be[5],
+      b23 = be[9],
+      b24 = be[13];
+    const b31 = be[2],
+      b32 = be[6],
+      b33 = be[10],
+      b34 = be[14];
+    const b41 = be[3],
+      b42 = be[7],
+      b43 = be[11],
+      b44 = be[15];
 
     ae[0] = a11 * b11 + a12 * b21 + a13 * b31 + a14 * b41;
     ae[4] = a11 * b12 + a12 * b22 + a13 * b32 + a14 * b42;
@@ -162,62 +217,140 @@ export default class Matrix4 {
   inverse() {
     const det = this.determinant();
     if (det === 0) {
-      console.error(`ArgumentError: The determinant is 0.`);
+      console.error("ArgumentError: The determinant is 0.");
       return Matrix4.identity();
     }
     const m = this.elements;
-    const invM = new Matrix4(), inv = invM.elements;
+    const invM = new Matrix4(),
+      inv = invM.elements;
 
-    inv[0] = m[5] * m[10] * m[15] - m[5] * m[11] * m[14] - m[9] * m[6] * m[15] +
-        m[9] * m[7] * m[14] + m[13] * m[6] * m[11] - m[13] * m[7] * m[10];
+    inv[0] =
+      m[5] * m[10] * m[15] -
+      m[5] * m[11] * m[14] -
+      m[9] * m[6] * m[15] +
+      m[9] * m[7] * m[14] +
+      m[13] * m[6] * m[11] -
+      m[13] * m[7] * m[10];
 
-    inv[4] = -m[4] * m[10] * m[15] + m[4] * m[11] * m[14] +
-        m[8] * m[6] * m[15] - m[8] * m[7] * m[14] - m[12] * m[6] * m[11] +
-        m[12] * m[7] * m[10];
+    inv[4] =
+      -m[4] * m[10] * m[15] +
+      m[4] * m[11] * m[14] +
+      m[8] * m[6] * m[15] -
+      m[8] * m[7] * m[14] -
+      m[12] * m[6] * m[11] +
+      m[12] * m[7] * m[10];
 
-    inv[8] = m[4] * m[9] * m[15] - m[4] * m[11] * m[13] - m[8] * m[5] * m[15] +
-        m[8] * m[7] * m[13] + m[12] * m[5] * m[11] - m[12] * m[7] * m[9];
+    inv[8] =
+      m[4] * m[9] * m[15] -
+      m[4] * m[11] * m[13] -
+      m[8] * m[5] * m[15] +
+      m[8] * m[7] * m[13] +
+      m[12] * m[5] * m[11] -
+      m[12] * m[7] * m[9];
 
-    inv[12] = -m[4] * m[9] * m[14] + m[4] * m[10] * m[13] +
-        m[8] * m[5] * m[14] - m[8] * m[6] * m[13] - m[12] * m[5] * m[10] +
-        m[12] * m[6] * m[9];
+    inv[12] =
+      -m[4] * m[9] * m[14] +
+      m[4] * m[10] * m[13] +
+      m[8] * m[5] * m[14] -
+      m[8] * m[6] * m[13] -
+      m[12] * m[5] * m[10] +
+      m[12] * m[6] * m[9];
 
-    inv[1] = -m[1] * m[10] * m[15] + m[1] * m[11] * m[14] +
-        m[9] * m[2] * m[15] - m[9] * m[3] * m[14] - m[13] * m[2] * m[11] +
-        m[13] * m[3] * m[10];
+    inv[1] =
+      -m[1] * m[10] * m[15] +
+      m[1] * m[11] * m[14] +
+      m[9] * m[2] * m[15] -
+      m[9] * m[3] * m[14] -
+      m[13] * m[2] * m[11] +
+      m[13] * m[3] * m[10];
 
-    inv[5] = m[0] * m[10] * m[15] - m[0] * m[11] * m[14] - m[8] * m[2] * m[15] +
-        m[8] * m[3] * m[14] + m[12] * m[2] * m[11] - m[12] * m[3] * m[10];
+    inv[5] =
+      m[0] * m[10] * m[15] -
+      m[0] * m[11] * m[14] -
+      m[8] * m[2] * m[15] +
+      m[8] * m[3] * m[14] +
+      m[12] * m[2] * m[11] -
+      m[12] * m[3] * m[10];
 
-    inv[9] = -m[0] * m[9] * m[15] + m[0] * m[11] * m[13] + m[8] * m[1] * m[15] -
-        m[8] * m[3] * m[13] - m[12] * m[1] * m[11] + m[12] * m[3] * m[9];
+    inv[9] =
+      -m[0] * m[9] * m[15] +
+      m[0] * m[11] * m[13] +
+      m[8] * m[1] * m[15] -
+      m[8] * m[3] * m[13] -
+      m[12] * m[1] * m[11] +
+      m[12] * m[3] * m[9];
 
-    inv[13] = m[0] * m[9] * m[14] - m[0] * m[10] * m[13] - m[8] * m[1] * m[14] +
-        m[8] * m[2] * m[13] + m[12] * m[1] * m[10] - m[12] * m[2] * m[9];
+    inv[13] =
+      m[0] * m[9] * m[14] -
+      m[0] * m[10] * m[13] -
+      m[8] * m[1] * m[14] +
+      m[8] * m[2] * m[13] +
+      m[12] * m[1] * m[10] -
+      m[12] * m[2] * m[9];
 
-    inv[2] = m[1] * m[6] * m[15] - m[1] * m[7] * m[14] - m[5] * m[2] * m[15] +
-        m[5] * m[3] * m[14] + m[13] * m[2] * m[7] - m[13] * m[3] * m[6];
+    inv[2] =
+      m[1] * m[6] * m[15] -
+      m[1] * m[7] * m[14] -
+      m[5] * m[2] * m[15] +
+      m[5] * m[3] * m[14] +
+      m[13] * m[2] * m[7] -
+      m[13] * m[3] * m[6];
 
-    inv[6] = -m[0] * m[6] * m[15] + m[0] * m[7] * m[14] + m[4] * m[2] * m[15] -
-        m[4] * m[3] * m[14] - m[12] * m[2] * m[7] + m[12] * m[3] * m[6];
+    inv[6] =
+      -m[0] * m[6] * m[15] +
+      m[0] * m[7] * m[14] +
+      m[4] * m[2] * m[15] -
+      m[4] * m[3] * m[14] -
+      m[12] * m[2] * m[7] +
+      m[12] * m[3] * m[6];
 
-    inv[10] = m[0] * m[5] * m[15] - m[0] * m[7] * m[13] - m[4] * m[1] * m[15] +
-        m[4] * m[3] * m[13] + m[12] * m[1] * m[7] - m[12] * m[3] * m[5];
+    inv[10] =
+      m[0] * m[5] * m[15] -
+      m[0] * m[7] * m[13] -
+      m[4] * m[1] * m[15] +
+      m[4] * m[3] * m[13] +
+      m[12] * m[1] * m[7] -
+      m[12] * m[3] * m[5];
 
-    inv[14] = -m[0] * m[5] * m[14] + m[0] * m[6] * m[13] + m[4] * m[1] * m[14] -
-        m[4] * m[2] * m[13] - m[12] * m[1] * m[6] + m[12] * m[2] * m[5];
+    inv[14] =
+      -m[0] * m[5] * m[14] +
+      m[0] * m[6] * m[13] +
+      m[4] * m[1] * m[14] -
+      m[4] * m[2] * m[13] -
+      m[12] * m[1] * m[6] +
+      m[12] * m[2] * m[5];
 
-    inv[3] = -m[1] * m[6] * m[11] + m[1] * m[7] * m[10] + m[5] * m[2] * m[11] -
-        m[5] * m[3] * m[10] - m[9] * m[2] * m[7] + m[9] * m[3] * m[6];
+    inv[3] =
+      -m[1] * m[6] * m[11] +
+      m[1] * m[7] * m[10] +
+      m[5] * m[2] * m[11] -
+      m[5] * m[3] * m[10] -
+      m[9] * m[2] * m[7] +
+      m[9] * m[3] * m[6];
 
-    inv[7] = m[0] * m[6] * m[11] - m[0] * m[7] * m[10] - m[4] * m[2] * m[11] +
-        m[4] * m[3] * m[10] + m[8] * m[2] * m[7] - m[8] * m[3] * m[6];
+    inv[7] =
+      m[0] * m[6] * m[11] -
+      m[0] * m[7] * m[10] -
+      m[4] * m[2] * m[11] +
+      m[4] * m[3] * m[10] +
+      m[8] * m[2] * m[7] -
+      m[8] * m[3] * m[6];
 
-    inv[11] = -m[0] * m[5] * m[11] + m[0] * m[7] * m[9] + m[4] * m[1] * m[11] -
-        m[4] * m[3] * m[9] - m[8] * m[1] * m[7] + m[8] * m[3] * m[5];
+    inv[11] =
+      -m[0] * m[5] * m[11] +
+      m[0] * m[7] * m[9] +
+      m[4] * m[1] * m[11] -
+      m[4] * m[3] * m[9] -
+      m[8] * m[1] * m[7] +
+      m[8] * m[3] * m[5];
 
-    inv[15] = m[0] * m[5] * m[10] - m[0] * m[6] * m[9] - m[4] * m[1] * m[10] +
-        m[4] * m[2] * m[9] + m[8] * m[1] * m[6] - m[8] * m[2] * m[5];
+    inv[15] =
+      m[0] * m[5] * m[10] -
+      m[0] * m[6] * m[9] -
+      m[4] * m[1] * m[10] +
+      m[4] * m[2] * m[9] +
+      m[8] * m[1] * m[6] -
+      m[8] * m[2] * m[5];
 
     return invM.multiplyScalar(1 / det);
   }
@@ -228,12 +361,20 @@ export default class Matrix4 {
 
   static compose(position: Vector3, quaternion: Quaternion, scale: Vector3) {
     const te: number[] = [];
-    const {x: sx, y: sy, z: sz} = scale;
-    const {x, y, z, w} = quaternion;
-    const x2 = x + x, y2 = y + y, z2 = z + z;
-    const xx = x * x2, xy = x * y2, xz = x * z2;
-    const yy = y * y2, yz = y * z2, zz = z * z2;
-    const wx = w * x2, wy = w * y2, wz = w * z2;
+    const { x: sx, y: sy, z: sz } = scale;
+    const { x, y, z, w } = quaternion;
+    const x2 = x + x,
+      y2 = y + y,
+      z2 = z + z;
+    const xx = x * x2,
+      xy = x * y2,
+      xz = x * z2;
+    const yy = y * y2,
+      yz = y * z2,
+      zz = z * z2;
+    const wx = w * x2,
+      wy = w * y2,
+      wz = w * z2;
 
     te[0] = (1 - (yy + zz)) * sx;
     te[1] = (xy + wz) * sx;
@@ -258,22 +399,22 @@ export default class Matrix4 {
     return new Matrix4(te);
   }
 
-  decompose(): {position: Vector3, quaternion: Quaternion, scale: Vector3} {
+  decompose(): { position: Vector3; quaternion: Quaternion; scale: Vector3 } {
     const te = this.elements;
     const position = new Vector3();
     const sx = new Vector3(te[0], te[1], te[2]).length();
     const sy = new Vector3(te[4], te[5], te[6]).length();
     const sz = new Vector3(te[8], te[9], te[10]).length();
 
-    // if determine is negative, we need to invert one scale
+    // If determine is negative, we need to invert one scale
     const det = this.determinant();
-    const scale = new Vector3((det < 0) ? -sx : sx, sy, sz);
+    const scale = new Vector3(det < 0 ? -sx : sx, sy, sz);
 
     position.x = te[12];
     position.y = te[13];
     position.z = te[14];
 
-    // scale the rotation part
+    // Scale the rotation part
     const matrix = new Matrix4();
 
     const invSX = 1 / sx;
@@ -294,49 +435,81 @@ export default class Matrix4 {
 
     const quaternion = Quaternion.fromRotationMatrix(matrix);
 
-    return {position, quaternion, scale};
+    return { position,
+quaternion,
+scale };
   }
 
   determinant() {
     const te = this.elements;
 
-    const n11 = te[0], n12 = te[4], n13 = te[8], n14 = te[12];
-    const n21 = te[1], n22 = te[5], n23 = te[9], n24 = te[13];
-    const n31 = te[2], n32 = te[6], n33 = te[10], n34 = te[14];
-    const n41 = te[3], n42 = te[7], n43 = te[11], n44 = te[15];
+    const n11 = te[0],
+      n12 = te[4],
+      n13 = te[8],
+      n14 = te[12];
+    const n21 = te[1],
+      n22 = te[5],
+      n23 = te[9],
+      n24 = te[13];
+    const n31 = te[2],
+      n32 = te[6],
+      n33 = te[10],
+      n34 = te[14];
+    const n41 = te[3],
+      n42 = te[7],
+      n43 = te[11],
+      n44 = te[15];
 
-    // TODO: make this more efficient
-    //( based on
-    // http://www.euclideanspace.com/maths/algebra/matrix/functions/inverse/fourD/index.htm
-    //)
+    /*
+     *  TODO: make this more efficient
+     * ( based on
+     *  http://www.euclideanspace.com/maths/algebra/matrix/functions/inverse/fourD/index.htm
+     * )
+     */
 
     return (
-        n41 *
-            (+n14 * n23 * n32 - n13 * n24 * n32 - n14 * n22 * n33 +
-             n12 * n24 * n33 + n13 * n22 * n34 - n12 * n23 * n34) +
-        n42 *
-            (+n11 * n23 * n34 - n11 * n24 * n33 + n14 * n21 * n33 -
-             n13 * n21 * n34 + n13 * n24 * n31 - n14 * n23 * n31) +
-        n43 *
-            (+n11 * n24 * n32 - n11 * n22 * n34 - n14 * n21 * n32 +
-             n12 * n21 * n34 + n14 * n22 * n31 - n12 * n24 * n31) +
-        n44 *
-            (-n13 * n22 * n31 - n11 * n23 * n32 + n11 * n22 * n33 +
-             n13 * n21 * n32 - n12 * n21 * n33 + n12 * n23 * n31)
-
+      n41 *
+        (Number(n14) * n23 * n32 -
+          n13 * n24 * n32 -
+          n14 * n22 * n33 +
+          n12 * n24 * n33 +
+          n13 * n22 * n34 -
+          n12 * n23 * n34) +
+      n42 *
+        (Number(n11) * n23 * n34 -
+          n11 * n24 * n33 +
+          n14 * n21 * n33 -
+          n13 * n21 * n34 +
+          n13 * n24 * n31 -
+          n14 * n23 * n31) +
+      n43 *
+        (Number(n11) * n24 * n32 -
+          n11 * n22 * n34 -
+          n14 * n21 * n32 +
+          n12 * n21 * n34 +
+          n14 * n22 * n31 -
+          n12 * n24 * n31) +
+      n44 *
+        (-n13 * n22 * n31 -
+          n11 * n23 * n32 +
+          n11 * n22 * n33 +
+          n13 * n21 * n32 -
+          n12 * n21 * n33 +
+          n12 * n23 * n31)
     );
   }
 
   multiplyScalar(x: number) {
-    return new Matrix4(this.elements.map(e => e * x));
+    return new Matrix4(this.elements.map((e) => e * x));
   }
 
   static lookAt(eye: Vector3, target: Vector3, up: Vector3) {
-    const newM = new Matrix4(), te = newM.elements;
+    const newM = new Matrix4(),
+      te = newM.elements;
     const z = eye.sub(target);
 
     if (z.lengthSq() === 0) {
-      // eye and target are in the same position
+      // Eye and target are in the same position
       z.z = 1;
     }
 
@@ -344,7 +517,7 @@ export default class Matrix4 {
     let x = up.cross(z);
 
     if (x.lengthSq() === 0) {
-      // up and z are parallel
+      // Up and z are parallel
       if (Math.abs(up.z) === 1) {
         z.x += 0.0001;
       } else {

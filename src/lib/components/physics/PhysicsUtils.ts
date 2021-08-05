@@ -22,5 +22,5 @@ export interface RaycastIntersection {
 type Collider = (ray: Ray) => RaycastIntersection;
 
 export const Raycast = (colliders: Collider[]) => (ray: Ray) => {
-	colliders.map(e => e(ray));
+  colliders.map((e) => e(ray));
 };

@@ -3,18 +3,19 @@
  */
 
 export interface PropsBase {
-  [key: string]: {initValue: any, clamper?: (newValue: any) => any}
+  [key: string]: { initValue: any; clamper?: (newValue: any) => any };
 }
 
 export class Store {
-  private prop:
-      {[key: string]: {value: any, clamper: (newValue: any) => any}} = {};
+  private prop: {
+    [key: string]: { value: any; clamper: (newValue: any) => any };
+  } = {};
 
   addProp<T>(name: string, initValue: T, clamper?: (newValue: T) => T): T {
     if (this.prop[name] === undefined) {
       this.prop[name] = {
         value: initValue,
-        clamper: (clamper || ((e: T): T => e))
+        clamper: clamper || ((e: T): T => e),
       };
     }
 
@@ -33,6 +34,7 @@ export class Store {
   }
 
   private state: any[] = [];
+
   private currState = 0;
 
   addState<T>(initValue: T): [() => T, (newValue: T) => void] {
@@ -47,7 +49,7 @@ export class Store {
       (): T => this.state[thisState],
       (newValue: T) => {
         this.state[thisState] = newValue;
-      }
+      },
     ];
   }
 
@@ -57,8 +59,9 @@ export class Store {
 
   addEvent(...dependencies: any[]): Promise<void> {
     const currentEvent = this.state[this.currState];
-    const wasChanged = currentEvent !== undefined &&
-        dependencies.some((e, i) => e !== currentEvent[i]);
+    const wasChanged =
+      currentEvent !== undefined &&
+      dependencies.some((e, i) => e !== currentEvent[i]);
 
     const currEvent = this.currState;
     ++this.currState;
@@ -79,6 +82,8 @@ export class Component {
   }
 
   start(): void {}
+
   run(): void {}
+
   unmount(): void {}
 }

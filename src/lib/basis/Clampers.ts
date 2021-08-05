@@ -10,7 +10,9 @@ export function rangeClamper(min: number, max: number) {
 
 export function selectClamper<T>(selects: T[]) {
   return (newValue: T) => {
-    if (selects.some((e) => e === newValue)) return newValue;
+    if (selects.some((e) => e === newValue)) {
+      return newValue;
+    }
     return selects[0];
   };
 }

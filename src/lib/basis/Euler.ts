@@ -1,30 +1,38 @@
-import Matrix4 from './Matrix4';
-import Quaternion from './Quaternion';
+import Matrix4 from "./Matrix4";
+import Quaternion from "./Quaternion";
 
 /**
  * @author MikuroXina / https://github.com/MikuroXina
  */
 
-type RotationOrder = 'XYZ'|'YZX'|'ZXY'|'XZY'|'YXZ'|'ZYX';
+type RotationOrder = "XYZ" | "YZX" | "ZXY" | "XZY" | "YXZ" | "ZYX";
 
 export default class Euler {
   constructor(
-      public readonly x: number = 0, public readonly y: number = 0,
-      public readonly z: number = 0,
-      public readonly order: RotationOrder = 'XYZ') {}
+    public readonly x: number = 0,
+    public readonly y: number = 0,
+    public readonly z: number = 0,
+    public readonly order: RotationOrder = "XYZ",
+  ) {}
 
   static fromRotationMatrix(m: Matrix4, order: RotationOrder) {
     const clamp = (src: number, min: number, max: number) =>
-        Math.max(Math.min(src, max), min);
+      Math.max(Math.min(src, max), min);
 
     const te = m.elements;
-    const m11 = te[0], m12 = te[4], m13 = te[8];
-    const m21 = te[1], m22 = te[5], m23 = te[9];
-    const m31 = te[2], m32 = te[6], m33 = te[10];
+    const m11 = te[0],
+      m12 = te[4],
+      m13 = te[8];
+    const m21 = te[1],
+      m22 = te[5],
+      m23 = te[9];
+    const m31 = te[2],
+      m32 = te[6],
+      m33 = te[10];
 
     let x: number, y: number, z: number;
 
-    if (order === 'XYZ') {
+    if (order === "XYZ") {
       y = Math.asin(clamp(m13, -1, 1));
 
       if (Math.abs(m13) < 0.99999) {
@@ -34,7 +42,7 @@ export default class Euler {
         x = Math.atan2(m32, m22);
         z = 0;
       }
-    } else if (order === 'YXZ') {
+    } else if (order === "YXZ") {
       x = Math.asin(-clamp(m23, -1, 1));
 
       if (Math.abs(m23) < 0.99999) {
@@ -44,7 +52,7 @@ export default class Euler {
         y = Math.atan2(-m31, m11);
         z = 0;
       }
-    } else if (order === 'ZXY') {
+    } else if (order === "ZXY") {
       x = Math.asin(clamp(m32, -1, 1));
 
       if (Math.abs(m32) < 0.99999) {
@@ -54,7 +62,7 @@ export default class Euler {
         y = 0;
         z = Math.atan2(m21, m11);
       }
-    } else if (order === 'ZYX') {
+    } else if (order === "ZYX") {
       y = Math.asin(-clamp(m31, -1, 1));
 
       if (Math.abs(m31) < 0.99999) {
@@ -64,7 +72,7 @@ export default class Euler {
         x = 0;
         z = Math.atan2(-m12, m22);
       }
-    } else if (order === 'YZX') {
+    } else if (order === "YZX") {
       z = Math.asin(clamp(m21, -1, 1));
 
       if (Math.abs(m21) < 0.99999) {
@@ -74,7 +82,7 @@ export default class Euler {
         x = 0;
         y = Math.atan2(m13, m33);
       }
-    } else if (order === 'XZY') {
+    } else if (order === "XZY") {
       z = Math.asin(-clamp(m12, -1, 1));
 
       if (Math.abs(m12) < 0.99999) {
@@ -85,7 +93,7 @@ export default class Euler {
         y = 0;
       }
     } else {
-      throw new Error('ArgumentError: Illegal rotation order on Euler');
+      throw new Error("ArgumentError: Illegal rotation order on Euler");
     }
 
     return new Euler(x, y, z, order);
@@ -106,7 +114,9 @@ export default class Euler {
   }
 
   add(v: Euler) {
-    if (this.order !== v.order) throw new Error('Cannot add different Eulers.');
+    if (this.order !== v.order) {
+      throw new Error("Cannot add different Eulers.");
+    }
     return new Euler(this.x + v.x, this.y + v.y, this.z + v.z, this.order);
   }
 }

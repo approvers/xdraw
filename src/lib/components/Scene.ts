@@ -2,19 +2,18 @@
  * @author MikuroXina / https://github.com/MikuroXina
  */
 
-import Color from '../basis/Color';
+import Color from "../basis/Color";
 
-import Camera from './cameras/Camera';
-import Light from './lights/Light';
-import Model from './Model';
-import MeshRenderer from './renderer/MeshRenderer';
-import Renderer from './renderer/Renderer';
-import WebGLClears from './renderer/webgl/WebGLClears';
-import Transform from './Transform';
-
+import Camera from "./cameras/Camera";
+import Light from "./lights/Light";
+import Model from "./Model";
+import MeshRenderer from "./renderer/MeshRenderer";
+import Renderer from "./renderer/Renderer";
+import WebGLClears from "./renderer/webgl/WebGLClears";
+import Transform from "./Transform";
 
 export class Fog {
-  name = '';
+  name = "";
 
   color: Color;
 
@@ -30,19 +29,31 @@ export class FogExp2 extends Fog {
 }
 
 export class Scene {
-  private _root = new Transform;
+  private _root = new Transform();
 
   private _models: Model[] = [];
+
   private _lights: Light[] = [];
+
   private _cameras: Camera[] = [];
+
   private _others: any[] = [];
+
   private _renderer: Renderer;
 
   constructor(
-      canvas: HTMLCanvasElement, width: number, height: number,
-      backgroundSetter: (clears: WebGLClears) => void = () => {}) {
-    this._renderer =
-        new MeshRenderer(this, canvas, width, height, backgroundSetter);
+    canvas: HTMLCanvasElement,
+    width: number,
+    height: number,
+    backgroundSetter: (clears: WebGLClears) => void = () => {},
+  ) {
+    this._renderer = new MeshRenderer(
+      this,
+      canvas,
+      width,
+      height,
+      backgroundSetter,
+    );
   }
 
   addModel(model: Model) {

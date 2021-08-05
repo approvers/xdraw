@@ -5,20 +5,30 @@
  * @author MikuroXina / https://github.com/MikuroXina
  */
 
-import Box3 from './Box3';
-import Matrix4 from './Matrix4';
-import Plane from './Plane';
-import Sphere from './Sphere';
-import Vector3 from './Vector3';
+import Box3 from "./Box3";
+import Matrix4 from "./Matrix4";
+import Plane from "./Plane";
+import Sphere from "./Sphere";
+import Vector3 from "./Vector3";
 
 export default class Frustum {
   planes: Plane[];
+
   constructor(
-      p0: Plane = new Plane(), p1: Plane = new Plane(), p2: Plane = new Plane(),
-      p3: Plane = new Plane(), p4: Plane = new Plane(),
-      p5: Plane = new Plane()) {
+    p0: Plane = new Plane(),
+    p1: Plane = new Plane(),
+    p2: Plane = new Plane(),
+    p3: Plane = new Plane(),
+    p4: Plane = new Plane(),
+    p5: Plane = new Plane(),
+  ) {
     this.planes = [
-      p0.clone(), p1.clone(), p2.clone(), p3.clone(), p4.clone(), p5.clone()
+      p0.clone(),
+      p1.clone(),
+      p2.clone(),
+      p3.clone(),
+      p4.clone(),
+      p5.clone(),
     ];
   }
 
@@ -27,51 +37,63 @@ export default class Frustum {
   }
 
   setFromMatrix(m: Matrix4) {
-    const planes = this.planes;
+    const { planes } = this;
     const me = m.elements;
-    const me0 = me[0], me1 = me[1], me2 = me[2], me3 = me[3];
-    const me4 = me[4], me5 = me[5], me6 = me[6], me7 = me[7];
-    const me8 = me[8], me9 = me[9], me10 = me[10], me11 = me[11];
-    const me12 = me[12], me13 = me[13], me14 = me[14], me15 = me[15];
+    const me0 = me[0],
+      me1 = me[1],
+      me2 = me[2],
+      me3 = me[3];
+    const me4 = me[4],
+      me5 = me[5],
+      me6 = me[6],
+      me7 = me[7];
+    const me8 = me[8],
+      me9 = me[9],
+      me10 = me[10],
+      me11 = me[11];
+    const me12 = me[12],
+      me13 = me[13],
+      me14 = me[14],
+      me15 = me[15];
 
     planes[0]
-        .setComponents(me3 - me0, me7 - me4, me11 - me8, me15 - me12)
-        .normalize();
+      .setComponents(me3 - me0, me7 - me4, me11 - me8, me15 - me12)
+      .normalize();
     planes[1]
-        .setComponents(me3 + me0, me7 + me4, me11 + me8, me15 + me12)
-        .normalize();
+      .setComponents(me3 + me0, me7 + me4, me11 + me8, me15 + me12)
+      .normalize();
     planes[2]
-        .setComponents(me3 + me1, me7 + me5, me11 + me9, me15 + me13)
-        .normalize();
+      .setComponents(me3 + me1, me7 + me5, me11 + me9, me15 + me13)
+      .normalize();
     planes[3]
-        .setComponents(me3 - me1, me7 - me5, me11 - me9, me15 - me13)
-        .normalize();
+      .setComponents(me3 - me1, me7 - me5, me11 - me9, me15 - me13)
+      .normalize();
     planes[4]
-        .setComponents(me3 - me2, me7 - me6, me11 - me10, me15 - me14)
-        .normalize();
+      .setComponents(me3 - me2, me7 - me6, me11 - me10, me15 - me14)
+      .normalize();
     planes[5]
-        .setComponents(me3 + me2, me7 + me6, me11 + me10, me15 + me14)
-        .normalize();
+      .setComponents(me3 + me2, me7 + me6, me11 + me10, me15 + me14)
+      .normalize();
 
     return this;
   }
 
   /*
-  intersectsMesh(transform: Transform) {
-    const sphere = transform.boundingSphere ||
-  transform.computeBoundingSphere(); sphere.applyMatrix4(transform.matrixWorld);
-    return this.intersectsSphere(sphere);
-  }
-
-  intersectsSprite(sprite: Sprite) {
-    const sphere = new Sphere(new Vector3(0, 0, 0), Math.sqrt(2) / 2);
-    sphere.applyMatrix4(sprite.transform.matrixWorld);
-    return this.intersectsSphere(sphere);
-  }
-  */
+   *IntersectsMesh(transform: Transform) {
+   *  const sphere = transform.boundingSphere ||
+   *transform.computeBoundingSphere(); sphere.applyMatrix4(transform.matrixWorld);
+   *  return this.intersectsSphere(sphere);
+   *}
+   *
+   *intersectsSprite(sprite: Sprite) {
+   *  const sphere = new Sphere(new Vector3(0, 0, 0), Math.sqrt(2) / 2);
+   *  sphere.applyMatrix4(sprite.transform.matrixWorld);
+   *  return this.intersectsSphere(sphere);
+   *}
+   */
 
   intersectsSphere(sphere: Sphere) {
-    const center = sphere.center;
+    const { center } = sphere;
     const negRadius = -sphere.radius;
 
     for (const plane of this.planes) {
@@ -86,10 +108,10 @@ export default class Frustum {
   intersectsBox(box: Box3) {
     const p = new Vector3();
 
-    const planes = this.planes;
+    const { planes } = this;
 
     for (const plane of planes) {
-      // corner at max distance
+      // Corner at max distance
       p.x = plane.normal.x > 0 ? box.max.x : box.min.x;
       p.y = plane.normal.y > 0 ? box.max.y : box.min.y;
       p.z = plane.normal.z > 0 ? box.max.z : box.min.z;

@@ -3,12 +3,15 @@
  * @author MikuroXina / https://github.com/MikuroXina
  */
 
-import {TypedArray} from './BufferAttribute';
+import { TypedArray } from "./BufferAttribute";
 
 export default class InterleavedBufferAttribute {
   public readonly count: number;
+
   public readonly isFloat: boolean;
+
   dynamic = false;
+
   offset = 0;
 
   version = 0;
@@ -19,12 +22,16 @@ export default class InterleavedBufferAttribute {
   }
 
   set needsUpdate(value) {
-    if (value === true) this.version++;
+    if (value === true) {
+      this.version++;
+    }
   }
 
   copyAt(
-      srcOffset: number, attribute: InterleavedBufferAttribute,
-      dstOffset: number) {
+    srcOffset: number,
+    attribute: InterleavedBufferAttribute,
+    dstOffset: number,
+  ) {
     srcOffset *= this.stride;
     dstOffset *= attribute.stride;
 
@@ -41,8 +48,10 @@ export default class InterleavedBufferAttribute {
   }
 
   clone() {
-    const newI =
-        new InterleavedBufferAttribute(this.array.slice(), this.stride);
+    const newI = new InterleavedBufferAttribute(
+      this.array.slice(),
+      this.stride,
+    );
     newI.dynamic = this.dynamic;
     return newI;
   }

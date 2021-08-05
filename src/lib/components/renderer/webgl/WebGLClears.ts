@@ -1,4 +1,4 @@
-import Color from '../../../basis/Color';
+import Color from "../../../basis/Color";
 
 /**
  * @author MikuroXina / https://github.com/MikuroXina

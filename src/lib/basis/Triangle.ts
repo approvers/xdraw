@@ -1,5 +1,5 @@
-import Vector2 from './Vector2';
-import Vector3 from './Vector3';
+import Vector2 from "./Vector2";
+import Vector3 from "./Vector3";
 
 /**
  * @author MikuroXina / https://github.com/MikuroXina
@@ -7,14 +7,17 @@ import Vector3 from './Vector3';
 
 export default class Triangle {
   constructor(
-      public a = new Vector3(), public b = new Vector3(),
-      public c = new Vector3()) {}
+    public a = new Vector3(),
+    public b = new Vector3(),
+    public c = new Vector3(),
+  ) {}
 
   normal() {
-    const calced = this.c.sub(this.b), v0 = this.a.sub(this.b);
+    const calced = this.c.sub(this.b),
+      v0 = this.a.sub(this.b);
     calced.cross(v0);
     const len = calced.lengthSq();
-    if (0 < len) {
+    if (len > 0) {
       return calced.multiplyScalar(1 / Math.sqrt(len));
     }
     return new Vector3();
@@ -33,10 +36,13 @@ export default class Triangle {
 
     const denom = dot00 * dot11 - dot01 * dot01;
 
-    // collinear or singular triangle
+    // Collinear or singular triangle
     if (denom === 0) {
-      // arbitrary location outside of triangle?
-      // not sure if this is the best idea, maybe should be returning undefined
+
+      /*
+       * Arbitrary location outside of triangle?
+       * not sure if this is the best idea, maybe should be returning undefined
+       */
       return new Vector3(-2, -1, -1);
     }
 
@@ -44,12 +50,13 @@ export default class Triangle {
     const u = (dot11 * dot02 - dot01 * dot12) * invDenom;
     const v = (dot00 * dot12 - dot01 * dot02) * invDenom;
 
-    // barycentric coordinates must always sum to 1
+    // Barycentric coordinates must always sum to 1
     return new Vector3(1 - u - v, v, u);
   }
 
   uv(point: Vector3, uv: Vector2[]) {
-    const calced = new Vector2(0, 0), bary = this.barycoord(point);
+    const calced = new Vector2(0, 0),
+      bary = this.barycoord(point);
     calced.add(uv[0].multiplyScalar(bary.x));
     calced.add(uv[1].multiplyScalar(bary.y));
     calced.add(uv[2].multiplyScalar(bary.z));

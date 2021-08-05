@@ -2,18 +2,21 @@
  * @author MikuroXina / https://github.com/MikuroXina
  */
 
-import BufferAttribute from './BufferAttribute';
-import Cylindrical from './Cylindrical';
-import Euler from './Euler';
-import Matrix3 from './Matrix3';
-import Matrix4 from './Matrix4';
-import Quaternion from './Quaternion';
-import Spherical from './Spherical';
-import Transform from './Component';
+import BufferAttribute from "./BufferAttribute";
+import Cylindrical from "./Cylindrical";
+import Euler from "./Euler";
+import Matrix3 from "./Matrix3";
+import Matrix4 from "./Matrix4";
+import Quaternion from "./Quaternion";
+import Spherical from "./Spherical";
+import Transform from "./Component";
 
 export default class Vector3 {
   constructor(
-      public x: number = 0, public y: number = 0, public z: number = 0) {}
+    public x: number = 0,
+    public y: number = 0,
+    public z: number = 0,
+  ) {}
 
   static fromSpherical(s: Spherical) {
     return Vector3.fromSphericalCoords(s.radius, s.phi, s.theta);
@@ -45,8 +48,9 @@ export default class Vector3 {
   }
 
   static fromMatrixScale(m: Matrix4) {
-    const [sx, sy, sz] =
-        [0, 1, 2].map((e) => Vector3.fromMatrixColumn(m, e).length());
+    const [sx, sy, sz] = [0, 1, 2].map((e) =>
+      Vector3.fromMatrixColumn(m, e).length(),
+    );
     return new Vector3(sx, sy, sz);
   }
 
@@ -54,7 +58,7 @@ export default class Vector3 {
     return this.fromArray(m.elements, index * 4);
   }
 
-  static fromArray(array: number[], offset: number = 0) {
+  static fromArray(array: number[], offset = 0) {
     return new Vector3(array[offset], array[offset + 1], array[offset + 2]);
   }
 
@@ -69,14 +73,17 @@ export default class Vector3 {
     this.x = this.y = this.z = s;
     return this;
   }
+
   setX(x: number) {
     this.x = x;
     return this;
   }
+
   setY(y: number) {
     this.y = y;
     return this;
   }
+
   setZ(z: number) {
     this.z = z;
     return this;
@@ -98,6 +105,7 @@ export default class Vector3 {
     }
     return this;
   }
+
   getComponent(index: number) {
     switch (index || -1) {
       case 0:
@@ -122,6 +130,7 @@ export default class Vector3 {
     newV.z += v.z;
     return newV;
   }
+
   addScalar(s: number) {
     const newV = this.clone();
     newV.x += s;
@@ -137,6 +146,7 @@ export default class Vector3 {
     newV.z -= v.z;
     return newV;
   }
+
   subScalar(s: number) {
     const newV = this.clone();
     newV.x -= s;
@@ -152,6 +162,7 @@ export default class Vector3 {
     newV.z *= v.z;
     return newV;
   }
+
   multiplyScalar(s: number) {
     const newV = this.clone();
     newV.x *= s;
@@ -161,7 +172,8 @@ export default class Vector3 {
   }
 
   applyMatrix3(m: Matrix3) {
-    const {x, y, z} = this, e = m.elements;
+    const { x, y, z } = this,
+      e = m.elements;
 
     this.x = e[0] * x + e[3] * y + e[6] * z;
     this.y = e[1] * x + e[4] * y + e[7] * z;
@@ -171,7 +183,8 @@ export default class Vector3 {
   }
 
   applyMatrix4(m: Matrix4) {
-    const {x, y, z} = this, e = m.elements;
+    const { x, y, z } = this,
+      e = m.elements;
 
     const w = 1 / (e[3] * x + e[7] * y + e[11] * z + e[15]);
 
@@ -182,7 +195,6 @@ export default class Vector3 {
     return this;
   }
 
-
   fromEuler(euler: Euler) {
     return this.fromQuaternion(Quaternion.fromEuler(euler));
   }
@@ -192,7 +204,7 @@ export default class Vector3 {
   }
 
   fromQuaternion(q: Quaternion) {
-    const {x, y, z} = this;
+    const { x, y, z } = this;
 
     const ix = q.w * x + q.y * z - q.z * y;
     const iy = q.w * y + q.z * x - q.x * z;
@@ -206,19 +218,21 @@ export default class Vector3 {
     return this;
   }
 
-
   project(t: Transform, projectionMatrix: Matrix4) {
-    return this.applyMatrix4(t.matrixWorld.inverse())
-        .applyMatrix4(projectionMatrix);
+    return this.applyMatrix4(t.matrixWorld.inverse()).applyMatrix4(
+      projectionMatrix,
+    );
   }
 
   unproject(t: Transform, projectionMatrix: Matrix4) {
-    return this.applyMatrix4(new Matrix4().inverse(projectionMatrix))
-        .applyMatrix4(t.matrixWorld);
+    return this.applyMatrix4(
+      new Matrix4().inverse(projectionMatrix),
+    ).applyMatrix4(t.matrixWorld);
   }
 
   affineTransform(m: Matrix4) {
-    const {x, y, z} = this, e = m.elements;
+    const { x, y, z } = this,
+      e = m.elements;
 
     this.x = e[0] * x + e[4] * y + e[8] * z;
     this.y = e[1] * x + e[5] * y + e[9] * z;
@@ -233,6 +247,7 @@ export default class Vector3 {
     this.z /= v.z;
     return this;
   }
+
   divideScalar(s: number) {
     return this.multiplyScalar(1 / s);
   }
@@ -243,6 +258,7 @@ export default class Vector3 {
     this.z = Math.min(this.z, v.z);
     return this;
   }
+
   max(v: Vector3) {
     this.x = Math.max(this.x, v.x);
     this.y = Math.max(this.y, v.y);
@@ -256,13 +272,16 @@ export default class Vector3 {
     this.z = Math.max(min.z, Math.min(max.z, this.z));
     return this;
   }
+
   clampScalar(min: number, max: number) {
     return this.clamp(new Vector3(min, min, min), new Vector3(max, max, max));
   }
+
   clampLength(min: number, max: number) {
     const len = this.length();
-    return this.divideScalar(length || 1)
-        .multiplyScalar(Math.max(min, Math.min(max, len)));
+    return this.divideScalar(length || 1).multiplyScalar(
+      Math.max(min, Math.min(max, len)),
+    );
   }
 
   floor() {
@@ -271,18 +290,21 @@ export default class Vector3 {
     this.z = Math.floor(this.z);
     return this;
   }
+
   ceil() {
     this.x = Math.ceil(this.x);
     this.y = Math.ceil(this.y);
     this.z = Math.ceil(this.z);
     return this;
   }
+
   round() {
     this.x = Math.round(this.x);
     this.y = Math.round(this.y);
     this.z = Math.round(this.z);
     return this;
   }
+
   roundToZero() {
     this.x = this.x < 0 ? Math.ceil(this.x) : Math.floor(this.x);
     this.y = this.y < 0 ? Math.ceil(this.y) : Math.floor(this.y);
@@ -296,11 +318,15 @@ export default class Vector3 {
     this.z = -this.z;
     return this;
   }
+
   dot(v: Vector3) {
     return this.x * v.x + this.y * v.y + this.z * v.z;
   }
+
   cross(v: Vector3) {
-    const {x, y, z} = this, {x: vx, y: vy, z: vz} = v, vec = new Vector3();
+    const { x, y, z } = this,
+      { x: vx, y: vy, z: vz } = v,
+      vec = new Vector3();
     vec.x = y * vz - z * vy;
     vec.y = z * vx - x * vz;
     vec.z = x * vy - y * vx;
@@ -310,6 +336,7 @@ export default class Vector3 {
   lengthSq() {
     return this.x * this.x + this.y * this.y + this.z * this.z;
   }
+
   length() {
     return Math.sqrt(this.lengthSq());
   }
@@ -323,7 +350,7 @@ export default class Vector3 {
   }
 
   posNeg() {
-    const sign = (v) => (v < 0 ? -1 : (v > 0 ? 1 : 0));
+    const sign = (v) => (v < 0 ? -1 : v > 0 ? 1 : 0);
     return new Vector3(sign(this.x), sign(this.y), sign(this.z));
   }
 
@@ -361,18 +388,22 @@ export default class Vector3 {
   }
 
   distanceToSquared(v: Vector3) {
-    const dx = this.x - v.x, dy = this.y - v.y, dz = this.z - v.z;
+    const dx = this.x - v.x,
+      dy = this.y - v.y,
+      dz = this.z - v.z;
     return dx * dx + dy * dy + dz * dz;
   }
 
   manhattanDistanceTo(v: Vector3) {
     return (
-        Math.abs(this.x - v.x) + Math.abs(this.y - v.y) +
-        Math.abs(this.z - v.z));
+      Math.abs(this.x - v.x) + Math.abs(this.y - v.y) + Math.abs(this.z - v.z)
+    );
   }
 
   transformDirection(m: Matrix4) {
-    const x = this.x, y = this.y, z = this.z;
+    const { x } = this,
+      { y } = this,
+      { z } = this;
     const e = m.elements;
 
     this.x = e[0] * x + e[4] * y + e[8] * z;
@@ -386,7 +417,7 @@ export default class Vector3 {
     return v.x === this.x && v.y === this.y;
   }
 
-  toArray(array: number[] = [], offset: number = 0) {
+  toArray(array: number[] = [], offset = 0) {
     array[offset] = this.x;
     array[offset + 1] = this.y;
     array[offset + 2] = this.z;
