@@ -7,12 +7,13 @@ import Matrix4 from "./Matrix4";
 import Vector3 from "./Vector3";
 
 export default class Sphere {
-  constructor(private _center = new Vector3(), public radius = 0) {}
+  constructor(private center = new Vector3(), public radius = 0) {}
 
-  static fromPoints(points: Vector3[], center?: Vector3) {
+  static fromPoints(points: Vector3[], center?: Vector3): Sphere {
     const box = Box3.fromPoints(points);
-    if (center === undefined) {
-      center = box.getCenter();
+    let centerP = center;
+    if (!centerP) {
+      centerP = box.getCenter();
     }
     const radius = points.reduce(
       (acc, cur) => Math.max(acc, (center as Vector3).distanceToSquared(cur)),
@@ -21,19 +22,19 @@ export default class Sphere {
     return new Sphere(center, radius);
   }
 
-  set center(v: Vector3) {
-    this._center = v.clone();
+  setCenter(v: Vector3): void {
+    this.center = v.clone();
   }
 
-  get center() {
-    return this._center;
+  getCenter(): Vector3 {
+    return this.center;
   }
 
-  clone() {
-    return new Sphere(this._center.clone(), this.radius);
+  clone(): Sphere {
+    return new Sphere(this.center.clone(), this.radius);
   }
 
-  applyMatrix4(m: Matrix4) {
+  applyMatrix4(m: Matrix4): Sphere {
     this.center.applyMatrix4(m);
     this.radius *= m.maxScaleOnAxis();
     return this;

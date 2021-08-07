@@ -12,18 +12,18 @@ export default class Triangle {
     public c = new Vector3(),
   ) {}
 
-  normal() {
-    const calced = this.c.sub(this.b),
+  normal(): Vector3 {
+    const sub = this.c.sub(this.b),
       v0 = this.a.sub(this.b);
-    calced.cross(v0);
-    const len = calced.lengthSq();
+    sub.cross(v0);
+    const len = sub.lengthSq();
     if (len > 0) {
-      return calced.multiplyScalar(1 / Math.sqrt(len));
+      return sub.multiplyScalar(1 / Math.sqrt(len));
     }
     return new Vector3();
   }
 
-  barycoord(point: Vector3) {
+  barycoord(point: Vector3): Vector3 {
     const v0 = this.c.sub(this.a);
     const v1 = this.b.sub(this.a);
     const v2 = point.sub(this.a);
@@ -38,7 +38,6 @@ export default class Triangle {
 
     // Collinear or singular triangle
     if (denom === 0) {
-
       /*
        * Arbitrary location outside of triangle?
        * not sure if this is the best idea, maybe should be returning undefined
@@ -54,7 +53,7 @@ export default class Triangle {
     return new Vector3(1 - u - v, v, u);
   }
 
-  uv(point: Vector3, uv: Vector2[]) {
+  uv(point: Vector3, uv: Vector2[]): Vector2 {
     const calced = new Vector2(0, 0),
       bary = this.barycoord(point);
     calced.add(uv[0].multiplyScalar(bary.x));

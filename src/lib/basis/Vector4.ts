@@ -7,6 +7,7 @@ import Matrix4 from "./Matrix4";
 import Quaternion from "./Quaternion";
 
 export default class Vector4 {
+  // eslint-disable-next-line max-params
   constructor(
     public x: number = 0,
     public y: number = 0,
@@ -21,11 +22,11 @@ export default class Vector4 {
    * @memberof Vector4
    */
   static fromQuaternionToAxisAngle(q: Quaternion): Vector4 {
+    // eslint-disable-next-line max-len
     // http://www.euclideanspace.com/maths/geometry/rotations/conversions/quaternionToAngle/index.htm
 
-    let x: number, y: number, z: number, w: number;
-
-    w = 2 * Math.acos(q.w);
+    let x: number, y: number, z: number;
+    const w = 2 * Math.acos(q.w);
 
     const s = Math.sqrt(1 - q.w * q.w);
 
@@ -42,7 +43,8 @@ export default class Vector4 {
     return new Vector4(x, y, z, w);
   }
 
-  static fromRotationMatrixToAxisAngle(m: Matrix4) {
+  static fromRotationMatrixToAxisAngle(m: Matrix4): Vector4 {
+    // eslint-disable-next-line max-len
     // http://www.euclideanspace.com/maths/geometry/rotations/conversions/matrixToAngle/index.htm
 
     /*
@@ -51,9 +53,11 @@ export default class Vector4 {
      */
 
     let angle: number, x: number, y: number, z: number;
-    const epsilon = 0.01, // Margin to allow for rounding errors
-      epsilon2 = 0.1, // Margin to distinguish between 0 and 180 degrees
-      te = m.elements,
+    // Margin to allow for rounding errors
+    const epsilon = 0.01;
+    // Margin to distinguish between 0 and 180 degrees
+    const epsilon2 = 0.1;
+    const te = m.elements,
       m11 = te[0],
       m12 = te[4],
       m13 = te[8],
@@ -69,7 +73,6 @@ export default class Vector4 {
       Math.abs(m13 - m31) < epsilon &&
       Math.abs(m23 - m32) < epsilon
     ) {
-
       /*
        * Singularity found
        * first check for identity matrix which must have +1 for all
@@ -84,7 +87,8 @@ export default class Vector4 {
       ) {
         // This singularity is identity matrix so angle = 0
 
-        return new Vector4(1, 0, 0, 0); // Zero angle, arbitrary axis
+        // Zero angle, arbitrary axis
+        return new Vector4(1, 0, 0, 0);
       }
 
       // Otherwise this singularity is angle = 180
@@ -122,20 +126,18 @@ export default class Vector4 {
           x = xy / y;
           z = yz / y;
         }
-      } else {
+      } else if (zz < epsilon) {
         // M33 is the largest diagonal term so base result on this
-
-        if (zz < epsilon) {
-          x = 0.707106781;
-          y = 0.707106781;
-          z = 0;
-        } else {
-          z = Math.sqrt(zz);
-          x = xz / z;
-          y = yz / z;
-        }
+        x = 0.707106781;
+        y = 0.707106781;
+        z = 0;
+      } else {
+        z = Math.sqrt(zz);
+        x = xz / z;
+        y = yz / z;
       }
-      return new Vector4(x, y, z, angle); // Return 180 deg rotation
+      // Return 180 deg rotation
+      return new Vector4(x, y, z, angle);
     }
 
     /*
@@ -143,11 +145,12 @@ export default class Vector4 {
      * handle normally
      */
 
+    // Used to normalize
     let s = Math.sqrt(
       (m32 - m23) * (m32 - m23) +
         (m13 - m31) * (m13 - m31) +
         (m21 - m12) * (m21 - m12),
-    ); // Used to normalize
+    );
 
     if (Math.abs(s) < 0.001) {
       s = 1;
@@ -167,7 +170,7 @@ export default class Vector4 {
     return new Vector4(x, y, z, angle);
   }
 
-  setScalar(s: number) {
+  setScalar(s: number): Vector4 {
     this.x = s;
     this.y = s;
     this.z = s;
@@ -175,27 +178,27 @@ export default class Vector4 {
     return this;
   }
 
-  setX(x: number) {
+  setX(x: number): Vector4 {
     this.x = x;
     return this;
   }
 
-  setY(y: number) {
+  setY(y: number): Vector4 {
     this.y = y;
     return this;
   }
 
-  setZ(z: number) {
+  setZ(z: number): Vector4 {
     this.z = z;
     return this;
   }
 
-  setW(w: number) {
+  setW(w: number): Vector4 {
     this.w = w;
     return this;
   }
 
-  setComponent(index: number, value: number) {
+  setComponent(index: number, value: number): Vector4 {
     switch (index) {
       case 0:
         this.x = value;
@@ -216,7 +219,7 @@ export default class Vector4 {
     return this;
   }
 
-  getComponent(index: number) {
+  getComponent(index: number): number {
     switch (index) {
       case 0:
         return this.x;
@@ -231,11 +234,11 @@ export default class Vector4 {
     }
   }
 
-  clone() {
+  clone(): Vector4 {
     return new Vector4(this.x, this.y, this.z, this.w);
   }
 
-  add(v: Vector4) {
+  add(v: Vector4): Vector4 {
     this.x += v.x;
     this.y += v.y;
     this.z += v.z;
@@ -243,7 +246,7 @@ export default class Vector4 {
     return this;
   }
 
-  addScalar(s: number) {
+  addScalar(s: number): Vector4 {
     this.x += s;
     this.y += s;
     this.z += s;
@@ -251,7 +254,7 @@ export default class Vector4 {
     return this;
   }
 
-  sub(v: Vector4) {
+  sub(v: Vector4): Vector4 {
     this.x -= v.x;
     this.y -= v.y;
     this.z -= v.z;
@@ -259,7 +262,7 @@ export default class Vector4 {
     return this;
   }
 
-  subScalar(s: number) {
+  subScalar(s: number): Vector4 {
     this.x -= s;
     this.y -= s;
     this.z -= s;
@@ -267,7 +270,7 @@ export default class Vector4 {
     return this;
   }
 
-  multiplyScalar(s: number) {
+  multiplyScalar(s: number): Vector4 {
     this.x *= s;
     this.y *= s;
     this.z *= s;
@@ -275,7 +278,7 @@ export default class Vector4 {
     return this;
   }
 
-  applyMatrix4(m: Matrix4) {
+  applyMatrix4(m: Matrix4): Vector4 {
     const { x, y, z, w } = this;
     const e = m.elements;
 
@@ -286,11 +289,11 @@ export default class Vector4 {
     return this;
   }
 
-  divideScalar(s: number) {
+  divideScalar(s: number): Vector4 {
     return this.multiplyScalar(1 / s);
   }
 
-  min(v: Vector4) {
+  min(v: Vector4): Vector4 {
     this.x = Math.min(this.x, v.x);
     this.y = Math.min(this.y, v.y);
     this.z = Math.min(this.z, v.z);
@@ -298,7 +301,7 @@ export default class Vector4 {
     return this;
   }
 
-  max(v: Vector4) {
+  max(v: Vector4): Vector4 {
     this.x = Math.max(this.x, v.x);
     this.y = Math.max(this.y, v.y);
     this.z = Math.max(this.z, v.z);
@@ -306,8 +309,8 @@ export default class Vector4 {
     return this;
   }
 
-  clamp(min: Vector4, max: Vector4) {
-    // Assumes min < max, componentwise
+  clamp(min: Vector4, max: Vector4): Vector4 {
+    // Assumes min < max, component-wise
 
     this.x = Math.max(min.x, Math.min(max.x, this.x));
     this.y = Math.max(min.y, Math.min(max.y, this.y));
@@ -317,14 +320,14 @@ export default class Vector4 {
     return this;
   }
 
-  clampScalar(minVal: number, maxVal: number) {
+  clampScalar(minVal: number, maxVal: number): Vector4 {
     return this.clamp(
       new Vector4(minVal, minVal, minVal, minVal),
       new Vector4(maxVal, maxVal, maxVal, maxVal),
     );
   }
 
-  clampLength(min: number, max: number) {
+  clampLength(min: number, max: number): Vector4 {
     const length = this.length();
 
     return this.divideScalar(length || 1).multiplyScalar(
@@ -332,7 +335,7 @@ export default class Vector4 {
     );
   }
 
-  floor() {
+  floor(): Vector4 {
     this.x = Math.floor(this.x);
     this.y = Math.floor(this.y);
     this.z = Math.floor(this.z);
@@ -340,7 +343,7 @@ export default class Vector4 {
     return this;
   }
 
-  ceil() {
+  ceil(): Vector4 {
     this.x = Math.ceil(this.x);
     this.y = Math.ceil(this.y);
     this.z = Math.ceil(this.z);
@@ -348,7 +351,7 @@ export default class Vector4 {
     return this;
   }
 
-  round() {
+  round(): Vector4 {
     this.x = Math.round(this.x);
     this.y = Math.round(this.y);
     this.z = Math.round(this.z);
@@ -356,7 +359,7 @@ export default class Vector4 {
     return this;
   }
 
-  roundToZero() {
+  roundToZero(): Vector4 {
     this.x = this.x < 0 ? Math.ceil(this.x) : Math.floor(this.x);
     this.y = this.y < 0 ? Math.ceil(this.y) : Math.floor(this.y);
     this.z = this.z < 0 ? Math.ceil(this.z) : Math.floor(this.z);
@@ -364,7 +367,7 @@ export default class Vector4 {
     return this;
   }
 
-  negate() {
+  negate(): Vector4 {
     this.x = -this.x;
     this.y = -this.y;
     this.z = -this.z;
@@ -372,37 +375,37 @@ export default class Vector4 {
     return this;
   }
 
-  dot(v: Vector4) {
+  dot(v: Vector4): number {
     return this.x * v.x + this.y * v.y + this.z * v.z + this.w * v.w;
   }
 
-  lengthSq() {
+  lengthSq(): number {
     return (
       this.x * this.x + this.y * this.y + this.z * this.z + this.w * this.w
     );
   }
 
-  length() {
+  length(): number {
     return Math.sqrt(
       this.x * this.x + this.y * this.y + this.z * this.z + this.w * this.w,
     );
   }
 
-  manhattanLength() {
+  manhattanLength(): number {
     return (
       Math.abs(this.x) + Math.abs(this.y) + Math.abs(this.z) + Math.abs(this.w)
     );
   }
 
-  normalize() {
+  normalize(): Vector4 {
     return this.divideScalar(this.length() || 1);
   }
 
-  setLength(length: number) {
+  setLength(length: number): Vector4 {
     return this.normalize().multiplyScalar(length);
   }
 
-  lerp(v: Vector4, alpha: number) {
+  lerp(v: Vector4, alpha: number): Vector4 {
     this.x += (v.x - this.x) * alpha;
     this.y += (v.y - this.y) * alpha;
     this.z += (v.z - this.z) * alpha;
@@ -410,11 +413,11 @@ export default class Vector4 {
     return this;
   }
 
-  equals(v: Vector4) {
+  equals(v: Vector4): boolean {
     return v.x === this.x && v.y === this.y && v.z === this.z && v.w === this.w;
   }
 
-  fromArray(array: number[], offset = 0) {
+  fromArray(array: number[], offset = 0): Vector4 {
     this.x = array[offset];
     this.y = array[offset + 1];
     this.z = array[offset + 2];
@@ -422,7 +425,7 @@ export default class Vector4 {
     return this;
   }
 
-  toArray(array: number[] = [], offset = 0) {
+  toArray(array: number[] = [], offset = 0): number[] {
     array[offset] = this.x;
     array[offset + 1] = this.y;
     array[offset + 2] = this.z;
@@ -430,7 +433,7 @@ export default class Vector4 {
     return array;
   }
 
-  fromBufferAttribute(attribute: BufferAttribute, index: number) {
+  fromBufferAttribute(attribute: BufferAttribute, index: number): Vector4 {
     this.x = attribute.getX(index);
     this.y = attribute.getY(index);
     this.z = attribute.getZ(index);

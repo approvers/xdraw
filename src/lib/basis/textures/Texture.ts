@@ -13,9 +13,21 @@ import {
   TextureMapping,
   TextureWrapping,
 } from "../../components/renderer/DrawTypes";
-import { TypedArray } from "../BufferAttribute";
 import Matrix3 from "../Matrix3";
+import { TypedArray } from "../BufferAttribute";
 import Vector2 from "../Vector2";
+
+export interface TextureOptions {
+  readonly mapping: TextureMapping;
+  wrapS: TextureWrapping;
+  wrapT: TextureWrapping;
+  magFilter: TextureFilter;
+  minFilter: TextureFilter;
+  format: TextureFormat;
+  type: TextureDataType;
+  anisotropy: number;
+  encoding: TextureEncoding;
+}
 
 export default class Texture {
   name = "";
@@ -40,8 +52,11 @@ export default class Texture {
 
   flipY = true;
 
-  unpackAlignment: 1 | 2 | 4 | 8 = 4; // Valid values: 1, 2, 4, 8 (see
-  // http://www.khronos.org/opengles/sdk/docs/man/xhtml/glPixelStorei.xml)
+  /*
+   * Valid values: 1, 2, 4, 8 (see
+   * http://www.khronos.org/opengles/sdk/docs/man/xhtml/glPixelStorei.xml)
+   */
+  unpackAlignment: 1 | 2 | 4 | 8 = 4;
 
   /*
    * Values of encoding !== THREE.LinearEncoding only supported on map, envMap
@@ -62,42 +77,30 @@ export default class Texture {
       | HTMLCanvasElement
       | HTMLVideoElement
       | null = null,
-    public readonly mapping: TextureMapping = "UV",
-    private wrapS = TextureWrapping.ClampToEdgeWrapping,
-    private wrapT = TextureWrapping.ClampToEdgeWrapping,
-    private magFilter: TextureFilter = "Linear",
-    private minFilter: TextureFilter = "LinearMipMapLinear",
-    private format: TextureFormat = "RGBA",
-    private type: TextureDataType = "UnsignedByte",
-    private anisotropy = 1,
-    public encoding: TextureEncoding = "Linear",
+    public options: TextureOptions = {
+      mapping: "UV",
+      wrapS: TextureWrapping.ClampToEdgeWrapping,
+      wrapT: TextureWrapping.ClampToEdgeWrapping,
+      magFilter: "Linear",
+      minFilter: "LinearMipMapLinear",
+      format: "RGBA",
+      type: "UnsignedByte",
+      anisotropy: 1,
+      encoding: "Linear",
+    },
   ) {}
 
-  updateMatrix() {
-    this.matrix = Matrix3.fromUvTransform(
-      this.offset.x,
-      this.offset.y,
-      this.repeat.x,
-      this.repeat.y,
-      this.rotation,
-      this.center.x,
-      this.center.y,
-    );
+  updateMatrix(): void {
+    this.matrix = Matrix3.fromUvTransform({
+      offset: this.offset,
+      repeat: this.repeat,
+      rotation: this.rotation,
+      pivot: this.center,
+    });
   }
 
-  clone() {
-    const newT = new Texture(
-      this.image,
-      this.mapping,
-      this.wrapS,
-      this.wrapT,
-      this.magFilter,
-      this.minFilter,
-      this.format,
-      this.type,
-      this.anisotropy,
-      this.encoding,
-    );
+  clone(): Texture {
+    const newT = new Texture(this.image, { ...this.options });
 
     newT.mipmaps = this.mipmaps.slice(0);
     newT.name = this.name;
@@ -118,36 +121,38 @@ export default class Texture {
     return newT;
   }
 
-  toJSON(meta: any) {
-    const isRootObject = meta === undefined || typeof meta === "string";
+  toJSON(meta: { textures: { [key: string]: unknown } }): unknown {
+    const isRootObject = Boolean(meta) || typeof meta === "string";
 
-    if (!isRootObject && meta.textures[this.name] !== undefined) {
+    if (!isRootObject && meta.textures[this.name]) {
       return meta.textures[this.name];
     }
 
     const output = {
-      metadata: { version: 4.5,
-type: "Texture",
-generator: "Texture.toJSON" },
+      metadata: {
+        version: 4.5,
+        type: "Texture",
+        generator: "Texture.toJSON",
+      },
 
       name: this.name,
 
-      mapping: this.mapping,
+      mapping: this.options.mapping,
 
       repeat: [this.repeat.x, this.repeat.y],
       offset: [this.offset.x, this.offset.y],
       center: [this.center.x, this.center.y],
       rotation: this.rotation,
 
-      wrap: [this.wrapS, this.wrapT],
+      wrap: [this.options.wrapS, this.options.wrapT],
 
-      format: this.format,
-      type: this.type,
-      encoding: this.encoding,
+      format: this.options.format,
+      type: this.options.type,
+      encoding: this.options.encoding,
 
-      minFilter: this.minFilter,
-      magFilter: this.magFilter,
-      anisotropy: this.anisotropy,
+      minFilter: this.options.minFilter,
+      magFilter: this.options.magFilter,
+      anisotropy: this.options.anisotropy,
 
       flipY: this.flipY,
 
@@ -162,15 +167,15 @@ generator: "Texture.toJSON" },
     return output;
   }
 
-  transformUv(uv: Vector2) {
-    if (this.mapping !== "UV") {
+  transformUv(uv: Vector2): Vector2 {
+    if (this.options.mapping !== "UV") {
       return uv;
     }
 
     uv.applyMatrix3(this.matrix);
 
     if (uv.x < 0 || uv.x > 1) {
-      switch (this.wrapS) {
+      switch (this.options.wrapS) {
         case TextureWrapping.RepeatWrapping:
           uv.x -= Math.floor(uv.x);
           break;
@@ -186,11 +191,13 @@ generator: "Texture.toJSON" },
             uv.x -= Math.floor(uv.x);
           }
           break;
+        default:
+          break;
       }
     }
 
     if (uv.y < 0 || uv.y > 1) {
-      switch (this.wrapT) {
+      switch (this.options.wrapT) {
         case TextureWrapping.RepeatWrapping:
           uv.y -= Math.floor(uv.y);
           break;
@@ -206,6 +213,8 @@ generator: "Texture.toJSON" },
             uv.y -= Math.floor(uv.y);
           }
           break;
+        default:
+          break;
       }
     }
 
@@ -216,9 +225,9 @@ generator: "Texture.toJSON" },
     return uv;
   }
 
-  set needsUpdate(value: boolean) {
+  setNeedsUpdate(value: boolean): void {
     if (value === true) {
-      this.version++;
+      this.version += 1;
     }
   }
 }
@@ -226,18 +235,9 @@ generator: "Texture.toJSON" },
 export class DataTexture {
   constructor(
     public data: ArrayBuffer | TypedArray,
-    public width: number,
-    public height: number,
-    public format?: TextureFormat,
-    public type?: TextureDataType,
-    public mapping?: TextureMapping,
-    public wrapS?: TextureWrapping,
-    public wrapT?: TextureWrapping,
-    public magFilter?: TextureFilter,
-    public minFilter?: TextureFilter,
-    public anisotropy?: number,
-    public encoding?: TextureEncoding,
+    public size: Vector2,
+    public options: Partial<TextureOptions>,
   ) {}
 
-  texture: Texture;
+  texture: Texture | null = null;
 }

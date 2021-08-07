@@ -7,17 +7,17 @@
  *
  * The polar angle (phi) is measured from the positive y-axis. The positive
  * y-axis is up. The azimuthal angle (theta) is measured from the positive
- * z-axiz.
+ * z-axis.
  */
 
 import Vector3 from "./Vector3";
 
 export default class Spherical {
-  static fromVector3(v: Vector3) {
+  static fromVector3(v: Vector3): Spherical {
     return Spherical.fromCartesianCoords(v.x, v.y, v.z);
   }
 
-  static fromCartesianCoords(x: number, y: number, z: number) {
+  static fromCartesianCoords(x: number, y: number, z: number): Spherical {
     const radius = Math.sqrt(x * x + y * y + z * z);
     if (radius === 0) {
       return new Spherical(0, 0, 0);
@@ -31,12 +31,12 @@ export default class Spherical {
 
   constructor(public radius = 1.0, public phi = 0, public theta = 0) {}
 
-  clone() {
+  clone(): Spherical {
     return new Spherical(this.radius, this.phi, this.theta);
   }
 
   // Restrict phi to be between EPS and PI-EPS
-  makeSafe() {
+  makeSafe(): Spherical {
     const EPS = 0.000001;
     this.phi = Math.max(EPS, Math.min(Math.PI - EPS, this.phi));
     return this;
