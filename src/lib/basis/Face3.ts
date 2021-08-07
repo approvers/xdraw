@@ -1,11 +1,11 @@
-import Color from "./Color";
-import Vector3 from "./Vector3";
+import { Color } from "./Color";
+import { Vector3 } from "./Vector3";
 
 /**
  * @author MikuroXina / https://github.com/MikuroXina
  */
 
-export default class Face3 {
+export class Face3 {
   public vertexNormals: Vector3[] = [];
 
   public vertexColors: Vector3[] = [];

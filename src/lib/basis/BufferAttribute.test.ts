@@ -3,11 +3,11 @@
  * @author MikuroXina / https://github.com/MikuroXina
  */
 
-import BufferAttribute from "./BufferAttribute";
-import Color from "./Color";
-import Vector2 from "./Vector2";
-import Vector3 from "./Vector3";
-import Vector4 from "./Vector4";
+import { BufferAttribute } from "./BufferAttribute";
+import { Color } from "./Color";
+import { Vector2 } from "./Vector2";
+import { Vector3 } from "./Vector3";
+import { Vector4 } from "./Vector4";
 
 test("copyArray", () => {
   const array = new Float32Array([1, 2, 3, 4]);
@@ -21,7 +21,18 @@ test("copyArray", () => {
 test("copyColorsArray", () => {
   const buffer = new BufferAttribute(new Float32Array(6), 3);
 
-  buffer.copyColorsArray([Color.rgb(0, 0.5, 1), Color.rgb(0.25, 1, 0)]);
+  buffer.copyColorsArray([
+    Color.rgb({
+      r: 0,
+      g: 0.5,
+      b: 1,
+    }),
+    Color.rgb({
+      r: 0.25,
+      g: 1,
+      b: 0,
+    }),
+  ]);
 
   expect(buffer.array).toEqual(new Float32Array([0, 0.5, 1, 0.25, 1, 0]));
 });

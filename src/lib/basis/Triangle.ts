@@ -1,11 +1,11 @@
-import Vector2 from "./Vector2";
-import Vector3 from "./Vector3";
+import { Vector2 } from "./Vector2";
+import { Vector3 } from "./Vector3";
 
 /**
  * @author MikuroXina / https://github.com/MikuroXina
  */
 
-export default class Triangle {
+export class Triangle {
   constructor(
     public a = new Vector3(),
     public b = new Vector3(),

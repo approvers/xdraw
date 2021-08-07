@@ -2,9 +2,9 @@
  * @author MikuroXina / https://MikuroXina
  */
 
-import Vector3 from "./Vector3";
+import { Vector3 } from "./Vector3";
 
-export default class Plane {
+export class Plane {
   constructor(private normal = new Vector3(1, 0, 0), public constant = 0) {}
 
   setNormal(v: Vector3): void {

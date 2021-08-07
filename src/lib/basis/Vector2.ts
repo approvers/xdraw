@@ -1,11 +1,11 @@
-import BufferAttribute from "./BufferAttribute";
-import Matrix3 from "./Matrix3";
+import { BufferAttribute } from "./BufferAttribute";
+import { Matrix3 } from "./Matrix3";
 
 /**
  * @author MikuroXina / https://github.com/MikuroXina
  */
 
-export default class Vector2 {
+export class Vector2 {
   constructor(public x: number = 0, public y: number = 0) {}
 
   static fromArray(array: number[], offset = 0): Vector2 {

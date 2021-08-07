@@ -13,9 +13,9 @@ import {
   TextureMapping,
   TextureWrapping,
 } from "../../components/renderer/DrawTypes";
-import Matrix3 from "../Matrix3";
+import { Matrix3 } from "../Matrix3";
 import { TypedArray } from "../BufferAttribute";
-import Vector2 from "../Vector2";
+import { Vector2 } from "../Vector2";
 
 export interface TextureOptions {
   readonly mapping: TextureMapping;
@@ -29,7 +29,7 @@ export interface TextureOptions {
   encoding: TextureEncoding;
 }
 
-export default class Texture {
+export class Texture {
   name = "";
 
   mipmaps = [];

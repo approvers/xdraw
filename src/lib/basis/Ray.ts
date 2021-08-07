@@ -2,13 +2,13 @@
  * @author MikuroXina / https://github.com/MikuroXina
  */
 
-import Box3 from "./Box3";
-import Matrix4 from "./Matrix4";
-import Sphere from "./Sphere";
-import Triangle from "./Triangle";
-import Vector3 from "./Vector3";
+import { Box3 } from "./Box3";
+import { Matrix4 } from "./Matrix4";
+import { Sphere } from "./Sphere";
+import { Triangle } from "./Triangle";
+import { Vector3 } from "./Vector3";
 
-export default class Ray {
+export class Ray {
   constructor(
     public origin = new Vector3(),
     public direction = new Vector3(),
@@ -165,7 +165,7 @@ export default class Ray {
   }
 
   intersectsWithSphere(sphere: Sphere): boolean {
-    return this.distanceSqToPoint(sphere.center) <= sphere.radius ** 2;
+    return this.distanceSqToPoint(sphere.getCenter()) <= sphere.radius ** 2;
   }
 
   intersectsWithTriangle(f: Triangle, cullBackface = false): boolean {

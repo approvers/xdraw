@@ -5,7 +5,7 @@
 
 import { TypedArray } from "./BufferAttribute";
 
-export default class InterleavedBufferAttribute {
+export class InterleavedBufferAttribute {
   public readonly count: number;
 
   public readonly isFloat: boolean;

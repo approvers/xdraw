@@ -10,9 +10,9 @@
  * z-axis.
  */
 
-import Vector3 from "./Vector3";
+import { Vector3 } from "./Vector3";
 
-export default class Spherical {
+export class Spherical {
   static fromVector3(v: Vector3): Spherical {
     return Spherical.fromCartesianCoords(v.x, v.y, v.z);
   }

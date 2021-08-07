@@ -1,6 +1,6 @@
-import Matrix4 from "./Matrix4";
-import Quaternion from "./Quaternion";
-import Vector3 from "./Vector3";
+import { Matrix4 } from "./Matrix4";
+import { Quaternion } from "./Quaternion";
+import { Vector3 } from "./Vector3";
 
 /**
  * @author MikuroXina / https://github.com/MikuroXina
@@ -8,7 +8,7 @@ import Vector3 from "./Vector3";
 
 type RotationOrder = "XYZ" | "YZX" | "ZXY" | "XZY" | "YXZ" | "ZYX";
 
-export default class Euler {
+export class Euler {
   constructor(
     public readonly rotations: Vector3 = new Vector3(),
     public readonly order: RotationOrder = "XYZ",

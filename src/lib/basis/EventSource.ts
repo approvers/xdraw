@@ -2,7 +2,7 @@
  * @author MikuroXina / https://github.com/MikuroXina
  */
 
-export default class EventSource<T> {
+export class EventSource<T> {
   private listeners: ((newValue: T) => void)[] = [];
 
   addEventListener(listener: (newValue: T) => void): void {

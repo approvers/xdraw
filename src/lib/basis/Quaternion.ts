@@ -6,16 +6,16 @@
  * @author MikuroXina / https://github.com/MikuroXina
  */
 
-import Euler from "./Euler";
-import Matrix4 from "./Matrix4";
-import Vector3 from "./Vector3";
+import { Euler } from "./Euler";
+import { Matrix4 } from "./Matrix4";
+import { Vector3 } from "./Vector3";
 
 export interface NumBuffer {
   data: number[];
   offset: number;
 }
 
-export default class Quaternion {
+export class Quaternion {
   public x = 0;
 
   public y = 0;

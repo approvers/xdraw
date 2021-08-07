@@ -5,13 +5,13 @@
  * @author MikuroXina / https://github.com/MikuroXina
  */
 
-import Box3 from "./Box3";
-import Matrix4 from "./Matrix4";
-import Plane from "./Plane";
-import Sphere from "./Sphere";
-import Vector3 from "./Vector3";
+import { Box3 } from "./Box3";
+import { Matrix4 } from "./Matrix4";
+import { Plane } from "./Plane";
+import { Sphere } from "./Sphere";
+import { Vector3 } from "./Vector3";
 
-export default class Frustum {
+export class Frustum {
   constructor(public planes: [Plane, Plane, Plane, Plane, Plane, Plane]) {}
 
   clone(): Frustum {
@@ -23,52 +23,52 @@ export default class Frustum {
     const me = m.elements;
 
     planes[0]
-      .setComponents(
-        me[3] - me[0],
-        me[7] - me[4],
-        me[11] - me[8],
-        me[15] - me[12],
-      )
+      .setComponents({
+        x: me[3] - me[0],
+        y: me[7] - me[4],
+        z: me[11] - me[8],
+        w: me[15] - me[12],
+      })
       .normalize();
     planes[1]
-      .setComponents(
-        me[3] + me[0],
-        me[7] + me[4],
-        me[11] + me[8],
-        me[15] + me[12],
-      )
+      .setComponents({
+        x: me[3] + me[0],
+        y: me[7] + me[4],
+        z: me[11] + me[8],
+        w: me[15] + me[12],
+      })
       .normalize();
     planes[2]
-      .setComponents(
-        me[3] + me[1],
-        me[7] + me[5],
-        me[11] + me[9],
-        me[15] + me[13],
-      )
+      .setComponents({
+        x: me[3] + me[1],
+        y: me[7] + me[5],
+        z: me[11] + me[9],
+        w: me[15] + me[13],
+      })
       .normalize();
     planes[3]
-      .setComponents(
-        me[3] - me[1],
-        me[7] - me[5],
-        me[11] - me[9],
-        me[15] - me[13],
-      )
+      .setComponents({
+        x: me[3] - me[1],
+        y: me[7] - me[5],
+        z: me[11] - me[9],
+        w: me[15] - me[13],
+      })
       .normalize();
     planes[4]
-      .setComponents(
-        me[3] - me[2],
-        me[7] - me[6],
-        me[11] - me[10],
-        me[15] - me[14],
-      )
+      .setComponents({
+        x: me[3] - me[2],
+        y: me[7] - me[6],
+        z: me[11] - me[10],
+        w: me[15] - me[14],
+      })
       .normalize();
     planes[5]
-      .setComponents(
-        me[3] + me[2],
-        me[7] + me[6],
-        me[11] + me[10],
-        me[15] + me[14],
-      )
+      .setComponents({
+        x: me[3] + me[2],
+        y: me[7] + me[6],
+        z: me[11] + me[10],
+        w: me[15] + me[14],
+      })
       .normalize();
 
     return this;
@@ -90,7 +90,7 @@ export default class Frustum {
    */
 
   intersectsSphere(sphere: Sphere): boolean {
-    const { center } = sphere;
+    const center = sphere.getCenter();
     const negRadius = -sphere.radius;
 
     for (const plane of this.planes) {
@@ -109,9 +109,9 @@ export default class Frustum {
 
     for (const plane of planes) {
       // Corner at max distance
-      p.x = plane.normal.x > 0 ? box.max.x : box.min.x;
-      p.y = plane.normal.y > 0 ? box.max.y : box.min.y;
-      p.z = plane.normal.z > 0 ? box.max.z : box.min.z;
+      p.x = plane.getNormal().x > 0 ? box.max.x : box.min.x;
+      p.y = plane.getNormal().y > 0 ? box.max.y : box.min.y;
+      p.z = plane.getNormal().z > 0 ? box.max.z : box.min.z;
 
       if (plane.distanceToPoint(p) < 0) {
         return false;

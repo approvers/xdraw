@@ -2,11 +2,11 @@
  * @author MikuroXina / https://github.com/MikuroXina
  */
 
-import BufferAttribute from "./BufferAttribute";
-import Matrix4 from "./Matrix4";
-import Quaternion from "./Quaternion";
+import { BufferAttribute } from "./BufferAttribute";
+import { Matrix4 } from "./Matrix4";
+import { Quaternion } from "./Quaternion";
 
-export default class Vector4 {
+export class Vector4 {
   // eslint-disable-next-line max-params
   constructor(
     public x: number = 0,

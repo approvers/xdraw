@@ -2,15 +2,15 @@
  * @author MikuroXina / https://github.com/MikuroXina
  */
 
-import BufferAttribute from "./BufferAttribute";
-import Cylindrical from "./Cylindrical";
-import Euler from "./Euler";
-import Matrix3 from "./Matrix3";
-import Matrix4 from "./Matrix4";
-import Quaternion from "./Quaternion";
-import Spherical from "./Spherical";
+import { BufferAttribute } from "./BufferAttribute";
+import { Cylindrical } from "./Cylindrical";
+import { Euler } from "./Euler";
+import { Matrix3 } from "./Matrix3";
+import { Matrix4 } from "./Matrix4";
+import { Quaternion } from "./Quaternion";
+import { Spherical } from "./Spherical";
 
-export default class Vector3 {
+export class Vector3 {
   constructor(
     public x: number = 0,
     public y: number = 0,

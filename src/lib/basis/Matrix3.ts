@@ -2,12 +2,12 @@
  * @author MikuroXina / https://github.com/MikuroXina
  */
 
-import BufferAttribute from "./BufferAttribute";
-import Matrix4 from "./Matrix4";
-import Vector2 from "./Vector2";
-import Vector3 from "./Vector3";
+import { BufferAttribute } from "./BufferAttribute";
+import { Matrix4 } from "./Matrix4";
+import { Vector2 } from "./Vector2";
+import { Vector3 } from "./Vector3";
 
-export default class Matrix3 {
+export class Matrix3 {
   constructor(public elements = [1, 0, 0, 0, 1, 0, 0, 0, 1]) {}
 
   static identity(): Matrix3 {

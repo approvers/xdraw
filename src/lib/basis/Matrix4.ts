@@ -12,10 +12,10 @@
  * @author MikuroXina / https://github.com/MikuroXina
  */
 
-import Quaternion from "./Quaternion";
-import Vector3 from "./Vector3";
+import { Quaternion } from "./Quaternion";
+import { Vector3 } from "./Vector3";
 
-export default class Matrix4 {
+export class Matrix4 {
   constructor(
     public elements: number[] = [
       1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1,

@@ -1,7 +1,7 @@
-import Color from "./Color";
-import Vector2 from "./Vector2";
-import Vector3 from "./Vector3";
-import Vector4 from "./Vector4";
+import { Color } from "./Color";
+import { Vector2 } from "./Vector2";
+import { Vector3 } from "./Vector3";
+import { Vector4 } from "./Vector4";
 
 /**
  * @author MikuroXina / https://github.com/MikuroXina
@@ -16,7 +16,7 @@ export type TypedArray =
   | Uint32Array
   | Float32Array;
 
-export default class BufferAttribute {
+export class BufferAttribute {
   public readonly count: number;
 
   public readonly isFloat: boolean;

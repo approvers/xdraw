@@ -2,11 +2,11 @@
  * @author MikuroXina / https://MikuroXina
  */
 
-import Box3 from "./Box3";
-import Matrix4 from "./Matrix4";
-import Vector3 from "./Vector3";
+import { Box3 } from "./Box3";
+import { Matrix4 } from "./Matrix4";
+import { Vector3 } from "./Vector3";
 
-export default class Sphere {
+export class Sphere {
   constructor(private center = new Vector3(), public radius = 0) {}
 
   static fromPoints(points: Vector3[], center?: Vector3): Sphere {

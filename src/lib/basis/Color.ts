@@ -2,7 +2,7 @@
  * @author MikuroXina / https://github.com/MikuroXina
  */
 
-export default class Color {
+export class Color {
   r: number;
 
   g: number;

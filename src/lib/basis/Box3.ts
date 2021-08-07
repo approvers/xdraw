@@ -2,9 +2,9 @@
  * @author RkEclait / https://MikuroXina
  */
 
-import Vector3 from "./Vector3";
+import { Vector3 } from "./Vector3";
 
-export default class Box3 {
+export class Box3 {
   constructor(
     public min = new Vector3(
       Number(Infinity),
