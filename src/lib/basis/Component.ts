@@ -7,16 +7,26 @@ export interface Prop<T> {
   clamper?: (newValue: T) => T;
 }
 
-export class Store {
-  private props: Record<string, Prop<unknown>> = {};
+interface PropRecord<T> {
+  config: Prop<T>;
+  value: T;
+}
 
-  addProp<T>(name: string, initValue: T, clamper?: (newValue: T) => T): void {
+export class Store {
+  private props: Record<string, PropRecord<unknown>> = {};
+
+  addProp<T>(name: string, initValue: T, clamper?: (newValue: T) => T): T {
     if (!this.props[name]) {
       this.props[name] = {
-        initValue: initValue as unknown,
-        clamper: (clamper as (newValue: unknown) => unknown) || ((e) => e),
+        value: initValue as unknown,
+        config: {
+          initValue: initValue as unknown,
+          clamper: (clamper as (newValue: unknown) => unknown) || ((e) => e),
+        },
       };
     }
+
+    return this.props[name].value as T;
   }
 
   private state: unknown[] = [];
