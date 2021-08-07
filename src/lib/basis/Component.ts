@@ -62,4 +62,16 @@ export class Store {
 
 export class Component {
   readonly store = new Store();
+
+  start(): void {
+    // Do nothing
+  }
+
+  run(): void {
+    // Do nothing
+  }
+
+  unmount(): void {
+    // Do nothing
+  }
 }
