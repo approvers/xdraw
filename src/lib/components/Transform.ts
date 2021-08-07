@@ -3,16 +3,16 @@
  */
 
 import { Component } from "../basis/Component";
-import Euler from "../basis/Euler";
-import EventSource from "../basis/EventSource";
-import Matrix4 from "../basis/Matrix4";
-import Quaternion from "../basis/Quaternion";
-import Sphere from "../basis/Sphere";
-import Vector3 from "../basis/Vector3";
+import { Euler } from "../basis/Euler";
+import { EventSource } from "../basis/EventSource";
+import { Matrix4 } from "../basis/Matrix4";
+import { Quaternion } from "../basis/Quaternion";
+import { Sphere } from "../basis/Sphere";
+import { Vector3 } from "../basis/Vector3";
 
 let globalId = 0;
 
-export default class Transform extends Component {
+export class Transform extends Component {
   readonly id: number;
 
   name: string;
@@ -21,12 +21,11 @@ export default class Transform extends Component {
 
   children: Transform[] = [];
 
-  get root() {
-    let root: Transform = this;
-    while (root.parent) {
-      root = root.parent;
+  get root(): Transform {
+    if (this.parent) {
+      return this.parent.root;
     }
-    return root;
+    return this;
   }
 
   position = new Vector3();
@@ -37,7 +36,7 @@ export default class Transform extends Component {
 
   visible = true;
 
-  recieveRaycast = true;
+  receiveRaycast = true;
 
   static = false;
 
@@ -65,7 +64,7 @@ export default class Transform extends Component {
 
   castShadow = true;
 
-  recieveShadow = true;
+  receiveShadow = true;
 
   // Lazy boundings
   boundingSphere: Sphere | null = null;
@@ -79,18 +78,18 @@ export default class Transform extends Component {
   readonly didUpdateMatrix = new EventSource<Transform>();
 
   constructor() {
-    super({});
-
-    this.id = globalId++;
+    super();
+    this.id = globalId;
+    globalId += 1;
     this.name = `${this.id}`;
   }
 
-  add(newChild: Transform) {
+  add(newChild: Transform): void {
     this.children.push(newChild);
     newChild.parent = this;
   }
 
-  update() {
+  update(): void {
     this.traverse(
       (t) => {
         t.updateMatrix();
@@ -101,37 +100,37 @@ export default class Transform extends Component {
     );
   }
 
-  static newScene() {
+  static newScene(): Transform {
     const root = new Transform();
     root.name += "SceneRoot";
     return root;
   }
 
-  static get up() {
+  static get up(): Vector3 {
     return new Vector3(0, 1, 0);
   }
 
-  static get down() {
+  static get down(): Vector3 {
     return new Vector3(0, -1, 0);
   }
 
-  static get back() {
+  static get back(): Vector3 {
     return new Vector3(0, 0, -1);
   }
 
-  static get front() {
+  static get front(): Vector3 {
     return new Vector3(0, 0, 1);
   }
 
-  static get left() {
+  static get left(): Vector3 {
     return new Vector3(-1, 0, 0);
   }
 
-  static get right() {
+  static get right(): Vector3 {
     return new Vector3(1, 0, 0);
   }
 
-  clone() {
+  clone(): Component {
     const newT = new Transform();
     newT.name = `${this.name}(Clone)`;
     newT.parent = this.parent;
@@ -140,7 +139,7 @@ export default class Transform extends Component {
     newT.quaternion = this.quaternion.clone();
     newT.scale = this.scale.clone();
     newT.visible = this.visible;
-    newT.recieveRaycast = this.recieveRaycast;
+    newT.receiveRaycast = this.receiveRaycast;
 
     newT.matrix = this.matrix.clone();
     newT.matrixWorld = this.matrixWorld.clone();
@@ -148,13 +147,13 @@ export default class Transform extends Component {
     newT.renderOrder = this.renderOrder;
 
     newT.castShadow = this.castShadow;
-    newT.recieveShadow = this.recieveShadow;
+    newT.receiveShadow = this.receiveShadow;
 
     newT.boundingSphere = this.boundingSphere;
     return newT;
   }
 
-  computeBoundingSphere(vertices: Vector3[]) {
+  computeBoundingSphere(vertices: Vector3[]): Sphere {
     return (this.boundingSphere = Sphere.fromPoints(vertices));
   }
 
@@ -177,16 +176,15 @@ export default class Transform extends Component {
     }
   }
 
-  translate(amount: Vector3) {
+  translate(amount: Vector3): void {
     this.position = this.position.add(amount);
   }
 
-  rotate(amount: Euler) {
+  rotate(amount: Euler): void {
     this.quaternion = Quaternion.fromEuler(amount).multiply(this.quaternion);
   }
 
-  lookAt(target: Vector3) {
-
+  lookAt(target: Vector3): void {
     /*
      * This method does not support objects having
      * Non-uniformly-scaled parent(s)
@@ -206,7 +204,7 @@ export default class Transform extends Component {
     }
   }
 
-  applyProjection(matrix: Matrix4) {
+  applyProjection(matrix: Matrix4): void {
     this.matrixWorldProjection = matrix.multiply(this.matrixWorld);
   }
 
@@ -233,7 +231,7 @@ export default class Transform extends Component {
   traverse(
     capture?: (transform: Transform) => void,
     bubble?: (transform: Transform) => void,
-  ) {
+  ): void {
     const traversed: Transform[] = [];
     this.traverseRecursive(traversed, capture, bubble);
   }
