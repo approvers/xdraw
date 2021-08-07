@@ -8,22 +8,21 @@
 
 import { rangeClamper, selectClamper } from "../../basis/Clampers";
 import { Component } from "../../basis/Component";
-import Matrix4 from "../../basis/Matrix4";
-import Vector3 from "../../basis/Vector3";
-import Transform from "../Transform";
+import { Matrix4 } from "../../basis/Matrix4";
+import { Transform } from "../Transform";
+import { Vector3 } from "../../basis/Vector3";
 
-export default class Camera extends Component {
+export class Camera extends Component {
   public readonly transform = new Transform();
 
   constructor(mode: "Perspective" | "Orthographic" = "Perspective", fov = 45) {
-    super({
-      Mode: {
-        initValue: mode,
-        clamper: selectClamper(["Perspective", "Orthographic"]),
-      },
-      "Field of View": { initValue: fov, clamper: rangeClamper(0, 180) },
-      "Aspect Ratio": { initValue: 1, clamper: rangeClamper(0, 1) },
-    });
+    super();
+    this.store.addProp(
+      "Mode",
+      mode,
+      selectClamper(["Perspective", "Orthographic"]),
+    );
+    this.store.addProp("Field of View", fov, rangeClamper(0, 180));
   }
 
   /*
@@ -37,7 +36,7 @@ export default class Camera extends Component {
    *}
    */
 
-  run() {
+  override run(): void {
     const mode = this.store.addProp<"Perspective" | "Orthographic">(
       "Mode",
       "Perspective",
@@ -47,7 +46,7 @@ export default class Camera extends Component {
     const near = this.store.addProp("Near", 0.01);
     const far = this.store.addProp("Far", 2000);
     const focus = this.store.addProp("Focus", 10);
-    const aspect = this.store.addProp("Asoect Ratio", 1);
+    const aspect = this.store.addProp("Aspect Ratio", 1);
     const filmGauge = this.store.addProp("Film Gauge", 35);
     const filmOffset = this.store.addProp("Field Offset", 0);
 
@@ -61,9 +60,12 @@ export default class Camera extends Component {
       return;
     }
 
-    const fudge = Matrix4.perspective(fov, aspect, near, far).multiply(
-      this.transform.localMatrix.inverse(),
-    );
+    const fudge = Matrix4.perspective({
+      fov,
+      aspect,
+      near,
+      far,
+    }).multiply(this.transform.localMatrix.inverse());
     this.transform.root.traverse((t) => {
       if (t.id === this.transform.id) {
         return;
