@@ -10,23 +10,19 @@ export default class Face3 {
 
   public vertexColors: Vector3[] = [];
 
-  constructor(
-    public a: number,
-    public b: number,
-    public c: number,
-    public normal = new Vector3(),
-    public color = new Color(0),
-    public materialIndex = 0,
-  ) {}
+  public normal = new Vector3();
 
-  clone() {
-    return new Face3(
-      this.a,
-      this.b,
-      this.c,
-      this.normal.clone(),
-      this.color.clone(),
-      this.materialIndex,
-    );
+  public color = new Color(0);
+
+  public materialIndex = 0;
+
+  constructor(public coefficients: { a: number; b: number; c: number }) {}
+
+  clone(): Face3 {
+    const cloned = new Face3({ ...this.coefficients });
+    cloned.normal = this.normal.clone();
+    cloned.color = this.color.clone();
+    cloned.materialIndex = this.materialIndex;
+    return cloned;
   }
 }

@@ -10,16 +10,25 @@ import Euler from "./Euler";
 import Matrix4 from "./Matrix4";
 import Vector3 from "./Vector3";
 
-export default class Quaternion {
-  constructor(
-    public x: number = 0,
-    public y: number = 0,
-    public z: number = 0,
-    public w: number = 1,
-  ) {}
+export interface NumBuffer {
+  data: number[];
+  offset: number;
+}
 
-  static fromEuler(euler: Euler) {
-    const { x, y, z, order } = euler,
+export default class Quaternion {
+  public x = 0;
+
+  public y = 0;
+
+  public z = 0;
+
+  public w = 1;
+
+  static fromEuler(euler: Euler): Quaternion {
+    const {
+        rotations: { x, y, z },
+        order,
+      } = euler,
       newQ = new Quaternion();
     const c1 = Math.cos(x / 2);
     const c2 = Math.cos(y / 2);
@@ -73,7 +82,7 @@ export default class Quaternion {
     return newQ;
   }
 
-  static fromAxisAngle(axis: Vector3, angle: number) {
+  static fromAxisAngle(axis: Vector3, angle: number): Quaternion {
     const halfAngle = angle / 2,
       s = Math.sin(halfAngle),
       newQ = new Quaternion();
@@ -86,7 +95,7 @@ export default class Quaternion {
     return newQ;
   }
 
-  static fromRotationMatrix(m: Matrix4) {
+  static fromRotationMatrix(m: Matrix4): Quaternion {
     const te = m.elements,
       m11 = te[0],
       m12 = te[4],
@@ -134,7 +143,7 @@ export default class Quaternion {
     return newQ;
   }
 
-  static fromUnitVectors(from: Vector3, to: Vector3) {
+  static fromUnitVectors(from: Vector3, to: Vector3): Quaternion {
     let v = new Vector3(),
       r = from.dot(to) + 1;
     if (r < 0.000001) {
@@ -147,16 +156,23 @@ export default class Quaternion {
     } else {
       v = from.cross(to);
     }
-    return new Quaternion(v.x, v.y, v.z, r);
+    const q = new Quaternion();
+    q.x = v.x;
+    q.y = v.y;
+    q.z = v.z;
+    q.w = r;
+    return q;
   }
 
-  static slerp(qa: Quaternion, qb: Quaternion, t: number) {
-    if (t === 0) {
-      return qa.clone();
+  static slerp(a: Quaternion, b: Quaternion, t: number): Quaternion {
+    if (t <= 0) {
+      return a.clone();
     }
-    if (t === 1) {
-      return qb.clone();
+    if (t >= 1) {
+      return b.clone();
     }
+    let qa = a;
+    const qb = b;
     const { x, y, z, w } = qa;
     let cosHalfTheta = qa.dot(qb);
 
@@ -199,14 +215,13 @@ export default class Quaternion {
   }
 
   static slerpFlat(
-    dst: number[],
-    dstOffset: number,
-    src0: number[],
-    srcOffset0: number,
-    src1: number[],
-    srcOffset1: number,
-    t: number,
-  ) {
+    { data: dst, offset: dstOffset }: NumBuffer,
+    [{ data: src0, offset: srcOffset0 }, { data: src1, offset: srcOffset1 }]: [
+      NumBuffer,
+      NumBuffer,
+    ],
+    time: number,
+  ): void {
     // Fuzz-free and array-based Quaternion SLERP operation
     let x0 = src0[srcOffset0 + 0],
       y0 = src0[srcOffset0 + 1],
@@ -216,10 +231,11 @@ export default class Quaternion {
       y1 = src1[srcOffset1 + 1],
       z1 = src1[srcOffset1 + 2],
       w1 = src1[srcOffset1 + 3];
+    let t = time;
 
     if (w0 !== w1 || x0 !== x1 || y0 !== y1 || z0 !== z1) {
-      let s = 1 - t,
-        cos = x0 * x1 + y0 * y1 + z0 * z1 + w0 * w1,
+      let s = 1 - t;
+      const cos = x0 * x1 + y0 * y1 + z0 * z1 + w0 * w1,
         dir = cos >= 0 ? 1 : -1,
         sqrSin = 1 - cos * cos;
 
@@ -256,29 +272,39 @@ export default class Quaternion {
     dst[dstOffset + 3] = w0;
   }
 
-  static fromArray(array: number[], offset = 0) {
-    const x = array[offset];
-    const y = array[offset + 1];
-    const z = array[offset + 2];
-    const w = array[offset + 3];
-    return new Quaternion(x, y, z, w);
+  static fromArray(array: number[], offset = 0): Quaternion {
+    const q = new Quaternion();
+    q.x = array[offset];
+    q.y = array[offset + 1];
+    q.z = array[offset + 2];
+    q.w = array[offset + 3];
+    return q;
   }
 
-  clone() {
-    return new Quaternion(this.x, this.y, this.z, this.w);
+  clone(): Quaternion {
+    const q = new Quaternion();
+    q.x = this.x;
+    q.y = this.y;
+    q.z = this.z;
+    q.w = this.w;
+    return q;
   }
 
-  angleTo(q: Quaternion) {
+  angleTo(q: Quaternion): number {
     return 2 * Math.acos(Math.abs(Math.min(Math.max(this.dot(q), -1), 1)));
   }
 
-  rotateTowards(q: Quaternion, step: number) {
-    const oneAngle = step / this.angleTo(q),
-      works: Promise<Quaternion>[] = [];
+  rotateTowards(q: Quaternion, step: number): Promise<Quaternion>[] {
+    const oneAngle = step / this.angleTo(q);
     if (oneAngle === 0 || Number.isFinite(oneAngle)) {
-      return [new Promise((resolve) => resolve(this))];
+      return [
+        new Promise((resolve) => {
+          resolve(this);
+        }),
+      ];
     }
-    for (let i = 0; i < step; ++i) {
+    const works: Promise<Quaternion>[] = [];
+    for (let i = 0; i < step; i += 1) {
       works.push(
         new Promise((resolve) => {
           resolve(Quaternion.slerp(this, q, Math.min(1, i * oneAngle)));
@@ -288,11 +314,11 @@ export default class Quaternion {
     return works;
   }
 
-  inverse() {
+  inverse(): Quaternion {
     return this.conjugate();
   }
 
-  conjugate() {
+  conjugate(): Quaternion {
     const newQ = this.clone();
     newQ.x *= -1;
     newQ.y *= -1;
@@ -300,22 +326,22 @@ export default class Quaternion {
     return newQ;
   }
 
-  dot(v: Quaternion) {
+  dot(v: Quaternion): number {
     const newQ = this.clone();
     return newQ.x * v.x + newQ.y * v.y + newQ.z * v.z + newQ.w * v.w;
   }
 
-  lengthSq() {
+  lengthSq(): number {
     return (
       this.x * this.x + this.y * this.y + this.z * this.z + this.w * this.w
     );
   }
 
-  length() {
+  length(): number {
     return Math.sqrt(this.lengthSq());
   }
 
-  normalize() {
+  normalize(): Quaternion {
     let l = this.length();
     const newQ = this.clone();
 
@@ -334,7 +360,7 @@ export default class Quaternion {
     return newQ;
   }
 
-  multiplyScalar(a: number) {
+  multiplyScalar(a: number): Quaternion {
     const newQ = this.clone();
     newQ.x *= a;
     newQ.y *= a;
@@ -343,7 +369,7 @@ export default class Quaternion {
     return newQ;
   }
 
-  multiply(q: Quaternion) {
+  multiply(q: Quaternion): Quaternion {
     const newQ = this.clone();
     const { x: qax, y: qay, z: qaz, w: qaw } = newQ;
     const { x: qbx, y: qby, z: qbz, w: qbw } = q;
@@ -356,15 +382,15 @@ export default class Quaternion {
     return newQ;
   }
 
-  premultiply(q: Quaternion) {
+  premultiply(q: Quaternion): Quaternion {
     return q.multiply(this);
   }
 
-  equals(q: Quaternion) {
+  equals(q: Quaternion): boolean {
     return this.x === q.x && this.y === q.y && this.z === q.z && this.w === q.w;
   }
 
-  toArray(array: number[] = [], offset = 0) {
+  toArray(array: number[] = [], offset = 0): number[] {
     array[offset] = this.x;
     array[offset + 1] = this.y;
     array[offset + 2] = this.z;

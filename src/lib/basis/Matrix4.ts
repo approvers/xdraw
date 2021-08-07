@@ -17,18 +17,20 @@ import Vector3 from "./Vector3";
 
 export default class Matrix4 {
   constructor(
-    public elements: number[] = [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1,],
+    public elements: number[] = [
+      1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1,
+    ],
   ) {}
 
-  static zero() {
+  static zero(): Matrix4 {
     return new Matrix4([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
   }
 
-  static identity() {
+  static identity(): Matrix4 {
     return new Matrix4([1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]);
   }
 
-  static extractRotation(m: Matrix4) {
+  static extractRotation(m: Matrix4): Matrix4 {
     // Does not support reflection matrices
 
     const newM = new Matrix4(),
@@ -62,7 +64,7 @@ export default class Matrix4 {
     return newM;
   }
 
-  static projection(width: number, height: number, depth: number) {
+  static projection(width: number, height: number, depth: number): Matrix4 {
     return new Matrix4([
       2 / width,
       0,
@@ -83,7 +85,17 @@ export default class Matrix4 {
     ]);
   }
 
-  static perspective(fov: number, aspect: number, near: number, far: number) {
+  static perspective({
+    fov,
+    aspect,
+    near,
+    far,
+  }: {
+    fov: number;
+    aspect: number;
+    near: number;
+    far: number;
+  }): Matrix4 {
     const f = Math.tan(0.5 * (Math.PI - fov));
     const rangeInv = 1.0 / (near - far);
 
@@ -107,15 +119,15 @@ export default class Matrix4 {
     ]);
   }
 
-  clone() {
+  clone(): Matrix4 {
     return new Matrix4(this.elements.slice());
   }
 
-  equals(m: Matrix4) {
+  equals(m: Matrix4): boolean {
     return this.elements.every((e, i) => e === m.elements[i]);
   }
 
-  toArray(offset = 0) {
+  toArray(offset = 0): number[] {
     const array: number[] = [];
 
     const te = this.elements;
@@ -143,7 +155,7 @@ export default class Matrix4 {
     return array;
   }
 
-  multiply(m: Matrix4) {
+  multiply(m: Matrix4): Matrix4 {
     const newM = this.clone();
     const ae = newM.elements;
     const be = m.elements;
@@ -204,7 +216,7 @@ export default class Matrix4 {
     return newM;
   }
 
-  maxScaleOnAxis() {
+  maxScaleOnAxis(): number {
     const te = this.elements;
 
     const scaleXSq = te[0] * te[0] + te[1] * te[1] + te[2] * te[2];
@@ -214,7 +226,7 @@ export default class Matrix4 {
     return Math.sqrt(Math.max(scaleXSq, scaleYSq, scaleZSq));
   }
 
-  inverse() {
+  inverse(): Matrix4 {
     const det = this.determinant();
     if (det === 0) {
       console.error("ArgumentError: The determinant is 0.");
@@ -355,11 +367,15 @@ export default class Matrix4 {
     return invM.multiplyScalar(1 / det);
   }
 
-  static makeRotationFromQuaternion(q: Quaternion) {
+  static makeRotationFromQuaternion(q: Quaternion): Matrix4 {
     return Matrix4.compose(new Vector3(0, 0, 0), q, new Vector3(1, 1, 1));
   }
 
-  static compose(position: Vector3, quaternion: Quaternion, scale: Vector3) {
+  static compose(
+    position: Vector3,
+    quaternion: Quaternion,
+    scale: Vector3,
+  ): Matrix4 {
     const te: number[] = [];
     const { x: sx, y: sy, z: sz } = scale;
     const { x, y, z, w } = quaternion;
@@ -435,12 +451,14 @@ export default class Matrix4 {
 
     const quaternion = Quaternion.fromRotationMatrix(matrix);
 
-    return { position,
-quaternion,
-scale };
+    return {
+      position,
+      quaternion,
+      scale,
+    };
   }
 
-  determinant() {
+  determinant(): number {
     const te = this.elements;
 
     const n11 = te[0],
@@ -460,12 +478,10 @@ scale };
       n43 = te[11],
       n44 = te[15];
 
-    /*
-     *  TODO: make this more efficient
-     * ( based on
-     *  http://www.euclideanspace.com/maths/algebra/matrix/functions/inverse/fourD/index.htm
-     * )
-     */
+    // TODO: make this more efficient
+
+    // eslint-disable-next-line max-len
+    // Based on http://www.euclideanspace.com/maths/algebra/matrix/functions/inverse/fourD/index.htm
 
     return (
       n41 *
@@ -499,11 +515,11 @@ scale };
     );
   }
 
-  multiplyScalar(x: number) {
+  multiplyScalar(x: number): Matrix4 {
     return new Matrix4(this.elements.map((e) => e * x));
   }
 
-  static lookAt(eye: Vector3, target: Vector3, up: Vector3) {
+  static lookAt(eye: Vector3, target: Vector3, up: Vector3): Matrix4 {
     const newM = new Matrix4(),
       te = newM.elements;
     const z = eye.sub(target);

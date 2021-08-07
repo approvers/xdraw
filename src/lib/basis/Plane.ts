@@ -5,30 +5,40 @@
 import Vector3 from "./Vector3";
 
 export default class Plane {
-  constructor(private _normal = new Vector3(1, 0, 0), public constant = 0) {}
+  constructor(private normal = new Vector3(1, 0, 0), public constant = 0) {}
 
-  set normal(v: Vector3) {
-    this._normal = v.clone();
+  setNormal(v: Vector3): void {
+    this.normal = v.clone();
   }
 
-  get normal() {
-    return this._normal;
+  getNormal(): Vector3 {
+    return this.normal;
   }
 
-  setComponents(x: number, y: number, z: number, w: number) {
-    this._normal = new Vector3(x, y, z);
+  setComponents({
+    x,
+    y,
+    z,
+    w,
+  }: {
+    x: number;
+    y: number;
+    z: number;
+    w: number;
+  }): Plane {
+    this.normal = new Vector3(x, y, z);
     this.constant = w;
     return this;
   }
 
-  clone() {
-    return new Plane(this._normal.clone(), this.constant);
+  clone(): Plane {
+    return new Plane(this.normal.clone(), this.constant);
   }
 
-  normalize() {
+  normalize(): Plane {
     const len = this.normal.length();
     if (len === 0) {
-      return;
+      return this;
     }
     const inverseNormalLength = 1.0 / len;
     this.normal.multiplyScalar(inverseNormalLength);
@@ -36,7 +46,7 @@ export default class Plane {
     return this;
   }
 
-  distanceToPoint(p: Vector3) {
+  distanceToPoint(p: Vector3): number {
     return this.normal.dot(p) + this.constant;
   }
 }

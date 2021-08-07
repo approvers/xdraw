@@ -15,7 +15,7 @@ export default class Ray {
     public maxDistance = Infinity,
   ) {}
 
-  clone() {
+  clone(): Ray {
     return new Ray(
       this.origin.clone(),
       this.direction.clone(),
@@ -23,17 +23,17 @@ export default class Ray {
     );
   }
 
-  applyMatrix4(m: Matrix4) {
+  applyMatrix4(m: Matrix4): Ray {
     this.origin.applyMatrix4(m);
     this.direction.affineTransform(m);
     return this;
   }
 
-  at(t: number) {
+  at(t: number): Vector3 {
     return this.direction.clone().multiplyScalar(t).add(this.origin);
   }
 
-  intersectedPointWithBox(box: Box3) {
+  intersectedPointWithBox(box: Box3): Vector3 | null {
     let txmin: number,
       txmax: number,
       tymin: number,
@@ -102,7 +102,10 @@ export default class Ray {
     return this.at(txmin >= 0 ? txmin : txmax);
   }
 
-  intersectedPointWithTriangle(f: Triangle, cullBackface = false) {
+  intersectedPointWithTriangle(
+    f: Triangle,
+    cullBackface = false,
+  ): Vector3 | null {
     const edge1 = f.b.sub(f.a);
     const edge2 = f.c.sub(f.a);
     const normal = edge1.clone().cross(edge2);
@@ -157,19 +160,19 @@ export default class Ray {
     return this.at(QdN / DdN);
   }
 
-  intersectsWithBox(box: Box3) {
+  intersectsWithBox(box: Box3): boolean {
     return this.intersectedPointWithBox(box) !== null;
   }
 
-  intersectsWithSphere(sphere: Sphere) {
+  intersectsWithSphere(sphere: Sphere): boolean {
     return this.distanceSqToPoint(sphere.center) <= sphere.radius ** 2;
   }
 
-  intersectsWithTriangle(f: Triangle, cullBackface = false) {
+  intersectsWithTriangle(f: Triangle, cullBackface = false): boolean {
     return this.intersectedPointWithTriangle(f, cullBackface) !== null;
   }
 
-  distanceSqToPoint(p: Vector3) {
+  distanceSqToPoint(p: Vector3): number {
     const dist = p.sub(this.origin).dot(this.direction);
     if (dist < 0) {
       return this.origin.distanceToSquared(p);
@@ -190,13 +193,11 @@ export default class Ray {
   distanceSqToSegment(
     vStart: Vector3,
     vEnd: Vector3,
-    interRay?: Vector3,
-    interSegment?: Vector3,
-  ): any {
+  ): { distance: number; interRay: Vector3; interSegment: Vector3 } {
+    // eslint-disable-next-line max-len
+    // http://www.geometrictools.com/GTEngine/Include/Mathematics/GteDistRaySegment.h
 
     /*
-     * From
-     * http://www.geometrictools.com/GTEngine/Include/Mathematics/GteDistRaySegment.h
      * It returns the min distance between the ray and the segment
      * defined by vStart and vEnd
      * It can also set two optional targets :
@@ -226,7 +227,6 @@ export default class Ray {
       if (s0 >= 0) {
         if (s1 >= -extDet) {
           if (s1 <= extDet) {
-
             /*
              * Region 0
              * Minimum at interior points of ray and segment.
@@ -280,14 +280,13 @@ export default class Ray {
       sqrDist = -s0 * s0 + s1 * (s1 + 2 * b1) + c;
     }
 
-    if (interRay !== undefined && interRay !== null) {
-      interRay = this.direction.clone().multiplyScalar(s0).add(this.origin);
-    }
-
-    if (interSegment !== undefined && interSegment !== null) {
+    const interRay = this.direction.clone().multiplyScalar(s0).add(this.origin),
       interSegment = this.segDir.clone().multiplyScalar(s1).add(this.segCenter);
-    }
 
-    return sqrDist;
+    return {
+      distance: sqrDist,
+      interRay,
+      interSegment,
+    };
   }
 }

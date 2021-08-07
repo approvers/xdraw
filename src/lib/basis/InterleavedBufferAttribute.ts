@@ -21,9 +21,9 @@ export default class InterleavedBufferAttribute {
     this.isFloat = array instanceof Float32Array;
   }
 
-  set needsUpdate(value) {
+  setNeedsUpdate(value: boolean): void {
     if (value === true) {
-      this.version++;
+      this.version += 1;
     }
   }
 
@@ -31,23 +31,23 @@ export default class InterleavedBufferAttribute {
     srcOffset: number,
     attribute: InterleavedBufferAttribute,
     dstOffset: number,
-  ) {
-    srcOffset *= this.stride;
-    dstOffset *= attribute.stride;
+  ): InterleavedBufferAttribute {
+    const src = srcOffset * this.stride;
+    const dst = dstOffset * attribute.stride;
 
-    for (let i = 0; i < this.stride; i++) {
-      this.array[srcOffset + i] = attribute.array[dstOffset + i];
+    for (let i = 0; i < this.stride; i += 1) {
+      this.array[src + i] = attribute.array[dst + i];
     }
 
     return this;
   }
 
-  set(value: TypedArray, offset = 0) {
+  set(value: TypedArray, offset = 0): InterleavedBufferAttribute {
     this.array.set(value, offset);
     return this;
   }
 
-  clone() {
+  clone(): InterleavedBufferAttribute {
     const newI = new InterleavedBufferAttribute(
       this.array.slice(),
       this.stride,
@@ -56,72 +56,78 @@ export default class InterleavedBufferAttribute {
     return newI;
   }
 
-  setX(index: number, x: number) {
+  setX(index: number, x: number): InterleavedBufferAttribute {
     this.array[index * this.stride + this.offset] = x;
 
     return this;
   }
 
-  setY(index: number, y: number) {
+  setY(index: number, y: number): InterleavedBufferAttribute {
     this.array[index * this.stride + this.offset + 1] = y;
 
     return this;
   }
 
-  setZ(index: number, z: number) {
+  setZ(index: number, z: number): InterleavedBufferAttribute {
     this.array[index * this.stride + this.offset + 2] = z;
 
     return this;
   }
 
-  setW(index: number, w: number) {
+  setW(index: number, w: number): InterleavedBufferAttribute {
     this.array[index * this.stride + this.offset + 3] = w;
 
     return this;
   }
 
-  getX(index: number) {
+  getX(index: number): number {
     return this.array[index * this.stride + this.offset];
   }
 
-  getY(index: number) {
+  getY(index: number): number {
     return this.array[index * this.stride + this.offset + 1];
   }
 
-  getZ(index: number) {
+  getZ(index: number): number {
     return this.array[index * this.stride + this.offset + 2];
   }
 
-  getW(index: number) {
+  getW(index: number): number {
     return this.array[index * this.stride + this.offset + 3];
   }
 
-  setXY(index: number, x: number, y: number) {
-    index = index * this.stride + this.offset;
+  setXY(index: number, x: number, y: number): InterleavedBufferAttribute {
+    const i = index * this.stride + this.offset;
 
-    this.array[index + 0] = x;
-    this.array[index + 1] = y;
-
-    return this;
-  }
-
-  setXYZ(index: number, x: number, y: number, z: number) {
-    index = index * this.stride + this.offset;
-
-    this.array[index + 0] = x;
-    this.array[index + 1] = y;
-    this.array[index + 2] = z;
+    this.array[i + 0] = x;
+    this.array[i + 1] = y;
 
     return this;
   }
 
-  setXYZW(index: number, x: number, y: number, z: number, w: number) {
-    index = index * this.stride + this.offset;
+  setXYZ(
+    index: number,
+    { x, y, z }: { x: number; y: number; z: number },
+  ): InterleavedBufferAttribute {
+    const i = index * this.stride + this.offset;
 
-    this.array[index + 0] = x;
-    this.array[index + 1] = y;
-    this.array[index + 2] = z;
-    this.array[index + 3] = w;
+    this.array[i + 0] = x;
+    this.array[i + 1] = y;
+    this.array[i + 2] = z;
+
+    return this;
+  }
+
+  setXYZW(
+    index: number,
+    { x, y, z, w }: { x: number; y: number; z: number; w: number },
+  ): InterleavedBufferAttribute {
+    const i = index * this.stride + this.offset;
+
+    this.array[i + 0] = x;
+    this.array[i + 1] = y;
+    this.array[i + 2] = z;
+    this.array[i + 3] = w;
 
     return this;
   }
