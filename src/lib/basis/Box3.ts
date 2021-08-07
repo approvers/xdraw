@@ -14,7 +14,7 @@ export default class Box3 {
     public max = new Vector3(-Infinity, -Infinity, -Infinity),
   ) {}
 
-  static fromPoints(points: Vector3[]) {
+  static fromPoints(points: Vector3[]): Box3 {
     const box = new Box3();
     box.min = points.reduce((acc, cur) => acc.min(cur), box.min);
     box.max = points.reduce((acc, cur) => acc.max(cur), box.max);
@@ -25,7 +25,7 @@ export default class Box3 {
     throw new Error("Method not implemented.");
   }
 
-  empty() {
+  empty(): boolean {
     return (
       this.max.x < this.min.x ||
       this.max.y < this.min.y ||
@@ -33,7 +33,7 @@ export default class Box3 {
     );
   }
 
-  getCenter() {
+  getCenter(): Vector3 {
     if (this.empty()) {
       return new Vector3();
     }

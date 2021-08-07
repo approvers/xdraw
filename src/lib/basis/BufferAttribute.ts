@@ -21,20 +21,6 @@ export default class BufferAttribute {
 
   public readonly isFloat: boolean;
 
-  set needsUpdate(v: boolean) {
-    if (v === true) {
-    }
-  }
-
-  static fromArray<T extends TypedArray>(
-    buffer: new (any: any) => T,
-    array: number[],
-    itemSize: number,
-    normalized = false,
-  ) {
-    return new BufferAttribute(new buffer(array), itemSize, normalized);
-  }
-
   constructor(
     public readonly array: TypedArray,
     public readonly itemSize: number,
@@ -44,150 +30,153 @@ export default class BufferAttribute {
     this.isFloat = array instanceof Float32Array;
   }
 
-  get length() {
+  get length(): number {
     return this.count;
   }
 
-  clone() {
+  clone(): BufferAttribute {
     const newB = new BufferAttribute(
       this.array,
       this.itemSize,
       this.normalized,
     );
-    newB.needsUpdate = this.needsUpdate;
     return newB;
   }
 
-  getX(i: number) {
-    return this.array[i * this.itemSize];
+  getX(index: number): number {
+    return this.array[index * this.itemSize];
   }
 
-  getY(i: number) {
-    return this.array[i * this.itemSize + 1];
+  getY(index: number): number {
+    return this.array[index * this.itemSize + 1];
   }
 
-  getZ(i: number) {
-    return this.array[i * this.itemSize + 2];
+  getZ(index: number): number {
+    return this.array[index * this.itemSize + 2];
   }
 
-  getW(i: number) {
-    return this.array[i * this.itemSize + 3];
+  getW(index: number): number {
+    return this.array[index * this.itemSize + 3];
   }
 
-  setX(i: number, v: number) {
-    this.array[i * this.itemSize] = v;
+  setX(index: number, value: number): void {
+    this.array[index * this.itemSize] = value;
   }
 
-  setY(i: number, v: number) {
-    this.array[i * this.itemSize + 1] = v;
+  setY(index: number, value: number): void {
+    this.array[index * this.itemSize + 1] = value;
   }
 
-  setZ(i: number, v: number) {
-    this.array[i * this.itemSize + 2] = v;
+  setZ(index: number, value: number): void {
+    this.array[index * this.itemSize + 2] = value;
   }
 
-  setW(i: number, v: number) {
-    this.array[i * this.itemSize + 3] = v;
+  setW(index: number, value: number): void {
+    this.array[index * this.itemSize + 3] = value;
   }
 
-  setXY(index: number, x: number, y: number) {
-    index *= this.itemSize;
-
-    this.array[index + 0] = x;
-    this.array[index + 1] = y;
+  setXY(index: number, xValue: number, yValue: number): BufferAttribute {
+    this.array[index * this.itemSize + 0] = xValue;
+    this.array[index * this.itemSize + 1] = yValue;
 
     return this;
   }
 
-  setXYZ(index: number, x: number, y: number, z: number) {
-    index *= this.itemSize;
-
-    this.array[index + 0] = x;
-    this.array[index + 1] = y;
-    this.array[index + 2] = z;
-
-    return this;
-  }
-
-  setXYZW(index: number, x: number, y: number, z: number, w: number) {
-    index *= this.itemSize;
-
-    this.array[index + 0] = x;
-    this.array[index + 1] = y;
-    this.array[index + 2] = z;
-    this.array[index + 3] = w;
+  setXYZ(
+    index: number,
+    { x, y, z }: { x: number; y: number; z: number },
+  ): BufferAttribute {
+    this.array[index * this.itemSize + 0] = x;
+    this.array[index * this.itemSize + 1] = y;
+    this.array[index * this.itemSize + 2] = z;
 
     return this;
   }
 
-  copyArray(array: ArrayLike<number>) {
+  setXYZW(
+    index: number,
+    { x, y, z, w }: { x: number; y: number; z: number; w: number },
+  ): BufferAttribute {
+    this.array[index * this.itemSize + 0] = x;
+    this.array[index * this.itemSize + 1] = y;
+    this.array[index * this.itemSize + 2] = z;
+    this.array[index * this.itemSize + 3] = w;
+
+    return this;
+  }
+
+  copyArray(array: ArrayLike<number>): BufferAttribute {
     this.array.set(array);
     return this;
   }
 
-  copyColorsArray(colors: Color[]) {
+  copyColorsArray(colors: Color[]): BufferAttribute {
     const { array } = this;
     let offset = 0;
 
     for (let color of colors) {
-      if (color === undefined) {
+      if (!color) {
         color = new Color(0);
       }
 
-      array[offset++] = color.r;
-      array[offset++] = color.g;
-      array[offset++] = color.b;
+      array[offset + 0] = color.r;
+      array[offset + 1] = color.g;
+      array[offset + 2] = color.b;
+      offset += 3;
     }
 
     return this;
   }
 
-  copyVector2sArray(vectors: Vector2[]) {
+  copyVector2sArray(vectors: Vector2[]): BufferAttribute {
     const { array } = this;
     let offset = 0;
 
     for (let vector of vectors) {
-      if (vector === undefined) {
+      if (!vector) {
         vector = new Vector2();
       }
 
-      array[offset++] = vector.x;
-      array[offset++] = vector.y;
+      array[offset + 0] = vector.x;
+      array[offset + 1] = vector.y;
+      offset += 2;
     }
 
     return this;
   }
 
-  copyVector3sArray(vectors: Vector3[]) {
+  copyVector3sArray(vectors: Vector3[]): BufferAttribute {
     const { array } = this;
     let offset = 0;
 
     for (let vector of vectors) {
-      if (vector === undefined) {
+      if (!vector) {
         vector = new Vector3();
       }
 
-      array[offset++] = vector.x;
-      array[offset++] = vector.y;
-      array[offset++] = vector.z;
+      array[offset + 0] = vector.x;
+      array[offset + 1] = vector.y;
+      array[offset + 2] = vector.z;
+      offset += 3;
     }
 
     return this;
   }
 
-  copyVector4sArray(vectors: Vector4[]) {
+  copyVector4sArray(vectors: Vector4[]): BufferAttribute {
     const { array } = this;
     let offset = 0;
 
     for (let vector of vectors) {
-      if (vector === undefined) {
+      if (!vector) {
         vector = new Vector4();
       }
 
-      array[offset++] = vector.x;
-      array[offset++] = vector.y;
-      array[offset++] = vector.z;
-      array[offset++] = vector.w;
+      array[offset + 0] = vector.x;
+      array[offset + 1] = vector.y;
+      array[offset + 2] = vector.z;
+      array[offset + 3] = vector.w;
+      offset += 4;
     }
 
     return this;

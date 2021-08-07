@@ -4,15 +4,16 @@
 
 export type Clamper<V> = (newValue: V) => V;
 
-export function rangeClamper(min: number, max: number) {
-  return (newValue: number) => Math.min(Math.max(min, newValue), max);
-}
+export const rangeClamper =
+  (min: number, max: number): ((newValue: number) => number) =>
+  (newValue: number) =>
+    Math.min(Math.max(min, newValue), max);
 
-export function selectClamper<T>(selects: T[]) {
-  return (newValue: T) => {
+export const selectClamper =
+  <T>(selects: T[]): ((newValue: T) => T) =>
+  (newValue: T) => {
     if (selects.some((e) => e === newValue)) {
       return newValue;
     }
     return selects[0];
   };
-}

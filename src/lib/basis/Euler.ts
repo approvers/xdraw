@@ -1,5 +1,6 @@
 import Matrix4 from "./Matrix4";
 import Quaternion from "./Quaternion";
+import Vector3 from "./Vector3";
 
 /**
  * @author MikuroXina / https://github.com/MikuroXina
@@ -9,26 +10,16 @@ type RotationOrder = "XYZ" | "YZX" | "ZXY" | "XZY" | "YXZ" | "ZYX";
 
 export default class Euler {
   constructor(
-    public readonly x: number = 0,
-    public readonly y: number = 0,
-    public readonly z: number = 0,
+    public readonly rotations: Vector3 = new Vector3(),
     public readonly order: RotationOrder = "XYZ",
   ) {}
 
-  static fromRotationMatrix(m: Matrix4, order: RotationOrder) {
+  static fromRotationMatrix(m: Matrix4, order: RotationOrder): Euler {
     const clamp = (src: number, min: number, max: number) =>
       Math.max(Math.min(src, max), min);
 
     const te = m.elements;
-    const m11 = te[0],
-      m12 = te[4],
-      m13 = te[8];
-    const m21 = te[1],
-      m22 = te[5],
-      m23 = te[9];
-    const m31 = te[2],
-      m32 = te[6],
-      m33 = te[10];
+    const [m11, m21, m31, m12, m22, m32, m13, m23, m33] = te;
 
     let x: number, y: number, z: number;
 
@@ -96,27 +87,27 @@ export default class Euler {
       throw new Error("ArgumentError: Illegal rotation order on Euler");
     }
 
-    return new Euler(x, y, z, order);
+    return new Euler(new Vector3(x, y, z), order);
   }
 
-  static fromQuaternion(q: Quaternion, order: RotationOrder) {
+  static fromQuaternion(q: Quaternion, order: RotationOrder): Euler {
     const m = Matrix4.makeRotationFromQuaternion(q);
     return Euler.fromRotationMatrix(m, order);
   }
 
-  static fromDegressRotations(x: number, y: number, z: number) {
+  static fromDegreesRotations(x: number, y: number, z: number): Euler {
     const DEG2RAD = Math.PI / 180;
-    return new Euler(x * DEG2RAD, y * DEG2RAD, z * DEG2RAD);
+    return new Euler(new Vector3(x * DEG2RAD, y * DEG2RAD, z * DEG2RAD));
   }
 
-  clone() {
-    return new Euler(this.x, this.y, this.z, this.order);
+  clone(): Euler {
+    return new Euler(this.rotations.clone(), this.order);
   }
 
-  add(v: Euler) {
+  add(v: Euler): Euler {
     if (this.order !== v.order) {
-      throw new Error("Cannot add different Eulers.");
+      throw new Error("Cannot add with ones having different rotation orders.");
     }
-    return new Euler(this.x + v.x, this.y + v.y, this.z + v.z, this.order);
+    return new Euler(this.rotations.add(v.rotations), this.order);
   }
 }

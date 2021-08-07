@@ -11,7 +11,17 @@ export default class Color {
 
   a: number;
 
-  static rgb(r: number, g: number, b: number, a = 1) {
+  static rgb({
+    r,
+    g,
+    b,
+    a = 1,
+  }: {
+    r: number;
+    g: number;
+    b: number;
+    a?: number;
+  }): Color {
     const newC = new Color();
     newC.r = Math.max(Math.min(r, 0xff), 0);
     newC.g = Math.max(Math.min(g, 0xff), 0);
@@ -21,21 +31,21 @@ export default class Color {
   }
 
   constructor(hex = 0) {
-    hex = Math.floor(hex);
+    const hexInt = Math.floor(hex);
     if (hex >= 0x1000000) {
-      this.r = ((hex >> 24) & 0xff) / 0xff;
-      this.g = ((hex >> 16) & 0xff) / 0xff;
-      this.b = ((hex >> 8) & 0xff) / 0xff;
-      this.a = (hex & 0xff) / 0xff;
+      this.r = ((hexInt >> 24) & 0xff) / 0xff;
+      this.g = ((hexInt >> 16) & 0xff) / 0xff;
+      this.b = ((hexInt >> 8) & 0xff) / 0xff;
+      this.a = (hexInt & 0xff) / 0xff;
     } else {
-      this.r = ((hex >> 16) & 0xff) / 0xff;
-      this.g = ((hex >> 8) & 0xff) / 0xff;
-      this.b = (hex & 0xff) / 0xff;
+      this.r = ((hexInt >> 16) & 0xff) / 0xff;
+      this.g = ((hexInt >> 8) & 0xff) / 0xff;
+      this.b = (hexInt & 0xff) / 0xff;
       this.a = 1;
     }
   }
 
-  clone() {
+  clone(): Color {
     const newC = new Color();
     newC.r = this.r;
     newC.g = this.g;
@@ -43,7 +53,7 @@ export default class Color {
     return newC;
   }
 
-  multiplyScalar(intensity: number) {
+  multiplyScalar(intensity: number): Color {
     this.r *= intensity;
     this.g *= intensity;
     this.b *= intensity;

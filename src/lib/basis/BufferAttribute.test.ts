@@ -81,7 +81,11 @@ test("setXYZ", () => {
   const a = new BufferAttribute(f32a, 3, false);
   const expected = new Float32Array([1, 2, 3, -4, -5, -6]);
 
-  a.setXYZ(1, -4, -5, -6);
+  a.setXYZ(1, {
+    x: -4,
+    y: -5,
+    z: -6,
+  });
 
   expect(a.array).toEqual(expected);
 });
@@ -91,7 +95,12 @@ test("setXYZW", () => {
   const a = new BufferAttribute(f32a, 4, false);
   const expected = new Float32Array([-1, -2, -3, -4]);
 
-  a.setXYZW(0, -1, -2, -3, -4);
+  a.setXYZW(0, {
+    x: -1,
+    y: -2,
+    z: -3,
+    w: -4,
+  });
 
   expect(a.array).toEqual(expected);
 });
@@ -101,11 +110,9 @@ test("clone", () => {
     new Float32Array([1, 2, 3, 4, 0.12, -12]),
     2,
   );
-  attr.needsUpdate = true;
   const attrCopy = attr.clone();
 
   expect(attr.array).toEqual(attrCopy.array);
-  expect(attrCopy.needsUpdate).toBeTruthy();
 });
 
 test("count", () => {

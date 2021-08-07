@@ -2,15 +2,14 @@
  * @author MikuroXina / https://github.com/MikuroXina
  */
 
-import Color from "../basis/Color";
-
 import Camera from "./cameras/Camera";
+import Color from "../basis/Color";
 import Light from "./lights/Light";
-import Model from "./Model";
 import MeshRenderer from "./renderer/MeshRenderer";
+import Model from "./Model";
 import Renderer from "./renderer/Renderer";
 import WebGLClears from "./renderer/webgl/WebGLClears";
-import Transform from "./Transform";
+import { Component } from "../basis/Component";
 
 export class Fog {
   name = "";
@@ -28,9 +27,7 @@ export class FogExp2 extends Fog {
   }
 }
 
-export class Scene {
-  private _root = new Transform();
-
+export class Scene extends Component {
   private _models: Model[] = [];
 
   private _lights: Light[] = [];
@@ -47,6 +44,7 @@ export class Scene {
     height: number,
     backgroundSetter: (clears: WebGLClears) => void = () => {},
   ) {
+    super();
     this._renderer = new MeshRenderer(
       this,
       canvas,
