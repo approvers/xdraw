@@ -50,7 +50,7 @@
     "jest": "^27.4.3",
     "jest-canvas-mock": "^2.0.0-alpha.3",
     "kill-port": "^1.6.0",
-    "next": "^12.0.7",
+    "next": "^12.0.9",
     "prettier": "^2.3.2",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
